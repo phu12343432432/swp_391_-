@@ -27,7 +27,7 @@ public class DBContext {
         String password = "123456";
 
         String url = "jdbc:sqlserver://" + serverName + ":" + portNumber
-                + ";databaseName=" + dbName;//+"; integratedSecurity=true";
+                + ";databaseName=" + dbName + ";encrypt=true;trustServerCertificate=true;";
         Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
         try {
             if (connection == null || connection.isClosed()) {

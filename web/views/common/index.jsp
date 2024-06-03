@@ -10,7 +10,7 @@
         <meta content="Free HTML Templates" name="description">
 
         <!-- Favicon -->
-        <link href="img/favicon.ico" rel="icon">
+        <link href="${pageContext.request.contextPath}/img/favicon.ico" rel="icon">
 
         <!-- Google Web Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,6 +30,9 @@
 
         <!-- Template Stylesheet -->
         <link href="${pageContext.request.contextPath}/css/style.css" rel="stylesheet">
+
+        <!-- Customized Bootstrap Stylesheet -->
+        <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     </head>
 
@@ -99,24 +102,24 @@
                     </div >
                     <a href="lichsuhoadon" class="icon-button">
                         <span class="material-icons">shopping_cart</span>
-<!--                        <span class="icon-button__badge"></span>-->
+                        <!--                        <span class="icon-button__badge"></span>-->
                     </a>
-                    
+
                     <h1 class="m-4 ">
                         <div class="d-none d-lg-block ">
-                            <c:if test="${sessionScope.account==null}">
+                            <c:if test="${sessionScope.USER == null}">
                                 <a href="${pageContext.request.contextPath}/auth?action=login" class="bi-person custom-icon me-3">Login!</a>
                             </c:if>  
-                            <c:if test="${sessionScope.account!=null }">
+                            <c:if test="${sessionScope.USER != null }">
                                 <div class="dropdown">
                                     <button type="button" id="dropdownMenuButton1" class="btn dropdown-toggle " data-bs-toggle="dropdown" aria-expanded="false"style="color: #06A3DA;
                                             font-size: 20px;">
-                                        ${sessionScope.account.name}
+                                        ${sessionScope.USER.firstName} ${sessionScope.USER.lastName}
                                     </button>
                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                        <a class="dropdown-item " href="profile1">Profile</a>
+                                        <a class="dropdown-item " href="profile?action=view">Profile</a>
                                         <a class="dropdown-item " href="#">Update</a>
-                                        <a class="dropdown-item " href="logout">Logout</a>
+                                        <a class="dropdown-item " href="auth?action=logout">Logout</a>
                                     </div>
                                 </div>
                             </c:if> 
@@ -133,8 +136,12 @@
                             <div class="p-3" style="max-width: 900px;">
                                 <h5 class="text-white text-uppercase mb-3 animated slideInDown">Chuyên Nghiệp & Chất Lượng</h5>
                                 <h1 class="display-1 text-white mb-md-4 animated zoomIn">Sân cỏ nhân tạo dành cho thi đấu bóng đá</h1>
-                                <a href="danhsachtimsan" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Đặt Sân</a>
-                                <a href="" class="btn btn-outline-light py-md-3 px-md-5 animated slideInRight">Liên hệ</a>
+                                <a href="league?action=listLeague" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Tham gia giải đấu</a>
+                                <a href="team" class="btn btn-outline-light py-md-3 px-md-5 animated slideInRight">Team của bạn</a>
+                                </br>
+                                </br>
+                                <a href="league?action=create" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Tạo giải đấu</a>
+                                <a href="contact" class="btn btn-outline-light py-md-3 px-md-5 animated slideInRight">Liên lạc</a>
                             </div>
                         </div>
                     </div>

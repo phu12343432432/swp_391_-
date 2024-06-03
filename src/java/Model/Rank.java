@@ -19,10 +19,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Rank {
-    public int Id;
-    public int TeamId;
-    public int TotalScroing;
-    public Date CreateAt;
-    public Date UpdateAt;
-    public Date DeleteAt;
+    private int Id;
+    private int TeamId;
+    private int TotalScroing;
+    private Date CreateAt;
+    private Date UpdateAt;
+    private Date DeleteAt;
 }

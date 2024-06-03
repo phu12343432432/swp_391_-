@@ -19,15 +19,18 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-    public int Id;
-    public String UserName;
-    public String Password;
-    public String FirstName;    
-    public String LastName;
-    public String Phone;
-    public String Email;
-    public boolean IsActive;
-    public Date CreateAt;
-    public Date UpdateAt;
-    public Date DeleteAt;
+    private int Id;
+    private String UserName;
+    private String Password;
+    private String FirstName;    
+    private String LastName;
+    private String Phone;
+    private String Email;
+    private boolean IsActive;
+    private Date CreateAt;
+    private Date UpdateAt;
+    private Date DeleteAt;
+    private String Image;
+    private boolean IsCofirm;
+    private int RoleId;
 }

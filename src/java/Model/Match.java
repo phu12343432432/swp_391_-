@@ -19,14 +19,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Match {
-    public int Id;
-    public int HomeTeamId;   
-    public int AwayTeamId;
-    public int LeaugeId;
-    public String Name;
-    public String Address;
-    public Date StartAt;
-    public Date EndAt;
-    public int TeamSize;
-    public Date UpdateAt;
+    private int Id;
+    private int HomeTeamId;   
+    private int AwayTeamId;
+    private int LeaugeId;
+    private String Name;
+    private String Address;
+    private Date StartAt;
+    private Date EndAt;
+    private int TeamSize;
+    private Date UpdateAt;
 }

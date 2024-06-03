@@ -19,11 +19,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Score {
-    public int Id;
-    public int TeamId;
-    public int LeagueId;
-    public int Score;
-    public Date CreateAt;
-    public Date UpdateAt;
-    public Date DeleteAt;
+    private int Id;
+    private int TeamId;
+    private int LeagueId;
+    private int Score;
+    private Date CreateAt;
+    private Date UpdateAt;
+    private Date DeleteAt;
 }

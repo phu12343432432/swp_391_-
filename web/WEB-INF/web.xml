@@ -5,15 +5,39 @@
         <servlet-class>Controller.AuthenticateController</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>NewServlet</servlet-name>
-        <servlet-class>Controller.NewServlet</servlet-class>
+        <servlet-name>ProfileController</servlet-name>
+        <servlet-class>Controller.ProfileController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>VerifyController</servlet-name>
+        <servlet-class>Controller.VerifyController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UserTeamController</servlet-name>
+        <servlet-class>Controller.UserTeamController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UserLeagueController</servlet-name>
+        <servlet-class>Controller.UserLeagueController</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>AuthenticateController</servlet-name>
         <url-pattern>/auth</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>NewServlet</servlet-name>
-        <url-pattern>/NewServlet</url-pattern>
+        <servlet-name>ProfileController</servlet-name>
+        <url-pattern>/profile</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>VerifyController</servlet-name>
+        <url-pattern>/verify</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UserTeamController</servlet-name>
+        <url-pattern>/team</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UserLeagueController</servlet-name>
+        <url-pattern>/league</url-pattern>
     </servlet-mapping>
 </web-app>

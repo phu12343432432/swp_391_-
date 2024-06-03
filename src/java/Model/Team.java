@@ -19,15 +19,15 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Team {
-    public int Id;
-    public String Name;
-    public String ShortName;    
-    public String Description;
-    public int TeamSize;
-    public byte[] Image;
-    public Date CreateAt;
-    public Date UpdateAt;
-    public Date DeleteAt;
-    public boolean IsActive;
-    public int UserId;
+    private int Id;
+    private String Name;
+    private String ShortName;    
+    private String Description;
+    private int TeamSize;
+    private String Image;
+    private Date CreateAt;
+    private Date UpdateAt;
+    private Date DeleteAt;
+    private boolean IsActive;
+    private int UserId;
 }

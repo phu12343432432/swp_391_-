@@ -19,14 +19,17 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class League {
-    public int Id;
-    public String Name;
-    public String Description;
-    public Date StartDate;
-    public Date EndDate;
-    public String Address;
-    public int TeamSize;
-    public Date CreateAt;
-    public Date UpdateAt;
-    public Date DeleteAt;
+    private int Id;
+    private String Name;
+    private String Description;
+    private String StartDate;
+    private String EndDate;
+    private String Address;
+    private int TeamSize;
+    private String CreateAt;
+    private String UpdateAt;
+    private String DeleteAt;
+    private String Image;   
+    private String Type;
+    private int UserID;
 }

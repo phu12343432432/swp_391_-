@@ -100,7 +100,7 @@ public class UserLeagueController extends HttpServlet {
 
     private void createLeaguePage(HttpServletRequest request, HttpServletResponse response) {
         try {
-            String url = "views/user/create-league.jsp";
+            String url = "v+iews/user/create-league.jsp";
             request.getRequestDispatcher(url).forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();

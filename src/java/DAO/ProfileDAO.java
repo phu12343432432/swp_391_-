@@ -121,6 +121,7 @@ public class ProfileDAO extends DBContext {
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
+            //catch execpt
         }
         return false;
     }

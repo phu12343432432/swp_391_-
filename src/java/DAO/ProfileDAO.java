@@ -16,10 +16,7 @@ import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 
-/**
- *
- * @author Datnt
- */
+
 public class ProfileDAO extends DBContext {
 
     private Connection con;

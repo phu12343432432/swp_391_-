@@ -15,10 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 
-/**
- *
- * @author Datnt
- */
+
 public class VerifyController extends HttpServlet {
 
     @Override

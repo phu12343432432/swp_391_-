@@ -20,20 +20,25 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class League {
+public class MatchVM {
     private int Id;
-    private int Status;
+    private int HomeTeamId;
+    public String HometeamName;
+    public String HometeamImage;
+    public String HometeamShortName;
+    private int AwayTeamId;
+    public String AwayteamName;
+    public String AwayteamImage;
+    public String AwayteamShortName;
+    private int LeagueId;
     private String Name;
-    private String Description;
-    private LocalDateTime StartDate;
-    private LocalDateTime EndDate;
     private String Address;
-    private String DateRegister;
+    private LocalDateTime StartAt;
+    private LocalDateTime EndAt;
     private int TeamSize;
-    private String CreateAt;
-    private String UpdateAt;
-    private String DeleteAt;
-    private String Image;
-    private String Type;
-    private int UserId;
+    private LocalDateTime UpdateAt;
+    private int ScoreHome;
+    private int ScoreAway;    
+    private int Status;
+
 }

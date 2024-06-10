@@ -7,6 +7,7 @@ package Controller;
 import DAO.LeagueDAO;
 import DAO.TeamDAO;
 import Model.League;
+import Model.LeagueRegister;
 import Model.Team;
 import Model.User;
 import jakarta.servlet.ServletException;
@@ -54,14 +55,20 @@ public class UserLeagueController extends HttpServlet {
                 case "list-registered":
                     getUserLeagueRegistered(request, response);
                     break;
-                case "detail":
-                    viewLeagueDetail(request, response);
+                  case "detail":
+                    viewLeagueDetail_Owner(request, response);
                     break;
-                    case "view-league":
+                case "view-league":
                     viewLeagueDetail(request, response);
                     break;
                 case "start":
                     startLeague(request, response);
+                    break;
+                case "league-match":
+                    viewLeagueMatch(request, response);
+                    break;
+                case "match-detail":
+                    viewMatchDetail(request, response);
                     break;
             }
         } else {
@@ -274,6 +281,29 @@ public class UserLeagueController extends HttpServlet {
                 System.out.println("Oke");
             } else {
                 System.out.println("Khong oke");
+            }
+
+            request.getRequestDispatcher(url).forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void viewLeagueDetail_Owner(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            String url = "views/user/league-owner/league-details.jsp";
+            HttpSession session = request.getSession();
+            User userLogin = (User) session.getAttribute("USER");
+            String idS = request.getParameter("leagueId");
+            int id = Integer.parseInt(idS);
+            LeagueDAO leagueDAO = new LeagueDAO();
+            League league = leagueDAO.getLeagueById(id);
+            if (league != null) {
+                List<LeagueRegister> listTeamRegister = leagueDAO.getTeamRegisterLeague(id);
+                request.setAttribute("USER_LEAGUE", league);
+                request.setAttribute("LEAGUE_TEAM", listTeamRegister);
+                request.setAttribute("leagueId", idS);
+            } else {
+                System.out.println("Cannto get value in ViewLeagueDetail");
             }
 
             request.getRequestDispatcher(url).forward(request, response);

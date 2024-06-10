@@ -18,10 +18,6 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.IOException;
 
-/**
- *
- * @author Datnt
- */
 @MultipartConfig
 public class ProfileController extends HttpServlet {
 

@@ -76,6 +76,7 @@ public class UserTeamController extends HttpServlet {
         }
     }
 
+    // update user team
     private void updateTeam(HttpServletRequest request, HttpServletResponse response) {
         try {
             HttpSession session = request.getSession(false);

@@ -200,6 +200,7 @@ public class UserLeagueController extends HttpServlet {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
+    // update function dang ki giai dau
     private void RegisterLeague(HttpServletRequest request, HttpServletResponse response) {
         try {
             String url = "views/user/list-league.jsp";

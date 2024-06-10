@@ -57,7 +57,7 @@ public class UserLeagueController extends HttpServlet {
                 case "list-registered":
                     getUserLeagueRegistered(request, response);
                     break;
-                  case "detail":
+                case "detail":
                     viewLeagueDetail_Owner(request, response);
                     break;
                 case "view-league":
@@ -71,6 +71,9 @@ public class UserLeagueController extends HttpServlet {
                     break;
                 case "match-detail":
                     viewMatchDetail(request, response);
+                    break;
+                case "finish-league":
+                    finishLeague(request, response);
                     break;
             }
         } else {
@@ -92,8 +95,12 @@ public class UserLeagueController extends HttpServlet {
                 case "create":
                     createLeague(request, response);
                     break;
-                case "logout":
-                    session.removeAttribute("USER");
+                case "update":
+                    updateLeague(request, response);
+                    break;
+                case "match-detail":
+                    updateMatchDetail(request, response);
+                    break;
             }
         } else {
             // trang login
@@ -147,7 +154,7 @@ public class UserLeagueController extends HttpServlet {
         }
     }
 
-   private void createLeague(HttpServletRequest request, HttpServletResponse response) {
+    private void createLeague(HttpServletRequest request, HttpServletResponse response) {
         try {
             HttpSession session = request.getSession(false);
             User userLogin = (User) session.getAttribute("USER");
@@ -187,6 +194,10 @@ public class UserLeagueController extends HttpServlet {
             System.out.println("Update Team Cannot update");
             e.printStackTrace();
         }
+    }
+
+    private void updateLeague(HttpServletRequest request, HttpServletResponse response) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     private void RegisterLeague(HttpServletRequest request, HttpServletResponse response) {
@@ -295,6 +306,7 @@ public class UserLeagueController extends HttpServlet {
             e.printStackTrace();
         }
     }
+
     private void viewLeagueDetail_Owner(HttpServletRequest request, HttpServletResponse response) {
         try {
             String url = "views/user/league-owner/league-details.jsp";
@@ -318,7 +330,8 @@ public class UserLeagueController extends HttpServlet {
             e.printStackTrace();
         }
     }
-      private void startLeague(HttpServletRequest request, HttpServletResponse response) {
+
+    private void startLeague(HttpServletRequest request, HttpServletResponse response) {
         try {
             String url = "views/user/league-owner/league-details.jsp";
             String leagueIds = request.getParameter("leagueId");
@@ -387,6 +400,63 @@ public class UserLeagueController extends HttpServlet {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+    
+        private void updateMatchDetail(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            String url = "";
+            String scoreAs = request.getParameter("scoreA");
+            String scoreBs = request.getParameter("scoreB");
+            String matchIds = request.getParameter("matchId");
+            String teamAIds = request.getParameter("teamAId");
+            String teamBIds = request.getParameter("teamBId");
+            String leagueIds = request.getParameter("leagueId");
+
+            int scoreA = Integer.parseInt(scoreAs);
+            int scoreB = Integer.parseInt(scoreBs);
+            int matchId = Integer.parseInt(matchIds);
+            int teamAId = Integer.parseInt(teamAIds);
+            int teamBId = Integer.parseInt(teamBIds);
+            int leagueId = Integer.parseInt(leagueIds);
+
+            LeagueDAO leagueDAO = new LeagueDAO();
+            boolean result = leagueDAO.UpdateMatchResult(scoreA, scoreB, matchId, teamAId, teamBId, leagueId);
+            if (result) {
+                request.setAttribute("MESSAGE", "Cập nhật tỉ số thành công");
+                url = "league?action=league-match&leagueId=" + leagueIds;
+            } else {
+                request.setAttribute("ERROR", "Cập nhật tỉ số thất bại");
+            }
+            response.sendRedirect(url);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void finishLeague(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            String url = "views/user/league-owner/league-details.jsp";
+            String leagueIds = request.getParameter("leagueId");
+            if (leagueIds != null) {
+                int leagueId = Integer.parseInt(leagueIds);
+                LeagueDAO leagueDAO = new LeagueDAO();
+                boolean result = leagueDAO.finishLeague(leagueId);
+                if (result) {
+                    League league = leagueDAO.getLeagueById(leagueId);
+                    if (league != null) {
+                        List<LeagueRegister> listTeamRegister = leagueDAO.getTeamRegisterLeague(leagueId);
+                        request.setAttribute("USER_LEAGUE", league);
+                        request.setAttribute("LEAGUE_TEAM", listTeamRegister);
+                        request.setAttribute("leagueId", leagueId);
+                    } 
+                    request.setAttribute("MESSAGE", "Giải đấu của bạn đã hoàn thành cảm ơn bạn");
+                } else {
+                    request.setAttribute("ERROR", "Không thể kết thúc giải đấu");
+                }
+                request.getRequestDispatcher(url).forward(request, response);
+            }
+        } catch (Exception e) {
         }
     }
 

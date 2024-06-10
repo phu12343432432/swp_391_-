@@ -57,6 +57,12 @@ public class UserLeagueController extends HttpServlet {
                 case "detail":
                     viewLeagueDetail(request, response);
                     break;
+                    case "view-league":
+                    viewLeagueDetail(request, response);
+                    break;
+                case "start":
+                    startLeague(request, response);
+                    break;
             }
         } else {
             // trang login

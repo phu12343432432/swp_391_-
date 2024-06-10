@@ -19,10 +19,7 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
-/**
- *
- * @author Datnt
- */
+
 public class TeamDAO extends DBContext {
 
     private Connection con;

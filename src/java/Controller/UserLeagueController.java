@@ -253,6 +253,7 @@ public class UserLeagueController extends HttpServlet {
         }
     }
 
+    // Lam update function
     private void getUserLeague(HttpServletRequest request, HttpServletResponse response) {
         try {
             HttpSession session = request.getSession();
@@ -282,7 +283,21 @@ public class UserLeagueController extends HttpServlet {
     }
 
     private void getUserLeagueRegistered(HttpServletRequest request, HttpServletResponse response) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            String url = "views/user/league-owner/register-league.jsp";
+            HttpSession session = request.getSession();
+            Team userTeam = (Team) session.getAttribute("TEAM");
+            LeagueDAO leagueDAO = new LeagueDAO();
+            List<League> league = leagueDAO.getLeagueRegistered(userTeam.getId());
+            if (league != null) {
+                request.setAttribute("REGISTER_LEAGUE", league);
+            } else {
+                System.out.println("Cannot found");
+            }
+            request.getRequestDispatcher(url).forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void viewLeagueDetail(HttpServletRequest request, HttpServletResponse response) {
@@ -402,8 +417,8 @@ public class UserLeagueController extends HttpServlet {
             e.printStackTrace();
         }
     }
-    
-        private void updateMatchDetail(HttpServletRequest request, HttpServletResponse response) {
+
+    private void updateMatchDetail(HttpServletRequest request, HttpServletResponse response) {
         try {
             String url = "";
             String scoreAs = request.getParameter("scoreA");
@@ -449,7 +464,7 @@ public class UserLeagueController extends HttpServlet {
                         request.setAttribute("USER_LEAGUE", league);
                         request.setAttribute("LEAGUE_TEAM", listTeamRegister);
                         request.setAttribute("leagueId", leagueId);
-                    } 
+                    }
                     request.setAttribute("MESSAGE", "Giải đấu của bạn đã hoàn thành cảm ơn bạn");
                 } else {
                     request.setAttribute("ERROR", "Không thể kết thúc giải đấu");

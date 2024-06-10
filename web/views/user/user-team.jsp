@@ -62,7 +62,6 @@
         <jsp:include page="header.jsp"/>
 
 
-
         <div class="min-h-screen bg-gray-100 flex items-center justify-center px-4">
             <div class="bg-white shadow-lg rounded-lg p-8 max-w-4xl w-full">
                 <div class="flex flex-col md:flex-row justify-between items-start">
@@ -82,18 +81,11 @@
 
 
                         <p class="text-gray-700 mb-1" style="margin: 0 auto">${sessionScope.account.userName}</p>
-                        <a href="profile?action=changePassword">
+                        <a href="league?action=list-registered">
                             <button class="bg-green-500 text-white text-lg px-6 py-2 rounded-full shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-700 focus:ring-opacity-50" style="background-image: linear-gradient(to right top,#45af2a,#3ba023,#30901c,#268215,#1b730d,#1b730d,#1b730d,#1b730d,#268215,#30901c,#3ba023,#45af2a); margin:10px auto">
                                 Lịch sử tham gia giải đấu
                             </button>
                         </a>
-
-                        <!--                        <a href="profile?action=forgotPassword">
-                                                    <button class="bg-green-500 text-white text-lg px-6 py-2 rounded-full shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-700 focus:ring-opacity-50" style="background-image: linear-gradient(to right top,#45af2a,#3ba023,#30901c,#268215,#1b730d,#1b730d,#1b730d,#1b730d,#268215,#30901c,#3ba023,#45af2a); margin:10px auto">
-                                                        Quên mật khẩu
-                                                    </button>
-                                                </a>-->
-
                         <a href="auth">
                             <button class="bg-green-500 text-white text-lg px-6 py-2 rounded-full shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-700 focus:ring-opacity-50" style="background-image: linear-gradient(to right top,#45af2a,#3ba023,#30901c,#268215,#1b730d,#1b730d,#1b730d,#1b730d,#268215,#30901c,#3ba023,#45af2a); ">
                                 Trở về trang chủ 

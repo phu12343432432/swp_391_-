@@ -22,10 +22,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- *
- * @author Datnt
- */
+
 @MultipartConfig
 public class UserLeagueController extends HttpServlet {
 

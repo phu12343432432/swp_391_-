@@ -13,10 +13,6 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import java.util.Properties;
 
-/**
- *
- * @author Datnt
- */
 public class MailService {
 //        final String username = "dat.nt271102@gmail.com";
 //        final String password = "jjdicrlyxhlfutqg";

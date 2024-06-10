@@ -134,6 +134,7 @@ public class AuthenticationDAO extends DBContext {
         }
         return null;
     }
+    // get role ftom database
 
     public boolean CheckUserName(String userName) {
         String sql = "SELECT * FROM [User] WHERE [UserName] = ? ";
@@ -190,6 +191,7 @@ public class AuthenticationDAO extends DBContext {
         }
         return false;
     }
+    //ComfirmEmail 
 
     public boolean ForgotPassWord(String password, String email) {
         String sql = "UPDATE [User] SET Password = ? WHERE Email = ?";

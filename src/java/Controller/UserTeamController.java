@@ -17,7 +17,6 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.IOException;
 
-
 @MultipartConfig
 public class UserTeamController extends HttpServlet {
 
@@ -36,6 +35,11 @@ public class UserTeamController extends HttpServlet {
                 case "team-history":
                     viewHistory(request, response);
                     break;
+
+                case "view-team":
+                    viewTeamDetails(request, response);
+                    break;
+
             }
         } else {
             url = "views/common/sign-in.jsp";
@@ -100,7 +104,7 @@ public class UserTeamController extends HttpServlet {
                 System.out.println("TeamId " + teamId);
                 teamUpdated = teamDAO.updateTeam(_team, image);
             } else {
-                teamDAO.createTeam(_team, image); 
+                teamDAO.createTeam(_team, image);
                 teamUpdated = teamDAO.getTeamByUserId(userLogin.getId());
             }
             if (teamUpdated != null) {
@@ -118,6 +122,23 @@ public class UserTeamController extends HttpServlet {
 
     private void viewHistory(HttpServletRequest request, HttpServletResponse response) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+    
+       private void viewTeamDetails(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            HttpSession session = request.getSession();
+            String team = request.getParameter("id");
+            int teamId = Integer.parseInt(team);
+            User user = (User) session.getAttribute("USER");
+            TeamDAO teamDAO = new TeamDAO();
+            Team userTeam = teamDAO.getTeamById(teamId);
+            if (userTeam != null) {
+                request.setAttribute("TEAM", userTeam);
+            }
+            request.getRequestDispatcher("views/user/team-details.jsp").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

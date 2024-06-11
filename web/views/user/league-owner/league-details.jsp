@@ -130,7 +130,11 @@
                     </select>
                 </div>
                 <div>
-
+                    <div style="margin: 30px 0px">
+                        <a href="league?action=league-rank&leagueId=${USER_LEAGUE.id}" class="bg-green-500 text-white px-4 py-2 rounded shadow peer-checked:bg-green-500 transition-colors" 
+                           style="background-image: linear-gradient(to right top,#45af2a,#3ba023,#30901c,#268215,#1b730d,#1b730d,#1b730d,#1b730d,#268215,#30901c,#3ba023,#45af2a);">Xem bảng xếp hạng</a>
+                    </div>
+                           
                     <label for="surname" class="text-gray-700">Các đội đăng kí:</label>
                     <c:if test="${LEAGUE_TEAM.size() == 0}">
                         <h2>"Chưa có đội bóng nào đăng kí giải đấu này"</h2>
@@ -272,3 +276,5 @@
 
 </script>
 </html>
+
+

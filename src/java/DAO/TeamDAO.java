@@ -36,6 +36,39 @@ public class TeamDAO extends DBContext {
         }
     }
 
+    
+     public Team getTeamById(int _teamId) {
+        try {
+            String sql = "SELECT * FROM Team WHERE Id = ?";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, _teamId);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                Team _team = new Team();
+                int teamId = rs.getInt("Id");
+                String Name = rs.getString("Name");
+                String ShortName = rs.getString("ShortName");
+                String Description = rs.getString("Description");
+                int teamSize = rs.getInt("TeamSize");
+                byte[] imgData = rs.getBytes("Image");
+                String base64Image = Base64.getEncoder().encodeToString(imgData);
+
+                _team.setImage(base64Image);
+                _team.setName(Name);
+                _team.setShortName(ShortName);
+                _team.setDescription(Description);
+                _team.setTeamSize(teamSize);
+                _team.setId(teamId);
+                return _team;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+
     public Team getTeamByUserId(int userId) {
         try {
             String sql = "SELECT * FROM Team WHERE UserId = ?";

@@ -1,38 +1,3 @@
-
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package Model;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-
-/**
- *
- * @author ADMIN
- */
-@Setter
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString   
-public class LeagueRegisterVM {
-    private int TeamId;
-    private String TeamName;  
-    private String ShortName;
-    private String RegisterAt;
-    private String Image;
-    private int Point;
-}
-
-
-
-
-
 <%@ page import="java.net.URLEncoder" %>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset = UTF-8" %>
 
@@ -146,10 +111,10 @@ public class LeagueRegisterVM {
                             </div>
                         </div>
                     </c:forEach>
-                    <div style="display: flex; justify-content: center; margin-top: 15px">
+<!--                    <div style="display: flex; justify-content: center; margin-top: 15px">
                         <a href="league?action=start&leagueId=${USER_LEAGUE.id}" class="bg-green-500 text-white px-4 py-2 rounded shadow peer-checked:bg-green-500 transition-colors" 
                            style="background-image: linear-gradient(to right top,#45af2a,#3ba023,#30901c,#268215,#1b730d,#1b730d,#1b730d,#1b730d,#268215,#30901c,#3ba023,#45af2a);">Bắt đầu giải đấu</a>
-                    </div>
+                    </div>-->
                 </div>              
         </div>
 

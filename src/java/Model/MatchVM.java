@@ -23,6 +23,7 @@ import lombok.ToString;
 public class MatchVM {
     private int Id;
     private int HomeTeamId;
+    //Team of Home use get poin
     public String HometeamName;
     public String HometeamImage;
     public String HometeamShortName;

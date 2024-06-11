@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
 @MultipartConfig
 public class UserLeagueController extends HttpServlet {
 
@@ -72,6 +71,10 @@ public class UserLeagueController extends HttpServlet {
                 case "finish-league":
                     finishLeague(request, response);
                     break;
+                case "league-rank":
+                    viewLeagueRank(request, response);
+                    break;
+
             }
         } else {
             // trang login
@@ -472,5 +475,5 @@ public class UserLeagueController extends HttpServlet {
         } catch (Exception e) {
         }
     }
-
+    
 }

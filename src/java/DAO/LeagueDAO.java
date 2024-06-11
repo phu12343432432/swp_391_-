@@ -7,6 +7,7 @@ package DAO;
 import DAL.DBContext;
 import Model.League;
 import Model.LeagueRegister;
+import Model.LeagueRegisterVM;
 import Model.MatchVM;
 import Model.User;
 import jakarta.servlet.http.Part;
@@ -632,6 +633,35 @@ public class LeagueDAO {
         }
         return false;
     }
+    
+      public List<LeagueRegisterVM> getTeamLeaugeRank(int leagueId) {
+        List<LeagueRegisterVM> listTeam = new ArrayList<>();
+        try {
+            String sql = "SELECT tl.TeamId, tl.RegisterAt, tl.Point, t.Name, t.Image, t.ShortName FROM League le JOIN Team_League tl ON tl.LeagueId = le.Id "
+                    + "JOIN Team t ON tl.TeamId = t.Id WHERE le.Id = ? ORDER BY tl.Point DESC";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, leagueId);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                LeagueRegisterVM tl = new LeagueRegisterVM();
+                tl.setTeamId(rs.getInt("TeamId"));
+                tl.setTeamName(rs.getString("Name"));
+                tl.setRegisterAt(rs.getDate("RegisterAt").toString());
+                tl.setPoint(rs.getInt("Point"));
+                tl.setShortName(rs.getString("ShortName"));
+                byte[] imgData = rs.getBytes("Image");
+                String base64Image = Base64.getEncoder().encodeToString(imgData);
+                tl.setImage(base64Image);
+                listTeam.add(tl);
+            }
+            return listTeam;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
 
     public static void main(String[] args) {
         LeagueDAO leageDAO = new LeagueDAO();

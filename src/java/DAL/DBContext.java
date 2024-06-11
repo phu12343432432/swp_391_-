@@ -36,6 +36,7 @@ public class DBContext {
             return null;
         }
     }
+    //connect to database
 
     /*Insert your other code right after this comment*/
     public static void closeConnect() {

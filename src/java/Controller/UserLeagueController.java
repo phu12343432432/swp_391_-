@@ -20,7 +20,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @MultipartConfig
@@ -202,7 +205,7 @@ public class UserLeagueController extends HttpServlet {
     }
 
     // update function dang ki giai dau
-    private void RegisterLeague(HttpServletRequest request, HttpServletResponse response) {
+       private void RegisterLeague(HttpServletRequest request, HttpServletResponse response) {
         try {
             String url = "views/user/list-league.jsp";
             TeamDAO teamDAO = new TeamDAO();
@@ -212,12 +215,29 @@ public class UserLeagueController extends HttpServlet {
             if (leagueIdS != null) {
                 int leagueId = Integer.parseInt(leagueIdS);
                 Team userTeam = teamDAO.getTeamByUserId(userLogin.getId());
-                LeagueDAO leagueDAO = new LeagueDAO();
-                int status = leagueDAO.registerLeague(userTeam.getId(), leagueId);
-                if (status == 0) {
-                    request.setAttribute("MESSAGE", "Đăng kí thành công");
-                } else if (status == 1) {
-                    request.setAttribute("ERROR", "Giải đấu đã đủ cảm ơn bạn đã quan tâm");
+                if (userTeam == null) {
+//                    url = "views/user/user-team.jsp";
+                    request.setAttribute("TEAMERROR", "Bạn chưa có team để tham gia giải đấu, vui lòng tạo team!");
+                } else {
+                    LeagueDAO leagueDAO = new LeagueDAO();
+                    League league = leagueDAO.getLeagueById(leagueId);
+                    String dateRemains = league.getDateRegister();
+
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    Date date = new Date();
+                    Date currentDate = dateFormat.parse(dateRemains);
+                    if (date.compareTo(currentDate) > 0) {
+                        request.setAttribute("ERROR", "Đã hết hạn đăng kí giải đấu");
+                    } else {
+                        int status = leagueDAO.registerLeague(userTeam.getId(), leagueId);
+                        if (status == 0) {
+                            request.setAttribute("MESSAGE", "Đăng kí thành công");
+                        } else if (status == 1) {
+                            request.setAttribute("ERROR", "Giải đấu đã đủ cảm ơn bạn đã quan tâm");
+                        } else if (status == 2) {
+                            request.setAttribute("ERROR", "Bạn đã đăng kí giải đấu này rồi");
+                        }
+                    }
                 }
             }
             request.getRequestDispatcher(url).forward(request, response);
@@ -225,6 +245,9 @@ public class UserLeagueController extends HttpServlet {
             e.printStackTrace();
         }
     }
+
+
+
 
     private void searchByName(HttpServletRequest request, HttpServletResponse response) {
         try {

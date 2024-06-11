@@ -59,7 +59,7 @@
 
     </style>
     <body>
-
+        <input type="hidden" id="error-team" name="error" value="${TEAMERROR}"/>
         <jsp:include page="header.jsp"/>
         <main>
             <section class="py-5 text-center container">
@@ -72,12 +72,6 @@
                             <input type="hidden" name="action" value="search-by-name"/>
                             <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search" value="${search}">
                             <button class="btn btn-outline-success" type="submit">Search</button>
-                            <div style="color:green">
-                                ${MESSAGE}
-                            </div>
-                            <div style="color:red">
-                                ${ERROR}
-                            </div>
                         </form>
                         </p>
                     </div>
@@ -86,6 +80,8 @@
 
             <div class="album py-5 bg-light">
                 <div class="container">
+                    <input type="hidden" id="error" name="ERROR" value="${ERROR}"/>              
+                    <input type="hidden" id="success" name="MESSAGE" value="${MESSAGE}"/>
 
                     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
                         <c:forEach items="${LEAGUE}" var="league">
@@ -96,12 +92,20 @@
                                         <p class="card-text" style="color: #198754; font-weight: bold;">${league.name}</p>      
                                         <p class="card-text">Bắt đầu: ${league.startDate}</p>
                                         <p class="card-text">Kết thúc: ${league.endDate}</p>
+                                        <p class="card-text">Hạn đăng kí giải: ${league.dateRegister}</p>
                                         <small class="text-muted">${league.type}</small>
                                         <div class="d-flex justify-content-between align-items-center" style="margin-top: 15px">
                                             <div class="btn-group">
-                                                <a class="btn btn-sm btn-secondary" href="league?action=view-league" class="btn btn-sm" style="width: 100px">Xem chi tiết</a>
+                                                <a class="btn btn-sm btn-secondary" href="league?action=view-league&leagueId=${league.id}" class="btn btn-sm" style="width: 100px">Xem chi tiết</a>
                                             </div>
-                                            <a class="btn btn-sm btn-warning" href="league?action=register&leagueId=${league.id}" class="btn btn-sm" style="width: 200px">Đăng kí ngay</a>
+                                            <c:choose>
+                                                <c:when test="${USER.id == league.userId}">
+                                                    <a class="btn btn-sm btn-primary" class="btn btn-sm" style="width: 200px">Giải đấu của bạn</a>
+                                                </c:when>   
+                                                <c:otherwise>
+                                                    <a class="btn btn-sm btn-warning" href="league?action=register&leagueId=${league.id}" class="btn btn-sm" style="width: 200px">Đăng kí ngay</a>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </div>
                                     </div>
                                 </div>
@@ -119,11 +123,11 @@
                             </li>
                         </c:when>
                         <c:otherwise>
-                            <li class="page-item"><a class="page-link" href="lecturers?search=${search}&index=${selectedPage-1}">«</a></li>
+                            <li class="page-item"><a class="page-link" href="league?action=listLeague&search=${search}&index=${selectedPage-1}">«</a></li>
                             </c:otherwise>
                         </c:choose>
                         <c:forEach var="i" begin="1" end="${endP}">
-                        <li class="page-item ${i == selectedPage ? "active" : "" }"> <a class="page-link" href="lecturers?search=${search}&index=${i}">${i}</a> <li>
+                        <li class="page-item ${i == selectedPage ? "active" : "" }"> <a class="page-link" href="league?action=listLeague&search=${search}&index=${i}">${i}</a> <li>
                         </c:forEach>
                         <c:choose>
                             <c:when test ="${selectedPage >= endP}">
@@ -132,7 +136,7 @@
                             </li>
                         </c:when>
                         <c:otherwise>
-                            <li class="page-item"><a class="page-link" href="lecturers?search=${search}&index=${selectedPage+1}">»</a></li>
+                            <li class="page-item"><a class="page-link" href="league?action=listLeague&search=${search}&index=${selectedPage+1}">»</a></li>
                             </c:otherwise>
                         </c:choose>
                 </ul>
@@ -144,8 +148,43 @@
     </body>
 
 
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        var error = document.getElementById('error');
+        var message = document.getElementById('success');
+        var errorTeam = document.getElementById('error-team');
+
+        if (errorTeam.value) {
+            Swal.fire({
+                title: errorTeam.value,
+                icon: "info",
+                showCancelButton: true,
+                confirmButtonText: "Tạo team",
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                window.location.href = 'team';
+                }
+            });
+        }
+        if (error.value) {
+            Swal.fire({
+                title: error.value,
+                icon: "info",
+                showCancelButton: true,
+                confirmButtonText: "Xác nhận",
+            })
+        }
+
+        if (message.value) {
+            Swal.fire({
+                title: message.value,
+                icon: "success",
+                showCancelButton: true,
+                confirmButtonText: "Xác nhận",
+            })
+        }
+
         const profilePicture = document.getElementById('profile-picture');
         const imageInput = document.getElementById('image-input');
 
@@ -188,3 +227,4 @@
 
     </script>
 </html>
+

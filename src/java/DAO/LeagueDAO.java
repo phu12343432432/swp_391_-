@@ -133,6 +133,7 @@ public class LeagueDAO {
         }
         return null;
     }
+    //get user by id from data base 
 
     public List<League> getLeaguePaged(int index) {
         List<League> listLeague = new ArrayList<>();

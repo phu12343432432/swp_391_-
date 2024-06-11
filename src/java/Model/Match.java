@@ -24,5 +24,6 @@ public class Match {
     private Date StartAt;
     private Date EndAt;
     private int TeamSize;
+    //new attribute
     private Date UpdateAt;
 }

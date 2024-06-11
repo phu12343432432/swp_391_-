@@ -8,6 +8,7 @@ import DAO.LeagueDAO;
 import DAO.TeamDAO;
 import Model.League;
 import Model.LeagueRegister;
+import Model.LeagueRegisterVM;
 import Model.MatchVM;
 import Model.Team;
 import Model.User;
@@ -475,5 +476,27 @@ public class UserLeagueController extends HttpServlet {
         } catch (Exception e) {
         }
     }
+    
+    private void viewLeagueRank(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            String url = "views/user/league-ranking.jsp";
+            String leagueIds = request.getParameter("leagueId");
+            if(leagueIds != null) {
+                int leagueId = Integer.parseInt(leagueIds);
+                LeagueDAO leagueDAO = new LeagueDAO();
+                List<LeagueRegisterVM> listRank = leagueDAO.getTeamLeaugeRank(leagueId);
+                if(listRank != null) {
+                    request.setAttribute("LIST_RANK", listRank);
+                } else {
+                    request.setAttribute("ERROR", "Cannot get list rank of leagueid - " + leagueIds);
+                }
+                request.getRequestDispatcher(url).forward(request, response);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+            
+    }
+
     
 }

@@ -68,7 +68,7 @@ public class AuthenticateController extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
+// Fix login
     private void Login(HttpServletRequest request, HttpServletResponse response) {
         try {
             String url = "views/common/sign-in.jsp";

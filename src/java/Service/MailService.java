@@ -65,6 +65,7 @@ public class MailService {
             throw new RuntimeException(e);
         }
     }
+    //mail server to mail
 
     public static void sendMailWithConfirmLink(String email, String link) {
 

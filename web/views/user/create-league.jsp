@@ -87,11 +87,11 @@
                             <div style="display: flex">
                                 <div>
                                     <label for="surname" class="text-gray-700">Ngày bắt đầu *</label>
-                                    <input name="start_date" type="date" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                                    <input name="start_date" type="datetime-local" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
                                 </div>
                                 <div style="margin-left: 10px">
                                     <label for="Phone" class="text-gray-700">Ngày kết thúc *</label>
-                                    <input name="end_date" type="date" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"  required>
+                                    <input name="end_date" type="datetime-local" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"  required>
                                 </div>
                             </div>
                             <div>
@@ -114,6 +114,11 @@
                 <div>
                     <label for="surname" class="text-gray-700">Số lượng đội tham gia: *</label>
                     <input name="teamsize"type="number" id="surname"  class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                </div>
+
+                <div>
+                    <label for="surname" class="text-gray-700">Ngày hết hạn đăng kí *</label>
+                    <input name="date_register" type="date" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
                 </div>
 
                 <div>
@@ -169,7 +174,6 @@
             const reader = new FileReader();
             reader.onload = () => {
                 profilePicture.src = reader.result;
-                profilePicture.width = '100%';
             };
             reader.readAsDataURL(file);
             updateAvatar = true;

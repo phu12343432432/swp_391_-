@@ -16,4 +16,5 @@ import lombok.Setter;
 public class Role {
     private int Id;
     private String RoleName;
+    //new atribute
 }

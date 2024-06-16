@@ -18,6 +18,10 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.IOException;
 
+/**
+ *
+ * @author ADMIN
+ */
 @MultipartConfig
 public class ProfileController extends HttpServlet {
 
@@ -45,6 +49,9 @@ public class ProfileController extends HttpServlet {
                     case "forgotPassword":
                         forgotPassword(request, response);
                         url = "views/user/send-mail-noti.jsp";
+                        break;
+                    case "send-request":
+                        SendRequets(request, response);
                         break;
 
                 }
@@ -183,5 +190,21 @@ public class ProfileController extends HttpServlet {
 
     private void confirmOTP(HttpServletRequest request, HttpServletResponse response) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    
+    private void SendRequets(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            HttpSession session = request.getSession();
+            User user = (User) session.getAttribute("USER");
+            ProfileDAO profileDAO = new ProfileDAO();
+            boolean result = profileDAO.createLeaguePermissionRequest(user.getId());
+            if(result){
+                request.setAttribute("MESSAGE", "Gửi yêu cầu thành công. Bạn vui lòng đợi quản trị viên duyệt nhé");
+            }
+            request.getRequestDispatcher("league?action=listLeague").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

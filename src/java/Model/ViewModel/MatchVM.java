@@ -2,9 +2,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package Model;
+package Model.ViewModel;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,17 +20,25 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class Match {
+public class MatchVM {
     private int Id;
-    private int HomeTeamId;   
+    private int HomeTeamId;
+    public String HometeamName;
+    public String HometeamImage;
+    public String HometeamShortName;
     private int AwayTeamId;
-    private int LeaugeId;
+    public String AwayteamName;
+    public String AwayteamImage;
+    public String AwayteamShortName;
+    private int LeagueId;
     private String Name;
     private String Address;
     private LocalDateTime StartAt;
     private LocalDateTime EndAt;
     private int TeamSize;
-    private LocalDateTime UpdateAt; 
-    private int ScoreHome;   
-    private int ScoreAway;
+    private LocalDateTime UpdateAt;
+    private int ScoreHome;
+    private int ScoreAway;    
+    private int Status;
+
 }

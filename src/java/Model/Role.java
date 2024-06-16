@@ -9,6 +9,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ *
+  * @author ADMIN
+ */
 @Setter
 @Getter
 @NoArgsConstructor
@@ -16,5 +20,4 @@ import lombok.Setter;
 public class Role {
     private int Id;
     private String RoleName;
-    //new atribute
 }

@@ -19,7 +19,10 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
-
+/**
+ *
+ * @author ADMIN
+ */
 public class TeamDAO extends DBContext {
 
     private Connection con;
@@ -36,7 +39,6 @@ public class TeamDAO extends DBContext {
         }
     }
 
-    
      public Team getTeamById(int _teamId) {
         try {
             String sql = "SELECT * FROM Team WHERE Id = ?";
@@ -66,9 +68,7 @@ public class TeamDAO extends DBContext {
         }
         return null;
     }
-
-
-
+    
     public Team getTeamByUserId(int userId) {
         try {
             String sql = "SELECT * FROM Team WHERE UserId = ?";
@@ -82,7 +82,6 @@ public class TeamDAO extends DBContext {
                 String ShortName = rs.getString("ShortName");
                 String Description = rs.getString("Description");
                 int teamSize = rs.getInt("TeamSize");
-
                 byte[] imgData = rs.getBytes("Image");
                 String base64Image = Base64.getEncoder().encodeToString(imgData);
 
@@ -100,6 +99,7 @@ public class TeamDAO extends DBContext {
         return null;
     }
 
+   
     public Team updateTeam(Team team, Part image) {
         try {
             Team _team = new Team();
@@ -117,6 +117,7 @@ public class TeamDAO extends DBContext {
                 Date date = new Date();
                 String currentDate = dateFormat.format(date);
                 ps.setString(5, currentDate);
+                // input steam. => Chuyen nah nay thanh ma binary.
                 InputStream fileContent = image.getInputStream();
                 ps.setBinaryStream(6, fileContent, (int) image.getSize());
                 ps.setInt(7, team.getId());
@@ -138,7 +139,6 @@ public class TeamDAO extends DBContext {
 
             int affectedRow = ps.executeUpdate();
             if (affectedRow > 0) {
-                System.out.println("Oke");
                 sql = "SELECT * FROM dbo.[Team] WHERE Id = ?";
                 ps = con.prepareStatement(sql);
                 ps.setInt(1, team.getId());
@@ -167,8 +167,6 @@ public class TeamDAO extends DBContext {
         }
         return null;
     }
-    // use for update team 
-    
 
     public boolean createTeam(Team team, Part image) {
         try {

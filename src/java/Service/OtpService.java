@@ -4,6 +4,10 @@
  */
 package Service;
 
+/**
+ *
+ * @author ADMIN
+ */
 public class OtpService {
 
     public static String genarateOtp() {

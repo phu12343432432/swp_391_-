@@ -17,6 +17,10 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.IOException;
 
+/**
+ *
+ * @author ADMIN
+ */
 @MultipartConfig
 public class UserTeamController extends HttpServlet {
 
@@ -35,11 +39,9 @@ public class UserTeamController extends HttpServlet {
                 case "team-history":
                     viewHistory(request, response);
                     break;
-
                 case "view-team":
                     viewTeamDetails(request, response);
                     break;
-
             }
         } else {
             url = "views/common/sign-in.jsp";
@@ -55,7 +57,6 @@ public class UserTeamController extends HttpServlet {
         String url = "views/common/index.jsp";
         switch (action) {
             case "update":
-                System.out.println("Vao day roi");
                 updateTeam(request, response);
                 break;
         }
@@ -65,11 +66,11 @@ public class UserTeamController extends HttpServlet {
     private void userTeam(HttpServletRequest request, HttpServletResponse response) {
         try {
             HttpSession session = request.getSession();
-            User user = (User) session.getAttribute("USER");
+            User user = (User) session.getAttribute("USER"); // object
             TeamDAO teamDAO = new TeamDAO();
             Team userTeam = teamDAO.getTeamByUserId(user.getId());
             if (userTeam != null) {
-                request.setAttribute("TEAM", userTeam);
+                request.setAttribute("TEAM", userTeam); // set value => ton tai trong 1 request.
             }
             request.getRequestDispatcher("views/user/user-team.jsp").forward(request, response);
         } catch (Exception e) {
@@ -77,19 +78,25 @@ public class UserTeamController extends HttpServlet {
         }
     }
 
-    // update user team
     private void updateTeam(HttpServletRequest request, HttpServletResponse response) {
         try {
             HttpSession session = request.getSession(false);
             User userLogin = (User) session.getAttribute("USER");
 
+            
+            // mac dinh kieu tra ve cua request.getParam => Auto String.
             String teamName = request.getParameter("teamName");
             String shortName = request.getParameter("shortName");
             String teamsizeS = request.getParameter("teamsize");
             String teamIdS = request.getParameter("teamId");
             String desc = request.getParameter("desc");
+            
+            // lu anh dan binary
             Part image = request.getPart("image");
+            // => local D:/...
 
+            
+          
             TeamDAO teamDAO = new TeamDAO();
             Team _team = new Team();
             _team.setName(teamName);
@@ -97,13 +104,18 @@ public class UserTeamController extends HttpServlet {
             _team.setTeamSize(Integer.parseInt(teamsizeS));
             _team.setDescription(desc);
             _team.setUserId(userLogin.getId());
+            
             Team teamUpdated = new Team();
+            // ton tai teamid co team roi.
             if (!(teamIdS.equals(""))) {
+                // goi phunog thuc DAO update team.
                 int teamId = Integer.parseInt(teamIdS);
                 _team.setId(teamId);
                 System.out.println("TeamId " + teamId);
+                // Thang vua duoc update
                 teamUpdated = teamDAO.updateTeam(_team, image);
             } else {
+                // goi phuong thuc tao team
                 teamDAO.createTeam(_team, image);
                 teamUpdated = teamDAO.getTeamByUserId(userLogin.getId());
             }
@@ -123,8 +135,8 @@ public class UserTeamController extends HttpServlet {
     private void viewHistory(HttpServletRequest request, HttpServletResponse response) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
-    
-       private void viewTeamDetails(HttpServletRequest request, HttpServletResponse response) {
+
+    private void viewTeamDetails(HttpServletRequest request, HttpServletResponse response) {
         try {
             HttpSession session = request.getSession();
             String team = request.getParameter("id");

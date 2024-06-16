@@ -51,8 +51,8 @@ public class AuthenticationDAO extends DBContext {
                 boolean isActive = rs.getBoolean("IsActive");
                 boolean IsConfirm = rs.getBoolean("IsConfirm");
                 int roleId = rs.getInt("RoleId");
-
                 byte[] imgData = rs.getBytes("Image");
+                boolean isRequest = rs.getBoolean("IsRequest");
                 String base64Image = null;
                 if (imgData != null) {
                     base64Image = Base64.getEncoder().encodeToString(imgData);
@@ -68,6 +68,7 @@ public class AuthenticationDAO extends DBContext {
                 user.setIsCofirm(IsConfirm);
                 user.setImage(base64Image);
                 user.setRoleId(roleId);
+                user.setIsRequest(isRequest);
                 return user;
             }
 
@@ -77,7 +78,6 @@ public class AuthenticationDAO extends DBContext {
         }
         return user;
     }
-    //authe 
 
     public int Register(UserSignUp userSignUp) {
 
@@ -134,7 +134,6 @@ public class AuthenticationDAO extends DBContext {
         }
         return null;
     }
-    // get role ftom database
 
     public boolean CheckUserName(String userName) {
         String sql = "SELECT * FROM [User] WHERE [UserName] = ? ";
@@ -191,7 +190,6 @@ public class AuthenticationDAO extends DBContext {
         }
         return false;
     }
-    //ComfirmEmail 
 
     public boolean ForgotPassWord(String password, String email) {
         String sql = "UPDATE [User] SET Password = ? WHERE Email = ?";

@@ -9,9 +9,9 @@ import DAO.TeamDAO;
 import Model.League;
 import Model.LeagueRegister;
 import Model.LeagueRegisterVM;
-import Model.MatchVM;
 import Model.Team;
 import Model.User;
+import Model.ViewModel.MatchVM;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServlet;
@@ -22,10 +22,16 @@ import jakarta.servlet.http.Part;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
+/**
+ *
+ * @author ADMIN
+ */
 @MultipartConfig
 public class UserLeagueController extends HttpServlet {
 
@@ -51,7 +57,6 @@ public class UserLeagueController extends HttpServlet {
                     searchByName(request, response);
                     break;
                 case "user-league":
-                    System.out.println("Vaoi dya roi");
                     getUserLeague(request, response);
                     break;
                 case "list-registered":
@@ -77,6 +82,9 @@ public class UserLeagueController extends HttpServlet {
                     break;
                 case "league-rank":
                     viewLeagueRank(request, response);
+                    break;
+                case "accept-team":
+                    acceptRegisterToLeague(request, response);
                     break;
 
             }
@@ -146,7 +154,7 @@ public class UserLeagueController extends HttpServlet {
             List<League> listLeague = leagueDAO.getLeaguePaged(index);
             int total = leagueDAO.getTotalLeague();
             int lastPage = total / 9;
-            if (total % 12 != 0) {
+            if (total % 9 != 0) {
                 lastPage++;
             }
             session.setAttribute("LEAGUE", listLeague);
@@ -162,36 +170,50 @@ public class UserLeagueController extends HttpServlet {
         try {
             HttpSession session = request.getSession(false);
             User userLogin = (User) session.getAttribute("USER");
+            if (userLogin.getRoleId() == 3) {
+                String name = request.getParameter("name");
+                String startDate = request.getParameter("start_date");
+                String endDate = request.getParameter("end_date");
+                String registerDate = request.getParameter("date_register");
+                String desc = request.getParameter("desc");
+                String address = request.getParameter("address");
+                String teamsizeS = request.getParameter("teamsize");
+                Part image = request.getPart("image");
+                String leagueType = request.getParameter("type");
 
-            String name = request.getParameter("name");
-            String startDate = request.getParameter("start_date");
-            String endDate = request.getParameter("end_date");
-            String registerDate = request.getParameter("date_register");
-            String desc = request.getParameter("desc");
-            String address = request.getParameter("address");
-            String teamsizeS = request.getParameter("teamsize");
-            Part image = request.getPart("image");
-            String leagueType = request.getParameter("type");
+                var _startDate = LocalDateTime.parse(startDate);
+                var _endDate = LocalDateTime.parse(endDate);
+                LocalDate date = LocalDate.parse(registerDate);
+                LocalDateTime _dateRegister = date.atStartOfDay();
 
-            var _startDate = LocalDateTime.parse(startDate);
-            var _endDate = LocalDateTime.parse(endDate);
-
-            LeagueDAO leagueDAO = new LeagueDAO();
-            League _league = new League();
-            _league.setType(leagueType);
-            _league.setName(name);
-            _league.setDateRegister(registerDate);
-            _league.setAddress(address);
-            _league.setTeamSize(Integer.parseInt(teamsizeS));
-            _league.setDescription(desc);
-            _league.setStartDate(_startDate);
-            _league.setEndDate(_endDate);
-            _league.setUserId(userLogin.getId());
-            boolean result = leagueDAO.createLeague(_league, image);
-            if (result) {
-                request.setAttribute("MESSAGE", "Tạo giải đấu thành công thành công, vui lòng đợi kiểm duyệt");
+                // validate ngay cach ngay ket thuc dang ki voi ngay bat dau
+                boolean isValid = validateDate(_dateRegister, _startDate);
+                // validate them ngay bat dau voi ngay ket thuc
+                
+                
+                if (!isValid) {
+                    request.setAttribute("ERRORMESSAGE", "Ngày bắt đầu giải và hạn chót đăng kí phải cách nhau ít nhất 2 ngày");
+                } else {
+                    LeagueDAO leagueDAO = new LeagueDAO();
+                    League _league = new League();
+                    _league.setType(leagueType);
+                    _league.setName(name);
+                    _league.setDateRegister(registerDate);
+                    _league.setAddress(address);
+                    _league.setTeamSize(Integer.parseInt(teamsizeS));
+                    _league.setDescription(desc);
+                    _league.setStartDate(_startDate);
+                    _league.setEndDate(_endDate);
+                    _league.setUserId(userLogin.getId());
+                    boolean result = leagueDAO.createLeague(_league, image);
+                    if (result) {
+                        request.setAttribute("MESSAGE", "Tạo giải đấu thành công thành công, vui lòng đợi kiểm duyệt");
+                    } else {
+                        request.setAttribute("ERRORMESSAGE", "Cập nhật team không thành công");
+                    }
+                }
             } else {
-                request.setAttribute("ERRORMESSAGE", "Cập nhật team không thành công");
+                request.setAttribute("ERRORMESSAGE", "Bạn không có quyền được tạo giải đấu vui lòng đăng kí với quản trị viên");
             }
             request.getRequestDispatcher("views/user/create-league.jsp").forward(request, response);
         } catch (Exception e) {
@@ -200,12 +222,13 @@ public class UserLeagueController extends HttpServlet {
         }
     }
 
-    private void updateLeague(HttpServletRequest request, HttpServletResponse response) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public static boolean validateDate(LocalDateTime start, LocalDateTime end) {
+        // Tính toán khoảng thời gian giữa ngày bắt đầu và ngày kết thúc
+        Duration duration = Duration.between(start, end);
+        return duration.toHours() >= 48;
     }
 
-    // update function dang ki giai dau
-       private void RegisterLeague(HttpServletRequest request, HttpServletResponse response) {
+    private void RegisterLeague(HttpServletRequest request, HttpServletResponse response) {
         try {
             String url = "views/user/list-league.jsp";
             TeamDAO teamDAO = new TeamDAO();
@@ -246,9 +269,6 @@ public class UserLeagueController extends HttpServlet {
         }
     }
 
-
-
-
     private void searchByName(HttpServletRequest request, HttpServletResponse response) {
         try {
             HttpSession session = request.getSession();
@@ -278,14 +298,13 @@ public class UserLeagueController extends HttpServlet {
         }
     }
 
-    // Lam update function
     private void getUserLeague(HttpServletRequest request, HttpServletResponse response) {
         try {
             HttpSession session = request.getSession();
             User userLogin = (User) session.getAttribute("USER");
             String search = request.getParameter("search");
             String indexS = request.getParameter("index");
-            String url = "views/user/user-league.jsp";
+            String url = "views/user/league-owner/user-league.jsp";
             if (indexS == null) {
                 indexS = "1";
             }
@@ -327,7 +346,7 @@ public class UserLeagueController extends HttpServlet {
 
     private void viewLeagueDetail(HttpServletRequest request, HttpServletResponse response) {
         try {
-            String url = "views/user/edit-league.jsp";
+            String url = "views/user/league-details.jsp";
             HttpSession session = request.getSession();
             User userLogin = (User) session.getAttribute("USER");
             String idS = request.getParameter("leagueId");
@@ -335,16 +354,22 @@ public class UserLeagueController extends HttpServlet {
             LeagueDAO leagueDAO = new LeagueDAO();
             League league = leagueDAO.getLeagueById(id);
             if (league != null) {
+                List<LeagueRegister> listTeamRegister = leagueDAO.getTeamRegisterLeagueApprove(id);
                 request.setAttribute("USER_LEAGUE", league);
-                System.out.println("Oke");
+                request.setAttribute("LEAGUE_TEAM", listTeamRegister);
+                request.setAttribute("leagueId", idS);
             } else {
-                System.out.println("Khong oke");
+                System.out.println("Cannto get value in ViewLeagueDetail");
             }
 
             request.getRequestDispatcher(url).forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void updateLeague(HttpServletRequest request, HttpServletResponse response) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     private void viewLeagueDetail_Owner(HttpServletRequest request, HttpServletResponse response) {
@@ -364,6 +389,7 @@ public class UserLeagueController extends HttpServlet {
             } else {
                 System.out.println("Cannto get value in ViewLeagueDetail");
             }
+            request.setAttribute("leagueId", idS);
 
             request.getRequestDispatcher(url).forward(request, response);
         } catch (Exception e) {
@@ -380,15 +406,20 @@ public class UserLeagueController extends HttpServlet {
                 LeagueDAO leagueDAO = new LeagueDAO();
                 League league = leagueDAO.getLeagueById(id);
                 List<MatchVM> listMatch = leagueDAO.generateMatch(id);
+                List<LeagueRegister> listTeamRegister = leagueDAO.getTeamRegisterLeague(id);
+                request.setAttribute("LEAGUE_TEAM", listTeamRegister);
                 request.setAttribute("USER_LEAGUE", league);
-                if (listMatch.size() > 0) {
+                if (listMatch == null) {
+                    // validate check nếu giải chưa full
+                    request.setAttribute("ERROR", "Số đội bóng tham gia chưa đủ bạn có chắc là sẽ bắt đầu giải đấu");
+                } else if (listMatch.size() == 0) {
+                    request.setAttribute("ERROR", "Chưa có đội bóng nào tham gia giải đấu của bạn");
+                } else if (listMatch.size() > 0) {
                     request.setAttribute("LIST_MATCH", listMatch);
                     url = "views/user/league-owner/league-match.jsp";
-                } else {
-                    request.setAttribute("ERROR", "Chưa có đội bóng nào tham gia giải đấu của bạn");
                 }
+                request.setAttribute("leagueId", leagueIds);
                 request.getRequestDispatcher(url).forward(request, response);
-
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -499,16 +530,16 @@ public class UserLeagueController extends HttpServlet {
         } catch (Exception e) {
         }
     }
-    
+
     private void viewLeagueRank(HttpServletRequest request, HttpServletResponse response) {
         try {
             String url = "views/user/league-ranking.jsp";
             String leagueIds = request.getParameter("leagueId");
-            if(leagueIds != null) {
+            if (leagueIds != null) {
                 int leagueId = Integer.parseInt(leagueIds);
                 LeagueDAO leagueDAO = new LeagueDAO();
                 List<LeagueRegisterVM> listRank = leagueDAO.getTeamLeaugeRank(leagueId);
-                if(listRank != null) {
+                if (listRank != null) {
                     request.setAttribute("LIST_RANK", listRank);
                 } else {
                     request.setAttribute("ERROR", "Cannot get list rank of leagueid - " + leagueIds);
@@ -518,8 +549,39 @@ public class UserLeagueController extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
         }
-            
+
     }
 
-    
+    private void acceptRegisterToLeague(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            String url = "views/user/league-owner/league-details.jsp";
+            String leagueIds = request.getParameter("leagueId");
+            String teamIds = request.getParameter("teamId");
+            if (leagueIds != null && teamIds != null) {
+                int leagueId = Integer.parseInt(leagueIds);
+                int teamId = Integer.parseInt(teamIds);
+                TeamDAO teamDAO = new TeamDAO();
+                Team teamRegister = teamDAO.getTeamById(teamId);
+
+                LeagueDAO leagueDAO = new LeagueDAO();
+                boolean result = leagueDAO.acceptToJoinLeague(teamId, leagueId);
+                League league = leagueDAO.getLeagueById(leagueId);
+                if (league != null) {
+                    List<LeagueRegister> listTeamRegister = leagueDAO.getTeamRegisterLeague(leagueId);
+                    request.setAttribute("USER_LEAGUE", league);
+                    request.setAttribute("LEAGUE_TEAM", listTeamRegister);
+                    request.setAttribute("leagueId", leagueIds);
+                    if (result) {
+                        request.setAttribute("MESSAGE", "You was accept " + teamRegister.getName() + " to join for your league");
+                    } else {
+                        request.setAttribute("ERROR", "Cannot accept teamid  - " + teamIds);
+                    }
+                    request.getRequestDispatcher(url).forward(request, response);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

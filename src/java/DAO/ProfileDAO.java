@@ -16,7 +16,10 @@ import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 
-
+/**
+ *
+ * @author ADMIN
+ */
 public class ProfileDAO extends DBContext {
 
     private Connection con;
@@ -121,8 +124,25 @@ public class ProfileDAO extends DBContext {
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
-            //catch execpt
         }
         return false;
+    }
+
+    public boolean createLeaguePermissionRequest(int userId) {
+        try {
+            String sql = "UPDATE [USER] SET IsRequest = 1 WHERE Id = ?";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, userId);
+            int affectedRow = ps.executeUpdate();
+            return affectedRow > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    public static void main(String[] args) {
+        ProfileDAO proleDAO = new ProfileDAO();
+        boolean result = proleDAO.createLeaguePermissionRequest(4);
+        System.out.println("result" + result);
     }
 }

@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  *
@@ -17,10 +18,16 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString   
 public class LeagueRegister {
     private int TeamId;
     private String TeamName;
     private String RegisterAt;
     private String Image;
     private int Point;
+    private int Status;
+    // 0 là mới đăng kí
+    // 1 đã duyệt 
+    // 2 từ chối
+    
 }

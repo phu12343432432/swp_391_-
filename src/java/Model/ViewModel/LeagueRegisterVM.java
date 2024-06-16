@@ -4,11 +4,11 @@
  */
 package Model;
 
-import java.sql.Date;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  *
@@ -18,20 +18,12 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
-    private int Id;
-    private String UserName;
-    private String Password;
-    private String FirstName;    
-    private String LastName;
-    private String Phone;
-    private String Email;
-    private boolean IsActive;
-    private Date CreateAt;
-    private Date UpdateAt;
-    private Date DeleteAt;
+@ToString   
+public class LeagueRegisterVM {
+    private int TeamId;
+    private String TeamName;  
+    private String ShortName;
+    private String RegisterAt;
     private String Image;
-    private boolean IsCofirm;
-    private int RoleId;
-    private boolean IsRequest;
+    private int Point;
 }

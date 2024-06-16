@@ -1,15 +1,10 @@
-<%-- 
-    Document   : chinhsuathanhvien
-    Created on : Mar 2, 2024, 3:58:46 PM
-    Author     : ASUS
---%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Sân Bóng FLeague</title>
+        <title>Sân Bóng FBK74</title>
         <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
         <!-- Custom CSS for animations -->

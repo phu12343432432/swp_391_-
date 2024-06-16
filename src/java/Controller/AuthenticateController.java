@@ -17,7 +17,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 
-
+/**
+ *
+ * @author ADMIN
+ */
 public class AuthenticateController extends HttpServlet {
 
     @Override
@@ -68,7 +71,7 @@ public class AuthenticateController extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-// Fix login
+
     private void Login(HttpServletRequest request, HttpServletResponse response) {
         try {
             String url = "views/common/sign-in.jsp";
@@ -86,11 +89,12 @@ public class AuthenticateController extends HttpServlet {
                     Team userTeam = teamDAO.getTeamByUserId(userLogedIn.getId());
                     session.setAttribute("TEAM", userTeam);
                     // User 
-                    if (userLogedIn.getRoleId() == 1) {
+                    if (userLogedIn.getRoleId() == 1 || userLogedIn.getRoleId() == 3) {
                         url = "views/common/index.jsp";
                         // Admin
                     } else if (userLogedIn.getRoleId() == 2) {
-                        url = "admin/dashboard.jsp";
+                        url = "admin?action=list-request-create-league";
+                        response.sendRedirect(url);
                     }
                 } else if (!userLogedIn.isIsActive()) {
                     request.setAttribute("ERRORMESSAGE", "Tài khoản của bạn bị vô hiệu hóa. Vui lòng liên hệ quản trị viên!");

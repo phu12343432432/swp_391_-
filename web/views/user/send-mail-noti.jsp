@@ -1,8 +1,3 @@
-<%-- 
-    Document   : message
-    Created on : Mar 12, 2024, 6:53:18 PM
-    Author     : nhatk
---%>
 
 <%@ page import="java.net.URLEncoder" %>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset = UTF-8" %>

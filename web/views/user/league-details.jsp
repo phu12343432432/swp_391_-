@@ -78,9 +78,7 @@
                                 <img src="https://placehold.co/100x100" alt="Profile picture" id="profile-picture" class=" border-3 border-green-500 p-1 mb-3" style="width: 400px; cursor: pointer; margin: 10px auto;border: 2px solid #1b730d">
                             </c:otherwise>
                         </c:choose>
-                        <div id="success" style="color: green; margin-top: 10px">${MESSAGE}</div>        
-                        <div id="success" style="color: red; margin-top: 10px">${ERROR}</div>
-
+                        <div style="color: green; margin-top: 10px">${MESSAGE}</div>
                     </div>
                     <div class="mt-8 md:mt-0 md:ml-10 w-full max-w-lg">
                         <!--<form class="space-y-4" action="team" method="POST" >-->                       
@@ -90,21 +88,21 @@
                             <input type="hidden" name="leagueId" value="${USER_LEAGUE.id}" />
                             <div>
                                 <label for="surname" class="text-gray-700">Tên giải đấu *</label>
-                                <input name="name" value="${USER_LEAGUE.name}" type="text" id="surname"  class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                                <input name="name" value="${USER_LEAGUE.name}" type="text" id="surname"  class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" readonly>
                             </div>
                             <div style="display: flex">
                                 <div>
                                     <label for="surname" class="text-gray-700">Ngày bắt đầu *</label>
-                                    <input name="start_date" value="${USER_LEAGUE.startDate}" type="datetime-local" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                                    <input name="start_date" value="${USER_LEAGUE.startDate}" type="datetime-local" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" readonly>
                                 </div>
                                 <div style="margin-left: 10px">
                                     <label for="Phone" class="text-gray-700">Ngày kết thúc *</label>
-                                    <input name="end_date" value="${USER_LEAGUE.endDate}" type="datetime-local" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"  required>
+                                    <input name="end_date" value="${USER_LEAGUE.endDate}" type="datetime-local" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"  readonly>
                                 </div>
                             </div>
                             <div>
                                 <label for="surname" class="text-gray-700">Địa điểm thi đấu *</label>
-                                <input name="address" value="${USER_LEAGUE.address}" type="text" id="surname"  class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                                <input name="address" value="${USER_LEAGUE.address}" type="text" id="surname"  class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" readonly>
                             </div>
 
                         </div>
@@ -117,26 +115,22 @@
                     <label for="desc" class="text-gray-700">Mô tả về giải đấu *:</label>
                     <textarea name="desc" type="email" id="Email" placeholder="Mô tả về team của bạn" 
                               class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                              pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Email phải chứa ký tự '@' và không được chứa các ký tự đặc biệt không hợp lệ." required>${USER_LEAGUE.description}</textarea>
+                              pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Email phải chứa ký tự '@' và không được chứa các ký tự đặc biệt không hợp lệ." readonly>${USER_LEAGUE.description}</textarea>
                 </div>
                 <div>
                     <label for="surname" class="text-gray-700">Số lượng đội tham gia: *</label>
-                    <input name="teamsize" value="${USER_LEAGUE.teamSize}" type="number" id="surname"  class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                    <input name="teamsize" value="${USER_LEAGUE.teamSize}" type="number" id="surname"  class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" readonly>
                 </div>
 
                 <div>
                     <label for="surname" class="text-gray-700">Hình thức thi đấu *</label>
-                    <select name="type" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"  requried>
+                    <select name="type" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"  readonly>
                         <option value="Đá xoay vòng" >Đá xoay vòng</option>
                         <option value="Thi đấu theo bảng">Thi đấu theo bảng</option>
                     </select>
                 </div>
-                <div>
-                    <div style="margin: 30px 0px">
-                        <a href="league?action=league-rank&leagueId=${USER_LEAGUE.id}" class="bg-green-500 text-white px-4 py-2 rounded shadow peer-checked:bg-green-500 transition-colors" 
-                           style="background-image: linear-gradient(to right top,#45af2a,#3ba023,#30901c,#268215,#1b730d,#1b730d,#1b730d,#1b730d,#268215,#30901c,#3ba023,#45af2a);">Xem bảng xếp hạng</a>
-                    </div>
 
+                <div>
                     <label for="surname" class="text-gray-700">Các đội đăng kí:</label>
                     <c:if test="${LEAGUE_TEAM.size() == 0}">
                         <h2>"Chưa có đội bóng nào đăng kí giải đấu này"</h2>
@@ -165,129 +159,83 @@
                                             <a class="btn btn-sm btn-secondary" href="team?action=view-team&id=${team.teamId}" class="btn btn-sm" style="width: 100%">Xem thông tin đội</a>
                                         </div>
                                     </div>
-
-                                    <div class="d-flex justify-content-between align-items-center" style="margin-top: 15px">
-                                        <c:if test="${team.status == 0}">
-                                            <div class="btn-group">
-                                                <a class="btn btn-sm btn-success" href="league?action=accept-team&teamId=${team.teamId}&leagueId=${leagueId}" class="btn btn-sm" style="width: 100%">Chấp nhận</a>
-                                            </div>  
-                                        </c:if>
-                                             <c:if test="${team.status == 1}">
-                                            <div class="btn-group">
-                                                <a disalb class="btn btn-sm btn-primary" href="#" class="btn btn-sm" style="width: 100%">Đã xác nhận</a>
-                                            </div>  
-                                        </c:if>
-                                    </div>
                                 </div>
 
                             </div>
                         </div>
                     </c:forEach>
-                    <div style="display: flex; justify-content: center; margin-top: 15px">
-                        <c:if test="${USER_LEAGUE.status == 0}">
-                            <a href="league?action=start&leagueId=${USER_LEAGUE.id}" class="bg-green-500 text-white px-4 py-2 rounded shadow peer-checked:bg-green-500 transition-colors" 
-                               style="background-image: linear-gradient(to right top,#45af2a,#3ba023,#30901c,#268215,#1b730d,#1b730d,#1b730d,#1b730d,#268215,#30901c,#3ba023,#45af2a);">Bắt đầu giải đấu</a>
-                        </c:if> 
-                        <c:if test="${USER_LEAGUE.status == 2}">
-                            <a href="league?action=league-match&leagueId=${USER_LEAGUE.id}"  class="btn btn-primary" >Đang diễn ra - xem chi tiết</a>
-                        </c:if> 
-                        <c:if test="${USER_LEAGUE.status == 3}">
-                            <a  href="league?action=league-match&leagueId=${USER_LEAGUE.id}"  class="btn btn-danger">Đã kết thúc - xem chi tiết</a>
-                        </c:if> 
-                    </div>
-                </div>              
+                </div>
+
+                <!--                <div style="display: flex; justify-content: center; margin-top: 15px">
+                                    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded shadow peer-checked:bg-green-500 transition-colors" 
+                                            style="background-image: linear-gradient(to right top,#45af2a,#3ba023,#30901c,#268215,#1b730d,#1b730d,#1b730d,#1b730d,#268215,#30901c,#3ba023,#45af2a);">Lưu</button>
+                                </div>-->
+            </form>
         </div>
 
 
 
-
-    </form>
-</div>
-
+        <jsp:include page="footer.jsp"/>
+        <!-- Footer End -->
 
 
-<jsp:include page="footer.jsp"/>
-<!-- Footer End -->
+        <!-- Back to Top -->
+        <a href="timsan_nhat.jsp" class="btn btn-lg btn-primary btn-lg-square rounded back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+    </body>
 
 
-<!-- Back to Top -->
-<a href="timsan_nhat.jsp" class="btn btn-lg btn-primary btn-lg-square rounded back-to-top"><i class="bi bi-arrow-up"></i></a>
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="${pageContext.request.contextPath}/lib/wow/wow.min.js"></script>
+    <script src="${pageContext.request.contextPath}/lib/easing/easing.min.js"></script>
+    <script src="${pageContext.request.contextPath}/lib/waypoints/waypoints.min.js"></script>
+    <script src="${pageContext.request.contextPath}/lib/counterup/counterup.min.js"></script>
+    <script src="${pageContext.request.contextPath}/lib/owlcarousel/owl.carousel.min.js"></script>
 
-</body>
+    <!-- Template Javascript -->
+    <script src="${pageContext.request.contextPath}/js/main.js"></script>
+    <script>
+        const profilePicture = document.getElementById('profile-picture');
+        const imageInput = document.getElementById('image-input');
 
-
-<!-- JavaScript Libraries -->
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="${pageContext.request.contextPath}/lib/wow/wow.min.js"></script>
-<script src="${pageContext.request.contextPath}/lib/easing/easing.min.js"></script>
-<script src="${pageContext.request.contextPath}/lib/waypoints/waypoints.min.js"></script>
-<script src="${pageContext.request.contextPath}/lib/counterup/counterup.min.js"></script>
-<script src="${pageContext.request.contextPath}/lib/owlcarousel/owl.carousel.min.js"></script>
-
-<!-- Template Javascript -->
-<script src="${pageContext.request.contextPath}/js/main.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    var error = document.getElementById('error');
-    var message = document.getElementById('success');
-
-    if (error.value) {
-        Swal.fire({
-            title: error.value,
-            icon: "info",
-            showCancelButton: true,
-            confirmButtonText: "Xác nhận",
-        })
-    }
-
-    if (message.value) {
-        Swal.fire({
-            title: message.value,
-            icon: "success",
-            showCancelButton: true,
-            confirmButtonText: "Xác nhận",
-        })
-    }
-    const profilePicture = document.getElementById('profile-picture');
-    const imageInput = document.getElementById('image-input');
-
-    profilePicture.addEventListener('click', () => {
-        imageInput.disabled = false;
-        imageInput.click();
-    });
-    const updateAvatar = false;
-    imageInput.addEventListener('change', () => {
-        imageInput.disabled = false;
-        const file = imageInput.files[0];
-        const formData = new FormData();
-        formData.append('image', file);
-
-        const reader = new FileReader();
-        reader.onload = () => {
-            profilePicture.src = reader.result;
-            profilePicture.width = '100%';
-        };
-        reader.readAsDataURL(file);
-        updateAvatar = true;
-    });
-    if (!updateAvatar && imageInput.value != null) {
-        imageInput.disabled = true;
-    }
-    document.addEventListener("DOMContentLoaded", function () {
-        const phoneInput = document.getElementById("Phone");
-
-        phoneInput.addEventListener("input", function () {
-            const regex = /^\d{0,10}$/;
-            if (!regex.test(phoneInput.value)) {
-                // If validation fails, show a custom error message
-                phoneInput.setCustomValidity("Số điện thoại phải gồm 10 chữ số và không chứa ký tự đặc biệt.");
-            } else {
-                // Clear custom error message
-                phoneInput.setCustomValidity("");
-            }
+        profilePicture.addEventListener('click', () => {
+            imageInput.disabled = false;
+            imageInput.click();
         });
-    });
+        const updateAvatar = false;
+        imageInput.addEventListener('change', () => {
+            imageInput.disabled = false;
+            const file = imageInput.files[0];
+            const formData = new FormData();
+            formData.append('image', file);
 
-</script>
+            const reader = new FileReader();
+            reader.onload = () => {
+                profilePicture.src = reader.result;
+                profilePicture.width = '100%';
+            };
+            reader.readAsDataURL(file);
+            updateAvatar = true;
+        });
+        if (!updateAvatar && imageInput.value != null) {
+            imageInput.disabled = true;
+        }
+        document.addEventListener("DOMContentLoaded", function () {
+            const phoneInput = document.getElementById("Phone");
+
+            phoneInput.addEventListener("input", function () {
+                const regex = /^\d{0,10}$/;
+                if (!regex.test(phoneInput.value)) {
+                    // If validation fails, show a custom error message
+                    phoneInput.setCustomValidity("Số điện thoại phải gồm 10 chữ số và không chứa ký tự đặc biệt.");
+                } else {
+                    // Clear custom error message
+                    phoneInput.setCustomValidity("");
+                }
+            });
+        });
+
+    </script>
 </html>

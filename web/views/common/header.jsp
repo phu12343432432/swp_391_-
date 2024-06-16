@@ -59,7 +59,7 @@
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                                 <a class="dropdown-item " href="#">Profile</a>
                                 <a class="dropdown-item " href="#">Update</a>
-                                <a class="dropdown-item " href="logout">Logout</a>
+                                <a class="dropdown-item " href="${pageContext.request.contextPath}/auth?action=logout">Logout</a>
                             </div>
                         </div>
                     </c:if> 

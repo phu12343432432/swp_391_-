@@ -13,6 +13,10 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import java.util.Properties;
 
+/**
+ *
+ * @author ADMIN
+ */
 public class MailService {
 //        final String username = "dat.nt271102@gmail.com";
 //        final String password = "jjdicrlyxhlfutqg";
@@ -65,7 +69,6 @@ public class MailService {
             throw new RuntimeException(e);
         }
     }
-    //mail server to mail
 
     public static void sendMailWithConfirmLink(String email, String link) {
 

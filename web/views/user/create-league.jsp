@@ -72,7 +72,9 @@
                         </h2>
                         <img src="https://placehold.co/100x100" alt="Profile picture" id="profile-picture" class=" border-3 border-green-500 p-1 mb-3" style="width: 400px; cursor: pointer; margin: 10px auto;border: 2px solid #1b730d">
 
-                        <div style="color: green; margin-top: 10px">${MESSAGE}</div>
+                        <div style="color: green; margin-top: 10px">${MESSAGE}</div>  
+                        <div style="color: red; margin-top: 10px">${ERRORMESSAGE}</div>
+
                     </div>
                     <div class="mt-8 md:mt-0 md:ml-10 w-full max-w-lg">
                         <!--<form class="space-y-4" action="team" method="POST" >-->                       
@@ -127,6 +129,9 @@
                         <option value="Đá xoay vòng" >Đá xoay vòng</option>
                         <option value="Thi đấu theo bảng">Thi đấu theo bảng</option>
                     </select>
+                </div>
+                <div>
+                    Hành động này cần được sự kiểm duyệt của admin nếu bạn chưa được phê duyệt quyền tạo giải đấu <a href="profile?action=send-request" class="btn btn-warning">Gửi yêu cầu</a>
                 </div>
                 <div style="display: flex; justify-content: center; margin-top: 15px">
                     <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded shadow peer-checked:bg-green-500 transition-colors" 

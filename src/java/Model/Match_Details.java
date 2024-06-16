@@ -4,30 +4,21 @@
  */
 package Model;
 
-import java.sql.Date;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
-/**
- *
- * @author ADMIN
- */
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Team {
+@ToString
+public class Match_Details {
     private int Id;
-    private String Name;
-    private String ShortName;    
+    private int YellowCard;
+    private int RedCard;
     private String Description;
-    private int TeamSize;
-    private String Image;
-    private Date CreateAt;
-    private Date UpdateAt;
-    private Date DeleteAt;
-    private boolean IsActive;
-    private int UserId;
+    private int MatchId;
 }

@@ -37,11 +37,7 @@ public class AdminController extends HttpServlet {
                         break;
                     }
                     case "list-request-create-league": {
-                        UserManageDAO userMangeDAO = new UserManageDAO();
-                        List<User> listUser = userMangeDAO.getListUserRequiredCreateLeaguePermission();
-                        request.setAttribute("USER", listUser);
-                        url = "views/manage/manage.jsp";
-                        request.getRequestDispatcher(url).forward(request, response);
+                        viewListRequest(request, response);
                         break;
                     }
                     case "process-request": {
@@ -78,10 +74,7 @@ public class AdminController extends HttpServlet {
                     boolean result = userManageDAO.rejectPermissionRequest(userId);
                     request.setAttribute("MESSAGE", "Reject user's request create league permission id - " + userIdS);
                 }
-                UserManageDAO userMangeDAO = new UserManageDAO();
-                List<User> listUser = userMangeDAO.getListUserRequiredCreateLeaguePermission();
-                request.setAttribute("USER", listUser);
-                request.getRequestDispatcher("views/manage/manage.jsp").forward(request, response);
+                request.getRequestDispatcher("admin?action=list-request-create-league").forward(request, response);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -90,6 +83,32 @@ public class AdminController extends HttpServlet {
 
     private void rejectRequest(HttpServletRequest request, HttpServletResponse response) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    private void viewListRequest(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            String url = "";
+            String indexS = request.getParameter("index");
+            if (indexS == null) {
+                indexS = "1";
+            }
+            int index = Integer.parseInt(indexS);
+            UserManageDAO userMangeDAO = new UserManageDAO();
+            int total = userMangeDAO.getListUserRequiredCreateLeaguePermissionTotal();
+            List<User> listUser = userMangeDAO.getListUserRequiredCreateLeaguePermission(index);
+            request.setAttribute("USER", listUser);
+            url = "views/manage/manage.jsp";
+
+            int lastPage = total / 10;
+            if (total % 10 != 0) {
+                lastPage++;
+            }
+            request.setAttribute("endP", lastPage);
+            request.setAttribute("selectedPage", index);
+            request.getRequestDispatcher(url).forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -65,65 +65,83 @@
         <div class="min-h-screen bg-gray-100 flex items-center justify-center px-4">
             <form class="bg-white shadow-lg rounded-lg p-8 max-w-4xl w-full" action="league" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="action" value="update"/>
-
-                <div class="flex flex-col justify-between items-center">
+                <div class="flex flex-col md:flex-row justify-between items-start">
                     <div class="flex flex-col items-center text-center md:text-left md:items-start">
                         <h2 class="text-2xl text-gray-800 font-semibold mb-4">
-                            <i class="fas fa-user-circle mr-2"></i>Bảng xếp hạng
+                            <i class="fas fa-user-circle mr-2"></i>Thông tin giải đấu
                         </h2>
+                        <div style="color: green; margin-top: 10px">${MESSAGE}</div>
                     </div>
                 </div>
                 </br>
                 <hr>
                 </br>
                 <div>
-                    <c:if test="${LIST_RANK.size() == 0}">
-                        <h2>"Giải đáu chưa bắt đầu"</h2>
+                    <label for="surname" class="text-gray-700">Các đội đăng kí:</label>
+                    <c:if test="${LEAGUE_TEAM.size() == 0}">
+                        <h2>"Chưa có đội bóng nào đăng kí giải đấu này"</h2>
+                        <a class="btn btn-sm btn-warning" href="league?action=register&leagueId=${leagueId}" class="btn btn-sm" style="width: 200px">Đăng kí ngay</a>
                     </c:if>
-                    <c:forEach items="${LIST_RANK}" var="team" varStatus="status">
-                        <div>Đội hạng - ${status.count}</div>
-
+                    <c:forEach items="${LIST_MATCH}" var="team">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <div class="row">
                                 <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
                                     <div class="image">
-                                        <img src="data:image/png;base64,${team.image}" alt="Profile picture"  style="width: 100%; height: 100px; cursor: pointer; margin: 10px auto;border: 2px solid #1b730d">
+                                        <img src="data:image/png;base64,${team.hometeamImage}" alt="Profile picture"  style="width: 100%; height: 100px; cursor: pointer; margin: 10px auto;border: 2px solid #1b730d">
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                    <div>
-                                        <p style="color: #198754; font-weight: bold;">${league.name}</p>      
-                                        <p style="margin: 0">Tên đội: <b>${team.teamName}</b></p>
-                                        <p style="margin: 0">Tên viết tắt: ${team.shortName}</p>
-                                        <small class="text-muted">${league.type}</small>
-                                        <i>Điểm: <b>${team.point}</b></i>
-                                        <div style="display: flex">
-                                            ${team.wins} <img style="width: 25px; margin-left: 5px" src="${pageContext.request.contextPath}/img/match-result/check.png"/>
-                                            ${team.loses} <img style="width: 25px; margin-left: 5px" src="${pageContext.request.contextPath}/img/match-result/cancel.png"/>                                          
-                                        </div>
+                                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-2">
+                                    <div class="blog-details">
+                                        <p class="card-text" style="color: #198754; font-weight: bold;"></p>      
+                                        <p class="card-text">${team.hometeamName}</b></p>
+                                        <small class="text-muted">${team.hometeamShortName}</small>
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4" style="">
-                                    <div class="d-flex justify-content-between align-items-center" style="margin-top: 15px">
+                                    <div class="d-flex justify-content-center align-items-center" style="margin-top: 15px">
                                         <div class="btn-group">
-                                            <a class="btn btn-sm btn-secondary" href="team?action=view-team&id=${team.teamId}" class="btn btn-sm" style="width: 100%">Xem thông tin đội</a>
+                                            <c:if test="${team.status == 0}">
+                                                <a href="league?action=match-detail&matchId=${team.id}" class="btn btn-sm btn-secondary" class="btn btn-sm" style="width: 100%">
+                                                    Sắp diễn ra
+                                                </a>
+                                            </c:if>
+                                            <c:if test="${team.status == 1}">
+
+                                                <a href="match-detail?matchId=${team.id}" class="btn btn-sm btn-danger" class="btn btn-sm" style="width: 100%">
+                                                    Đã diễn ra 
+                                                </a>
+                                            </c:if>
+
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-center align-items-center" style="margin-top: 15px">
+                                        <div class="btn-group">
+                                           ${team.scoreHome} - ${team.scoreAway}
                                         </div>
                                     </div>
                                 </div>
-
+                                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-2">
+                                    <div class="blog-details">
+                                        <p class="card-text" style="color: #198754; font-weight: bold;"></p>      
+                                        <p class="card-text">${team.awayteamName}</b></p>
+                                        <small class="text-muted">${team.awayteamShortName}</small>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                                    <div class="image">
+                                        <img src="data:image/png;base64,${team.awayteamImage}" alt="Profile picture"  style="width: 100%; height: 100px; cursor: pointer; margin: 10px auto;border: 2px solid #1b730d">
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                                    </hr>
                     </c:forEach>
                     <div style="display: flex; justify-content: center; margin-top: 15px">
-                        <a href="league?action=detail&leagueId=${leagueId}" class="bg-green-500 text-white px-4 py-2 rounded shadow peer-checked:bg-green-500 transition-colors" 
-                           style="background-image: linear-gradient(to right top,#45af2a,#3ba023,#30901c,#268215,#1b730d,#1b730d,#1b730d,#1b730d,#268215,#30901c,#3ba023,#45af2a);">Trở về</a>
+                        <a href="league?action=finish-league&leagueId=${USER_LEAGUE.id}" class="btn btn-danger" >Trở lại</a>
                     </div>
-                </div>              
+
+                </div>        
         </div>
-
-
-
-
     </form>
 </div>
 
@@ -150,28 +168,7 @@
 
 <!-- Template Javascript -->
 <script src="${pageContext.request.contextPath}/js/main.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    var error = document.getElementById('error');
-    var message = document.getElementById('success');
-
-    if (error.value) {
-        Swal.fire({
-            title: error.value,
-            icon: "info",
-            showCancelButton: true,
-            confirmButtonText: "Xác nhận",
-        })
-    }
-
-    if (message.value) {
-        Swal.fire({
-            title: message.value,
-            icon: "success",
-            showCancelButton: true,
-            confirmButtonText: "Xác nhận",
-        })
-    }
     const profilePicture = document.getElementById('profile-picture');
     const imageInput = document.getElementById('image-input');
 

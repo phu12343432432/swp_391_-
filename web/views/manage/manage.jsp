@@ -66,7 +66,7 @@
 
                                         </td>
                                         <td>
-                                            <a href="admin?action=process-request&decide=accept&userId=${user.id}" class="btn btn-success">
+                                            <a data-bs-toggle="modal" data-bs-target="#disableModal-${user.id}" class="btn btn-success">
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     width="16"
@@ -84,6 +84,24 @@
                                                     ></path>
                                                 </svg>
                                             </a>
+
+                                            <div class="modal fade" id="disableModal-${user.id}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" >Allow this user create league</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            This action allow ${user.userName} to create league in your system ?
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                            <a class="btn btn-primary" href="admin?action=process-request&decide=accept&userId=${user.id}">Save</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <a  href="admin?action=process-request&decide=reject&userId=${user.id}" class="btn btn-danger">
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
@@ -110,11 +128,29 @@
                     </div>
                     <nav aria-label="Page navigation example">
                         <ul class="pagination">
-                            <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                            <li class="page-item"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                            <li class="page-item"><a class="page-link" href="#">3</a></li>
-                            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                            <c:choose>
+                                <c:when test ="${selectedPage - 1 < 1}">
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="#">«</a>
+                                    </li>
+                                </c:when>
+                                <c:otherwise>
+                                    <li class="page-item"><a class="page-link" href="admin?action=list-request-create-league&earch=${search}&index=${selectedPage-1}">«</a></li>
+                                    </c:otherwise>
+                                </c:choose>
+                                <c:forEach var="i" begin="1" end="${endP}">
+                                <li class="page-item ${i == selectedPage ? "active" : "" }"> <a class="page-link" href="admin?action=list-request-create-league&search=${search}&index=${i}">${i}</a> <li>
+                                </c:forEach>
+                                <c:choose>
+                                    <c:when test ="${selectedPage >= endP}">
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="#">»</a>
+                                    </li>
+                                </c:when>
+                                <c:otherwise>
+                                    <li class="page-item"><a class="page-link" href="admin?action=list-request-create-league&search=${search}&index=${selectedPage+1}">»</a></li>
+                                    </c:otherwise>
+                                </c:choose>
                         </ul>
                     </nav>
                 </main>

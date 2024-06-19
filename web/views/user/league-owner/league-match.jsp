@@ -160,8 +160,9 @@
                                                 </a>
                                             </c:if>
                                             <c:if test="${team.status == 1}">
-                                                <a href="league?action=match-detail&matchId=${team.id}" class="btn btn-sm btn-danger" class="btn btn-sm" style="width: 100%">
-                                                    Đã diễn ra
+
+                                                <a href="match-detail?matchId=${team.id}" class="btn btn-sm btn-danger" class="btn btn-sm" style="width: 100%">
+                                                    Đã diễn ra 
                                                 </a>
                                             </c:if>
 

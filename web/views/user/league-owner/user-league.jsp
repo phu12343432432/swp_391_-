@@ -131,12 +131,17 @@
         <div class="container bootstrap snippets bootdey" style="min-height: 800px">
             <hr>
             <ol class="breadcrumb">
-                <li><a href="#">Giải đấu của bạn</a></li>
+                <li><a href="profile?action=view">Trở lại</a>/<a href="#">Giải đấu của bạn</a></li>
                 <li class="pull-right"><a href="" class="text-muted">
                         <i class="fa fa-refresh"></i></a>
                 </li>
             </ol>
             <div class="row">
+                <form action="league" class="d-flex" style="margin-bottom: 15px;">
+                    <input type="hidden" name="action" value="user-league"/>
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search" value="${search}">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
                 <c:if test="${USER_LEAGUE.size() == 0}">
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                         <div class="well blog">
@@ -182,6 +187,33 @@
                         </div>
                     </div>
                 </c:forEach>
+                <nav aria-label="Page navigation example" style="display: flex; justify-content:center;margin-top: 15px;">
+                    <ul class="pagination">
+                        <c:choose>
+                            <c:when test ="${selectedPage - 1 < 1}">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#">«</a>
+                                </li>
+                            </c:when>
+                            <c:otherwise>
+                                <li class="page-item"><a class="page-link" href="league?action=user-league&search=${search}&index=${selectedPage-1}">«</a></li>
+                                </c:otherwise>
+                            </c:choose>
+                            <c:forEach var="i" begin="1" end="${endP}">
+                            <li class="page-item ${i == selectedPage ? "active" : "" }"> <a class="page-link" href="league?action=user-league&search=${search}&index=${i}">${i}</a> <li>
+                            </c:forEach>
+                            <c:choose>
+                                <c:when test ="${selectedPage >= endP}">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#">»</a>
+                                </li>
+                            </c:when>
+                            <c:otherwise>
+                                <li class="page-item"><a class="page-link" href="league?action=user-league&search=${search}&index=${selectedPage+1}">»</a></li>
+                                </c:otherwise>
+                            </c:choose>
+                    </ul>
+                </nav>
             </div>
         </div>
     </body>

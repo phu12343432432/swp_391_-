@@ -128,15 +128,36 @@
     <body>
         <jsp:include page="header.jsp"/>
 
-        <div class="container bootstrap snippets bootdey">
+        <div class="container bootstrap snippets bootdey" style="min-height: 800px">
             <hr>
             <ol class="breadcrumb">
-                <li><a href="#">Giải đấu của bạn</a></li>
+                <li><a href="profile?action=view">Trở lại</a>/<a href="#">Giải đấu của bạn</a></li>
                 <li class="pull-right"><a href="" class="text-muted">
                         <i class="fa fa-refresh"></i></a>
                 </li>
             </ol>
             <div class="row">
+                <form action="league" class="d-flex" style="margin-bottom: 15px;">
+                    <input type="hidden" name="action" value="user-league"/>
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search" value="${search}">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+                <c:if test="${USER_LEAGUE.size() == 0}">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="well blog">
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                                    <div class="blog-details">
+                                        <h2>"Bạn chưa có giải đấu nào"</h2>
+                                    </div>
+                                    <a class="btn btn-sm btn-warning" href="league?action=create" class="btn btn-sm" style="width: 30%;padding: 5px 0; margin-left: 15px">Tạo giải đấu</a>
+                                </div>
+                            </div>
+                            <img src="${pageContext.request.contextPath}/img/anh4.jpg" style="height: 505px; width: 100%; margin-top: 35px"/>
+                            </a>
+                        </div>
+                    </div>
+                </c:if>
                 <c:forEach items="${USER_LEAGUE}" var="league">
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                         <div class="well blog">
@@ -166,63 +187,89 @@
                         </div>
                     </div>
                 </c:forEach>
-                <div class="row">
-                    <jsp:include page="footer.jsp"/>
+                <nav aria-label="Page navigation example" style="display: flex; justify-content:center;margin-top: 15px;">
+                    <ul class="pagination">
+                        <c:choose>
+                            <c:when test ="${selectedPage - 1 < 1}">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#">«</a>
+                                </li>
+                            </c:when>
+                            <c:otherwise>
+                                <li class="page-item"><a class="page-link" href="league?action=user-league&search=${search}&index=${selectedPage-1}">«</a></li>
+                                </c:otherwise>
+                            </c:choose>
+                            <c:forEach var="i" begin="1" end="${endP}">
+                            <li class="page-item ${i == selectedPage ? "active" : "" }"> <a class="page-link" href="league?action=user-league&search=${search}&index=${i}">${i}</a> <li>
+                            </c:forEach>
+                            <c:choose>
+                                <c:when test ="${selectedPage >= endP}">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#">»</a>
+                                </li>
+                            </c:when>
+                            <c:otherwise>
+                                <li class="page-item"><a class="page-link" href="league?action=user-league&search=${search}&index=${selectedPage+1}">»</a></li>
+                                </c:otherwise>
+                            </c:choose>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </body>
 
-                </div>
-                </body>
+    <jsp:include page="footer.jsp"/>
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="${pageContext.request.contextPath}/lib/wow/wow.min.js"></script>
+    <script src="${pageContext.request.contextPath}/lib/easing/easing.min.js"></script>
+    <script src="${pageContext.request.contextPath}/lib/waypoints/waypoints.min.js"></script>
+    <script src="${pageContext.request.contextPath}/lib/counterup/counterup.min.js"></script>
+    <script src="${pageContext.request.contextPath}/lib/owlcarousel/owl.carousel.min.js"></script>
 
-                <!-- JavaScript Libraries -->
-                <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-                <script src="${pageContext.request.contextPath}/lib/wow/wow.min.js"></script>
-                <script src="${pageContext.request.contextPath}/lib/easing/easing.min.js"></script>
-                <script src="${pageContext.request.contextPath}/lib/waypoints/waypoints.min.js"></script>
-                <script src="${pageContext.request.contextPath}/lib/counterup/counterup.min.js"></script>
-                <script src="${pageContext.request.contextPath}/lib/owlcarousel/owl.carousel.min.js"></script>
+    <!-- Template Javascript -->
+    <script src="${pageContext.request.contextPath}/js/main.js"></script>
+    <script>
+        const profilePicture = document.getElementById('profile-picture');
+        const imageInput = document.getElementById('image-input');
 
-                <!-- Template Javascript -->
-                <script src="${pageContext.request.contextPath}/js/main.js"></script>
-                <script>
-                    const profilePicture = document.getElementById('profile-picture');
-                    const imageInput = document.getElementById('image-input');
+        profilePicture.addEventListener('click', () => {
+            imageInput.disabled = false;
+            imageInput.click();
+        });
+        const updateAvatar = false;
+        imageInput.addEventListener('change', () => {
+            imageInput.disabled = false;
+            const file = imageInput.files[0];
+            const formData = new FormData();
+            formData.append('image', file);
 
-                    profilePicture.addEventListener('click', () => {
-                        imageInput.disabled = false;
-                        imageInput.click();
-                    });
-                    const updateAvatar = false;
-                    imageInput.addEventListener('change', () => {
-                        imageInput.disabled = false;
-                        const file = imageInput.files[0];
-                        const formData = new FormData();
-                        formData.append('image', file);
+            const reader = new FileReader();
+            reader.onload = () => {
+                profilePicture.src = reader.result;
+                profilePicture.width = '100%';
+            };
+            reader.readAsDataURL(file);
+            updateAvatar = true;
+        });
+        if (!updateAvatar && imageInput.value != null) {
+            imageInput.disabled = true;
+        }
+        document.addEventListener("DOMContentLoaded", function () {
+            const phoneInput = document.getElementById("Phone");
 
-                        const reader = new FileReader();
-                        reader.onload = () => {
-                            profilePicture.src = reader.result;
-                            profilePicture.width = '100%';
-                        };
-                        reader.readAsDataURL(file);
-                        updateAvatar = true;
-                    });
-                    if (!updateAvatar && imageInput.value != null) {
-                        imageInput.disabled = true;
-                    }
-                    document.addEventListener("DOMContentLoaded", function () {
-                        const phoneInput = document.getElementById("Phone");
+            phoneInput.addEventListener("input", function () {
+                const regex = /^\d{0,10}$/;
+                if (!regex.test(phoneInput.value)) {
+                    // If validation fails, show a custom error message
+                    phoneInput.setCustomValidity("Số điện thoại phải gồm 10 chữ số và không chứa ký tự đặc biệt.");
+                } else {
+                    // Clear custom error message
+                    phoneInput.setCustomValidity("");
+                }
+            });
+        });
 
-                        phoneInput.addEventListener("input", function () {
-                            const regex = /^\d{0,10}$/;
-                            if (!regex.test(phoneInput.value)) {
-                                // If validation fails, show a custom error message
-                                phoneInput.setCustomValidity("Số điện thoại phải gồm 10 chữ số và không chứa ký tự đặc biệt.");
-                            } else {
-                                // Clear custom error message
-                                phoneInput.setCustomValidity("");
-                            }
-                        });
-                    });
-
-                </script>
-                </html>
+    </script>
+</html>

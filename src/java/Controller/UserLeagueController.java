@@ -5,11 +5,15 @@
 package Controller;
 
 import DAO.LeagueDAO;
+import DAO.MatchDAO;
 import DAO.TeamDAO;
+import Model.Card;
+import Model.Goal;
 import Model.League;
 import Model.LeagueRegister;
 import Model.LeagueRegisterVM;
 import Model.Team;
+import Model.Team_Member;
 import Model.User;
 import Model.ViewModel.MatchVM;
 import jakarta.servlet.ServletException;
@@ -41,20 +45,42 @@ public class UserLeagueController extends HttpServlet {
         HttpSession session = request.getSession(false);
         String action = request.getParameter("action") == null ? "" : request.getParameter("action");
         String url = "views/common/index.jsp";
+        boolean isRedirect = false;
+        switch (action) {
+            case "listLeague":
+                viewLeague(request, response);
+                isRedirect = true;
+                break;
+            case "search-by-name":
+                searchByName(request, response);
+                isRedirect = true;
+                break;
+            case "view-league":
+                viewLeagueDetail(request, response);
+                isRedirect = true;
+                break;
+            case "league-rank":
+                viewLeagueRank(request, response);
+                isRedirect = true;
+                break;
+            case "match-detail":
+                viewMatchDetail(request, response);
+                isRedirect = true;
+                break;
+            case "league-match":
+                viewLeagueMatch(request, response);
+                isRedirect = true;
+                break;
+
+        }
         if (session != null && session.getAttribute("USER") != null) {
             User user = (User) session.getAttribute("USER");
             switch (action) {
                 case "create":
                     createLeaguePage(request, response);
                     break;
-                case "listLeague":
-                    viewLeague(request, response);
-                    break;
                 case "register":
                     RegisterLeague(request, response);
-                    break;
-                case "search-by-name":
-                    searchByName(request, response);
                     break;
                 case "user-league":
                     getUserLeague(request, response);
@@ -65,33 +91,26 @@ public class UserLeagueController extends HttpServlet {
                 case "detail":
                     viewLeagueDetail_Owner(request, response);
                     break;
-                case "view-league":
-                    viewLeagueDetail(request, response);
-                    break;
                 case "start":
                     startLeague(request, response);
-                    break;
-                case "league-match":
-                    viewLeagueMatch(request, response);
-                    break;
-                case "match-detail":
-                    viewMatchDetail(request, response);
                     break;
                 case "finish-league":
                     finishLeague(request, response);
                     break;
-                case "league-rank":
-                    viewLeagueRank(request, response);
-                    break;
                 case "accept-team":
                     acceptRegisterToLeague(request, response);
                     break;
-
+                case "league-match":
+                    viewLeagueMatch(request, response);
+                    isRedirect = true;
+                    break;
             }
         } else {
             // trang login
-            url = "views/common/sign-in.jsp";
-            request.getRequestDispatcher(url).forward(request, response);
+            if (!isRedirect) {
+                url = "views/common/sign-in.jsp";
+                request.getRequestDispatcher(url).forward(request, response);
+            }
         }
     }
 
@@ -189,8 +208,12 @@ public class UserLeagueController extends HttpServlet {
                 // validate ngay cach ngay ket thuc dang ki voi ngay bat dau
                 boolean isValid = validateDate(_dateRegister, _startDate);
                 // validate them ngay bat dau voi ngay ket thuc
-                
-                
+                int status = validateDateStartAndDateEdn(_startDate, _endDate);
+                if (status == 0) {
+                    request.setAttribute("ERRORMESSAGE", "Ngày bắt đầu giải và và ngày kết thúc không hợp lệ");
+                    request.getRequestDispatcher("views/user/create-league.jsp").forward(request, response);
+                    return;
+                }
                 if (!isValid) {
                     request.setAttribute("ERRORMESSAGE", "Ngày bắt đầu giải và hạn chót đăng kí phải cách nhau ít nhất 2 ngày");
                 } else {
@@ -204,6 +227,7 @@ public class UserLeagueController extends HttpServlet {
                     _league.setDescription(desc);
                     _league.setStartDate(_startDate);
                     _league.setEndDate(_endDate);
+
                     _league.setUserId(userLogin.getId());
                     boolean result = leagueDAO.createLeague(_league, image);
                     if (result) {
@@ -226,6 +250,15 @@ public class UserLeagueController extends HttpServlet {
         // Tính toán khoảng thời gian giữa ngày bắt đầu và ngày kết thúc
         Duration duration = Duration.between(start, end);
         return duration.toHours() >= 48;
+    }
+
+    public static int validateDateStartAndDateEdn(LocalDateTime start, LocalDateTime end) {
+        // Tính toán khoảng thời gian giữa ngày bắt đầu và ngày kết thúc
+        Duration duration = Duration.between(start, end);
+        if (duration.toHours() >= 0) {
+            return 1;
+        }
+        return 0;
     }
 
     private void RegisterLeague(HttpServletRequest request, HttpServletResponse response) {
@@ -282,7 +315,7 @@ public class UserLeagueController extends HttpServlet {
                 LeagueDAO leagueDAO = new LeagueDAO();
                 int index = Integer.parseInt(indexS);
                 List<League> listLeague = leagueDAO.searchLeagueByName(index, search);
-                int total = leagueDAO.getTotalLeague();
+                int total = leagueDAO.searchLeagueByNameTotal(index, search);
                 int lastPage = total / 9;
                 if (total % 12 != 0) {
                     lastPage++;
@@ -308,10 +341,18 @@ public class UserLeagueController extends HttpServlet {
             if (indexS == null) {
                 indexS = "1";
             }
+            if (search == null) {
+                search = "";
+            }
             LeagueDAO leagueDAO = new LeagueDAO();
             int index = Integer.parseInt(indexS);
             List<League> listLeague = leagueDAO.getUserLeaguePaged(index, userLogin.getId());
             int total = leagueDAO.getTotalUserLeague(userLogin.getId());
+
+            if (search != "") {
+                listLeague = leagueDAO.searchUserLeagueLeagueByName(index, search, userLogin.getId());
+                total = leagueDAO.searchUserLeagueLeagueByNameTotal(index, search, userLogin.getId());
+            }
             int lastPage = total / 4;
             if (total % 4 != 0) {
                 lastPage++;
@@ -376,7 +417,6 @@ public class UserLeagueController extends HttpServlet {
         try {
             String url = "views/user/league-owner/league-details.jsp";
             HttpSession session = request.getSession();
-            User userLogin = (User) session.getAttribute("USER");
             String idS = request.getParameter("leagueId");
             int id = Integer.parseInt(idS);
             LeagueDAO leagueDAO = new LeagueDAO();
@@ -457,10 +497,17 @@ public class UserLeagueController extends HttpServlet {
             if (matchIds != null) {
                 int id = Integer.parseInt(matchIds);
                 LeagueDAO leagueDAO = new LeagueDAO();
+                TeamDAO teamDAO = new TeamDAO();
                 League league = leagueDAO.getLeagueById(id);
                 MatchVM match = leagueDAO.getMatchByMatchId(id);
+
+                // đonạ này chưa có phân trnag
+                List<Team_Member> teamA = teamDAO.getListTeamMemberByTeamId(match.getHomeTeamId(), 1);
+                List<Team_Member> teamB = teamDAO.getListTeamMemberByTeamId(match.getAwayTeamId(), 1);
                 request.setAttribute("USER_LEAGUE", league);
                 if (match != null) {
+                    request.setAttribute("TEAMA", teamA);
+                    request.setAttribute("TEAMB", teamB);
                     request.setAttribute("MATCH", match);
                     url = "views/user/league-owner/match-detail.jsp";
                 } else {
@@ -483,6 +530,7 @@ public class UserLeagueController extends HttpServlet {
             String teamAIds = request.getParameter("teamAId");
             String teamBIds = request.getParameter("teamBId");
             String leagueIds = request.getParameter("leagueId");
+            String cardQuantityS = request.getParameter("cardQuantity");
 
             int scoreA = Integer.parseInt(scoreAs);
             int scoreB = Integer.parseInt(scoreBs);
@@ -490,12 +538,51 @@ public class UserLeagueController extends HttpServlet {
             int teamAId = Integer.parseInt(teamAIds);
             int teamBId = Integer.parseInt(teamBIds);
             int leagueId = Integer.parseInt(leagueIds);
+            int cardQuantity = Integer.parseInt(cardQuantityS);
+
+            int totalScore = scoreA + scoreB;
 
             LeagueDAO leagueDAO = new LeagueDAO();
             boolean result = leagueDAO.UpdateMatchResult(scoreA, scoreB, matchId, teamAId, teamBId, leagueId);
             if (result) {
-                request.setAttribute("MESSAGE", "Cập nhật tỉ số thành công");
+                MatchDAO matchDAO = new MatchDAO();
+
+                for (int i = 0; i < totalScore; i++) {
+                    String goalPlayerId = request.getParameter("goalPlayerId[" + i + "]");
+                    String goalTeamId = request.getParameter("goalTeamId[" + i + "]");
+                    String goalTime = request.getParameter("goalTime[" + i + "]");
+                    Goal goal = new Goal();
+                    int playerId = Integer.parseInt(goalPlayerId);
+                    int teamId = Integer.parseInt(goalTeamId);
+                    int time = Integer.parseInt(goalTime);
+                    goal.setGoal_Time(time);
+                    goal.setTeamId(teamId);
+                    goal.setMatchId(matchId);
+                    goal.setTeamId(teamId);
+                    goal.setTeamMemberId(playerId);
+                    matchDAO.InsertMatchGoal(goal);
+                }
+
+                for (int i = 0; i <= cardQuantity; i++) {
+                    String cardPlayerId = request.getParameter("cardPlayerId[" + i + "]");
+                    String cardTeamId = request.getParameter("cardTeamId[" + i + "]");
+                    String cardTime = request.getParameter("cardTime[" + i + "]");
+                    String cardType = request.getParameter("cardType[" + i + "]");
+
+                    Card card = new Card();
+                    int playerId = Integer.parseInt(cardPlayerId);
+                    int teamId = Integer.parseInt(cardTeamId);
+                    int time = Integer.parseInt(cardTime);
+                    card.setCard_Time(time);
+                    card.setTeamId(teamId);
+                    card.setMatchId(matchId);
+                    card.setTeamMemberId(playerId);
+                    card.setType(cardType);
+                    matchDAO.InsertMatchCard(card);
+                }
+
                 url = "league?action=league-match&leagueId=" + leagueIds;
+
             } else {
                 request.setAttribute("ERROR", "Cập nhật tỉ số thất bại");
             }
@@ -544,6 +631,8 @@ public class UserLeagueController extends HttpServlet {
                 } else {
                     request.setAttribute("ERROR", "Cannot get list rank of leagueid - " + leagueIds);
                 }
+                request.setAttribute("leagueId", leagueIds);
+
                 request.getRequestDispatcher(url).forward(request, response);
             }
         } catch (Exception e) {

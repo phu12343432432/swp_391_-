@@ -55,8 +55,8 @@ public class UserManageDAO extends DBContext {
         }
         return false;
     }
-    
-      public boolean rejectPermissionRequest(int userId) {
+
+    public boolean rejectPermissionRequest(int userId) {
         try {
             String sql = "UPDATE [USER] SET IsRequest = ?, RoleId = ? WHERE Id = ?";
             ps = con.prepareStatement(sql);
@@ -71,12 +71,27 @@ public class UserManageDAO extends DBContext {
         return false;
     }
 
-    public List<User> getListUserRequiredCreateLeaguePermission() {
+    public int getListUserRequiredCreateLeaguePermissionTotal() {
+        try {
+            String sql = "SELECT COUNT(*) FROM  [USER] WHERE IsRequest = 1";
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+              return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public List<User> getListUserRequiredCreateLeaguePermission(int index) {
         try {
             List<User> listUserRequest = new ArrayList();
 
-            String sql = "SELECT * FROM  [USER] WHERE IsRequest = 1";
+            String sql = "SELECT * FROM [USER] WHERE IsRequest = 1 ORDER BY Id DESC OFFSET ? ROW FETCH NEXT 10 ROWS ONLY";
             ps = con.prepareStatement(sql);
+            ps.setInt(1, (index - 1) * 10);
             rs = ps.executeQuery();
             while (rs.next()) {
                 User user = new User();
@@ -111,9 +126,7 @@ public class UserManageDAO extends DBContext {
     }
 
     public static void main(String[] args) {
-        UserManageDAO user = new UserManageDAO();
-        List<User> list = user.getListUserRequiredCreateLeaguePermission();
-        System.out.println(list.size());
+
     }
 
 }

@@ -95,6 +95,7 @@ public class AuthenticateController extends HttpServlet {
                     } else if (userLogedIn.getRoleId() == 2) {
                         url = "admin?action=list-request-create-league";
                         response.sendRedirect(url);
+                        return;
                     }
                 } else if (!userLogedIn.isIsActive()) {
                     request.setAttribute("ERRORMESSAGE", "Tài khoản của bạn bị vô hiệu hóa. Vui lòng liên hệ quản trị viên!");

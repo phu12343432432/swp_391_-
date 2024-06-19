@@ -135,10 +135,60 @@ public class LeagueDAO {
         return null;
     }
 
+    public int searchUserLeagueLeagueByNameTotal(int index, String search, int UserId) {
+        List<League> listLeague = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM League WHERE Name LIKE ? AND UserId = ?  ORDER BY CreateAt OFFSET ? ROWS FETCH NEXT 9 ROWS ONLY";
+            ps = con.prepareStatement(sql);
+            ps.setString(1, "%" + search + "%");
+            ps.setInt(2, UserId);
+            ps.setInt(3, (index - 1) * 9);
+
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+        }
+        return 0;
+    }
+
+    public List<League> searchUserLeagueLeagueByName(int index, String search, int UserId) {
+        List<League> listLeague = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM League WHERE Name LIKE ? AND UserId = ?  ORDER BY CreateAt OFFSET ? ROWS FETCH NEXT 9 ROWS ONLY";
+            ps = con.prepareStatement(sql);
+            ps.setString(1, "%" + search + "%");
+            ps.setInt(2, UserId);
+            ps.setInt(3, (index - 1) * 9);
+
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                League league = new League();
+                league.setId(rs.getInt("Id"));
+                league.setAddress(rs.getString("Address"));
+                league.setName(rs.getString("Name"));
+                league.setDescription(rs.getString("Description"));
+                league.setStartDate(rs.getTimestamp("StartDate").toLocalDateTime());
+                league.setEndDate(rs.getTimestamp("EndDate").toLocalDateTime());
+                league.setDateRegister(rs.getString("DateRegister"));
+                league.setTeamSize(rs.getInt("TeamSize"));
+                league.setType(rs.getString("Type"));
+                byte[] imgData = rs.getBytes("Image");
+                String base64Image = Base64.getEncoder().encodeToString(imgData);
+                league.setImage(base64Image);
+                listLeague.add(league);
+            }
+            return listLeague;
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
     public List<League> getLeaguePaged(int index) {
         List<League> listLeague = new ArrayList<>();
         try {
-            String sql = "SELECT * FROM League ORDER BY CreateAt OFFSET ? ROWS FETCH NEXT 9 ROWS ONLY";
+            String sql = "SELECT * FROM League ORDER BY CreateAt DESC OFFSET ? ROWS FETCH NEXT 9 ROWS ONLY";
             ps = con.prepareStatement(sql);
             ps.setInt(1, (index - 1) * 9);
             rs = ps.executeQuery();
@@ -165,6 +215,23 @@ public class LeagueDAO {
         } catch (Exception e) {
         }
         return null;
+    }
+
+    public int searchLeagueByNameTotal(int index, String search) {
+        List<League> listLeague = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM League WHERE Name LIKE ? ORDER BY CreateAt OFFSET ? ROWS FETCH NEXT 9 ROWS ONLY";
+            ps = con.prepareStatement(sql);
+            ps.setString(1, "%" + search + "%");
+            ps.setInt(2, (index - 1) * 9);
+
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+        }
+        return 0;
     }
 
     public List<League> searchLeagueByName(int index, String search) {
@@ -327,7 +394,7 @@ public class LeagueDAO {
         List<LeagueRegister> listTeam = new ArrayList<>();
         try {
             String sql = "SELECT tl.Status, tl.TeamId, tl.RegisterAt, tl.Point, t.Name, t.Image FROM League le JOIN Team_League tl ON tl.LeagueId = le.Id "
-                    + "JOIN Team t ON tl.TeamId = t.Id WHERE le.Id = ? ";
+                    + "JOIN Team t ON tl.TeamId = t.Id WHERE le.Id = ?";
             ps = con.prepareStatement(sql);
             ps.setInt(1, leagueId);
             rs = ps.executeQuery();
@@ -381,7 +448,7 @@ public class LeagueDAO {
     public List<LeagueRegisterVM> getTeamLeaugeRank(int leagueId) {
         List<LeagueRegisterVM> listTeam = new ArrayList<>();
         try {
-            String sql = "SELECT tl.TeamId, tl.RegisterAt, tl.Point, t.Name, t.Image, t.ShortName FROM League le JOIN Team_League tl ON tl.LeagueId = le.Id "
+            String sql = "SELECT tl.TeamId, tl.RegisterAt, tl.Point, t.Name, t.Image, t.ShortName, tl.Loses, tl.Wins, tl.Ties FROM League le JOIN Team_League tl ON tl.LeagueId = le.Id "
                     + "JOIN Team t ON tl.TeamId = t.Id WHERE le.Id = ? ORDER BY tl.Point DESC";
             ps = con.prepareStatement(sql);
             ps.setInt(1, leagueId);
@@ -393,6 +460,10 @@ public class LeagueDAO {
                 tl.setRegisterAt(rs.getDate("RegisterAt").toString());
                 tl.setPoint(rs.getInt("Point"));
                 tl.setShortName(rs.getString("ShortName"));
+                tl.setWins(rs.getInt("Wins"));
+                tl.setLoses(rs.getInt("Loses"));
+                tl.setTies(rs.getInt("Ties"));
+
                 byte[] imgData = rs.getBytes("Image");
                 String base64Image = Base64.getEncoder().encodeToString(imgData);
                 tl.setImage(base64Image);
@@ -451,7 +522,7 @@ public class LeagueDAO {
     public List<MatchVM> generateMatch(int leagueId) {
         try {
             boolean _isFullTeam = isFullTeam(leagueId);
-            if(!_isFullTeam) {
+            if (!_isFullTeam) {
                 return null;
             }
             League league = getLeagueById(leagueId);
@@ -648,30 +719,43 @@ public class LeagueDAO {
             int afftedRow = ps.executeUpdate();
             if (afftedRow > 0) {
                 if (scoreA > scoreB) {
-                    sql = "UPDATE Team_League SET Point += 3 WHERE TeamId = ? AND LeagueId = ?";
+                    sql = "UPDATE Team_League SET Point += 3, Wins += 1 WHERE TeamId = ? AND LeagueId = ?";
                     ps = con.prepareStatement(sql);
                     ps.setInt(1, homeId);
                     ps.setInt(2, leagueId);
                     afftedRow = ps.executeUpdate();
 
-                } else if (scoreA == scoreB) {
-                    sql = "UPDATE Team_League SET Point += 1 WHERE TeamId = ? AND LeagueId = ?";
+                    sql = "UPDATE Team_League SET Loses += 1 WHERE TeamId = ? AND LeagueId = ?";
                     ps = con.prepareStatement(sql);
                     ps.setInt(1, awayId);
                     ps.setInt(2, leagueId);
                     afftedRow = ps.executeUpdate();
 
-                    sql = "UPDATE Team_League SET Point += 1 WHERE TeamId = ? AND LeagueId = ?";
+                } else if (scoreA == scoreB) {
+                    sql = "UPDATE Team_League SET Point += 1, Ties += 1 WHERE TeamId = ? AND LeagueId = ?";
+                    ps = con.prepareStatement(sql);
+                    ps.setInt(1, awayId);
+                    ps.setInt(2, leagueId);
+                    afftedRow = ps.executeUpdate();
+
+                    sql = "UPDATE Team_League SET Point += 1, Ties += 1 WHERE TeamId = ? AND LeagueId = ?";
                     ps = con.prepareStatement(sql);
                     ps.setInt(1, homeId);
                     ps.setInt(2, leagueId);
                     afftedRow = ps.executeUpdate();
                 } else {
-                    sql = "UPDATE Team_League SET Point += 3 WHERE TeamId = ? AND LeagueId = ?";
+                    sql = "UPDATE Team_League SET Point += 3, Wins += 1 WHERE TeamId = ? AND LeagueId = ?";
                     ps = con.prepareStatement(sql);
                     ps.setInt(1, awayId);
                     ps.setInt(2, leagueId);
                     afftedRow = ps.executeUpdate();
+
+                    sql = "UPDATE Team_League SET Loses += 1 WHERE TeamId = ? AND LeagueId = ?";
+                    ps = con.prepareStatement(sql);
+                    ps.setInt(1, homeId);
+                    ps.setInt(2, leagueId);
+                    afftedRow = ps.executeUpdate();
+
                 }
             }
             return true;
@@ -694,7 +778,6 @@ public class LeagueDAO {
         return false;
     }
 
-    
     // check isFull roi moi cho accept
     public boolean acceptToJoinLeague(int teamId, int leagueId) {
         try {

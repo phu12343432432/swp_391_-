@@ -18,12 +18,15 @@ import lombok.ToString;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString   
+@ToString
 public class LeagueRegisterVM {
     private int TeamId;
-    private String TeamName;  
+    private String TeamName;
     private String ShortName;
     private String RegisterAt;
     private String Image;
     private int Point;
+    private int Wins;
+    private int Loses;
+    private int Ties;
 }

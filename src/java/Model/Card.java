@@ -10,28 +10,18 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- *
- * @author ADMIN
- */
+
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class LeagueRegister {
-
+public class Card {
+    private int Id;
+    private String Type;
+    private int TeamMemberId;
     private int TeamId;
-    private String TeamName;
-    private String RegisterAt;
-    private String Image;
-    private int Point;
-    private int Wins;
-    private int Loses;
-    private int Ties;
-    private int Status;
-    // 0 là mới đăng kí
-    // 1 đã duyệt 
-    // 2 từ chối
+    private int MatchId;    
+    private int Card_Time;
 
 }

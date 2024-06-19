@@ -20,6 +20,10 @@
         <servlet-name>UserLeagueController</servlet-name>
         <servlet-class>Controller.UserLeagueController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>MatchDetailController</servlet-name>
+        <servlet-class>Controller.MatchDetailController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>AuthenticateController</servlet-name>
         <url-pattern>/auth</url-pattern>
@@ -39,5 +43,9 @@
     <servlet-mapping>
         <servlet-name>UserLeagueController</servlet-name>
         <url-pattern>/league</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>MatchDetailController</servlet-name>
+        <url-pattern>/match-detail</url-pattern>
     </servlet-mapping>
 </web-app>

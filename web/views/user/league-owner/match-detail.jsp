@@ -63,18 +63,12 @@
         input[type="text"],
         input[type="number"],
         select {
-            width: 100%;
+            width: 70%;
             padding: 8px;
             margin-top: 5px;
             border: 1px solid #ccc;
             border-radius: 4px;
             height: 40px;
-        }
-
-        .goalInput {
-            width: 60% !important;
-            margin: 0 10px !important;
-            ;
         }
 
 
@@ -90,13 +84,6 @@
         button:hover {
             background-color: #0056b3;
         }
-
-        .yellowCardInputs > div,
-        .cards > div{
-            display: flex;
-            align-content: center;
-        }
-
     </style>
     <body>
 
@@ -119,161 +106,242 @@
                     </div>
                 </div>
                 <div>
-                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                        <div class="row">
-                            <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                                <div class="image">
-                                    <img src="data:image/png;base64,${MATCH.hometeamImage}" alt="Profile picture"  style="width: 100%; height: 100px; cursor: pointer; margin: 10px auto;border: 2px solid #1b730d">
-                                </div>
-                            </div>
-                            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-2">
-                                <div class="blog-details">
-                                    <p class="card-text" style="color: #198754; font-weight: bold;"></p>      
-                                    <p class="card-text">${MATCH.hometeamName}</b></p>
-                                    <small class="text-muted">${MATCH.hometeamShortName}</small>
-                                </div>
-                            </div>
-                            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4" style="">
-                                <div class="d-flex justify-content-center align-items-center" >
-                                    <div class="btn-group">
-                                        <h3>Tỉ số trận đấu</h3>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-center align-items-center" style="margin-top: 5px">
-                                    <div class="btn-group">
-                                        <input name="scoreA" id="teamAScore"  oninput="generateGoalInputs()"  value="${MATCH.scoreHome}" type="number"   class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
-                                    </div>
 
-                                    <div style="margin: 0 10px;">-</div>
 
-                                    <div class="btn-group">
-                                        <input name="scoreB"  id="teamBScore" oninput="generateGoalInputs()" value="${MATCH.scoreAway}" type="number"   class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-2">
-                                <div class="blog-details">
-                                    <p class="card-text" style="color: #198754; font-weight: bold;"></p>      
-                                    <p class="card-text">${MATCH.awayteamName}</b></p>
-                                    <small class="text-muted">${MATCH.awayteamShortName}</small>
-                                </div>
-                            </div>
-                            <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                                <div class="image">
-                                    <img src="data:image/png;base64,${MATCH.awayteamImage}" alt="Profile picture"  style="width: 100%; height: 100px; cursor: pointer; margin: 10px auto;border: 2px solid #1b730d">
-                                </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                            <div class="image">
+                                <img src="data:image/png;base64,${MATCH.hometeamImage}" alt="Profile picture"  style="width: 100%; height: 100px; cursor: pointer; margin: 10px auto;border: 2px solid #1b730d">
                             </div>
                         </div>
+                        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-2">
+                            <div class="blog-details">
+                                <p class="card-text" style="color: #198754; font-weight: bold;"></p>      
+                                <p class="card-text">${MATCH.hometeamName}</b></p>
+                                <small class="text-muted">${MATCH.hometeamShortName}</small>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-2">
+                            <div>Scorce</div>
+                            <input name="scoreA" id="teamAScore"  oninput="generateGoalInputs()" min="0" value="${MATCH.scoreHome}" type="number"   class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                        </div>
+
+                        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-2">
+                            <div>Yellow Card</div>
+                            <input name="scoreA" id="teamAScore"  oninput="generateGoalInputs()"  min="0" type="number"   class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-2">
+                            <div>Red Card</div>
+                            <input name="scoreA" id="teamAScore"  oninput="generateGoalInputs()" min="0" type="number"   class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                        </div>
+
+
                     </div>
-
                     <div id="matchForm">
-                        <h2>Bàn thắng</h2>
-                        <div id="goals"></div>
-                        <button type="button" class="btn btn-success" onclick="addGoalInput()">Thêm bàn thắng</button><br>
+                        <h4>Bàn thắng</h4>
+                        <div id="goalsA"></div>
+                        <button type="button" class="btn btn-success" onclick="addGoalInputA()">Thêm bàn thắng</button><br>
 
-                        <h2>Thẻ phạt</h2>
-                        <div id="cards"></div>
-                        <button type="button" class="btn btn-success" onclick="addCardInput()">Thêm thẻ phạt</button><br>
+                        <h4>Thẻ phạt</h4>
+                        <div id="cardsA"></div>
+                        <button type="button" class="btn btn-success" onclick="addCardInputA()">Thêm thẻ phạt</button><br>
+                    </div>   
 
-                    </div>     
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                            <div class="image">
+                                <img src="data:image/png;base64,${MATCH.awayteamImage}" alt="Profile picture"  style="width: 100%; height: 100px; cursor: pointer; margin: 10px auto;border: 2px solid #1b730d">
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-2">
+                            <div class="blog-details">
+                                <p class="card-text" style="color: #198754; font-weight: bold;"></p>      
+                                <p class="card-text">${MATCH.awayteamName}</b></p>
+                                <small class="text-muted">${MATCH.awayteamShortName}</small>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-2">
+                            <div>Scorce</div>
+                            <input name="scoreB" id="teamAScore"  oninput="generateGoalInputs()"  min="0" value="${MATCH.scoreAway}" type="number"   class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                        </div>
+
+                        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-2">
+                            <div>Yellow Card</div>
+                            <input name="scoreA" id="teamAScore"  oninput="generateGoalInputs()" min="0"  type="number"   class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-2">
+                            <div>Red Card</div>
+                            <input name="scoreA" id="teamAScore"  oninput="generateGoalInputs()"  min="0" type="number"   class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                        </div>
+                    </div>
+                    <div id="matchForm">
+                        <h4>Bàn thắng</h4>
+                        <div id="goalsB"></div>
+                        <button type="button" class="btn btn-warning" onclick="addGoalInputB()">Thêm bàn thắng</button><br>
+
+                        <h4>Thẻ phạt</h4>
+                        <div id="cardsB"></div>
+                        <button type="button" class="btn btn-warning" onclick="addCardInputB()">Thêm thẻ phạt</button><br>
+                    </div>  
                     <input type="hidden" name="cardQuantity" id="cardQuantity"/>
                     <div style="display: flex; justify-content: center; margin-top: 15px">
                         <button type="submit" href="league?action=update-match&match=${USER_LEAGUE.id}" class="bg-green-500 text-white px-4 py-2 rounded shadow peer-checked:bg-green-500 transition-colors" 
                                 style="background-image: linear-gradient(to right top,#45af2a,#3ba023,#30901c,#268215,#1b730d,#1b730d,#1b730d,#1b730d,#268215,#30901c,#3ba023,#45af2a);">Cập nhật trận đấu</button>
                     </div>
-                </div>     
+                </div>
+
             </form>
-
         </div>
+    </div>
 
 
-        <jsp:include page="footer.jsp"/>
-        <!-- Footer End -->
+    <jsp:include page="footer.jsp"/>
+    <!-- Footer End -->
 
 
-        <!-- Back to Top -->
-        <a href="timsan_nhat.jsp" class="btn btn-lg btn-primary btn-lg-square rounded back-to-top"><i class="bi bi-arrow-up"></i></a>
+    <!-- Back to Top -->
+    <a href="timsan_nhat.jsp" class="btn btn-lg btn-primary btn-lg-square rounded back-to-top"><i class="bi bi-arrow-up"></i></a>
 
-    </body>
+</body>
 
 
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="${pageContext.request.contextPath}/lib/wow/wow.min.js"></script>
-    <script src="${pageContext.request.contextPath}/lib/easing/easing.min.js"></script>
-    <script src="${pageContext.request.contextPath}/lib/waypoints/waypoints.min.js"></script>
-    <script src="${pageContext.request.contextPath}/lib/counterup/counterup.min.js"></script>
-    <script src="${pageContext.request.contextPath}/lib/owlcarousel/owl.carousel.min.js"></script>
+<!-- JavaScript Libraries -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="${pageContext.request.contextPath}/lib/wow/wow.min.js"></script>
+<script src="${pageContext.request.contextPath}/lib/easing/easing.min.js"></script>
+<script src="${pageContext.request.contextPath}/lib/waypoints/waypoints.min.js"></script>
+<script src="${pageContext.request.contextPath}/lib/counterup/counterup.min.js"></script>
+<script src="${pageContext.request.contextPath}/lib/owlcarousel/owl.carousel.min.js"></script>
 
-    <!-- Template Javascript -->
-    <script src="${pageContext.request.contextPath}/js/main.js"></script>
-    <script>
+<!-- Template Javascript -->
+<script src="${pageContext.request.contextPath}/js/main.js"></script>
+<script>
                             var goalIndex = 0;
                             var cardIndex = 0;
-                            function addGoalInput() {
-                                const goalDiv = document.getElementById('goals');
+                            const cardQuantityDiv = document.getElementById('cardQuantity');
+                            cardQuantityDiv.value = cardIndex;
+                            function addGoalInputA() {
+                                const goalDiv = document.getElementById('goalsA');
                                 const goalInput = document.createElement('div');
-                                goalInput.style.display = 'flex';
                                 goalInput.innerHTML = `
-                                    <label>Team</label>
-            <select class="goalInput" type="number" name="goalTeamId[` + goalIndex + `]" required>    
-
-            <option value="${MATCH.homeTeamId}">${MATCH.hometeamShortName}</option>  
-          <option value="${MATCH.awayTeamId}">${MATCH.awayteamShortName}</option>
-
-</select>
-            <label>Player</label>
-            <select class="goalInput"  type="number" name="goalPlayerId[` + goalIndex + `]">
-        <c:forEach items="${TEAMA}" var="teamA" >
-            <option value="${teamA.id}">${teamA.number}-${teamA.name} - ${MATCH.hometeamShortName}</option>
-        </c:forEach>};
-        <c:forEach items="${TEAMB}" var="teamB" >
-            <option value="${teamB.id}">${teamB.number}-${teamB.name} - ${MATCH.awayteamShortName}</option>
-        </c:forEach>};
-            <select>
-            <label>Time (minute):</label>
-            <input class="goalInput" type="number" name="goalTime[` + goalIndex + `]" required><br>
-        `;
+        <div class="row">
+            <input type="hidden" name="goalTeamId[` + goalIndex + `]" value="${MATCH.homeTeamId}"/>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                    <label style="width: 150px">Player</label>
+                    <select class="goalInput"  type="number" name="goalPlayerId[` + goalIndex + `]">
+                <c:forEach items="${TEAMA}" var="teamA" >
+                    <option value="${teamA.id}">${teamA.number}-${teamA.name} - ${MATCH.hometeamShortName}</option>
+                </c:forEach>
+                    </select>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-3">  
+                        <label>Time (minute):</label>
+                        <input class="goalInput" type="number" min="0" max="130" name="goalTime[` + goalIndex + `]" required>
+            </div>
+        </div>`;
                                 goalDiv.appendChild(goalInput);
                                 goalIndex++;
                                 console.log(goalIndex);
                             }
 
-                            function addCardInput() {
-                                const cardDiv = document.getElementById('cards');
-                                const cardQuantityDiv = document.getElementById('cardQuantity');
-                                cardQuantityDiv.value = cardIndex;
-                                const cardInput = document.createElement('div');
-                                cardInput.style.display = 'flex';
-                                cardInput.innerHTML = `
-                                 <div>Team</div>
-            <select type="number" name="cardTeamId[` + cardIndex + `]" required>
-            <option value="${MATCH.homeTeamId}">${MATCH.hometeamShortName}</option>  
-            <option value="${MATCH.awayTeamId}">${MATCH.awayteamShortName}</option>
-            </select>
-            <label>Player</label>
-                  <select class="goalInput" type="number" name="cardPlayerId[` + cardIndex + `]">
-        <c:forEach items="${TEAMA}" var="teamA" >
-            <option class="goalInput" value="${teamA.id}">${teamA.number}-${teamA.name} - ${MATCH.hometeamShortName}</option>
-        </c:forEach>};
-        <c:forEach items="${TEAMB}" var="teamB" >
-            <option class="goalInput" value="${teamB.id}">${teamB.number}-${teamB.name} - ${MATCH.awayteamShortName}</option>
-        </c:forEach>};
-            </select>
-           
-            <div>Type (yellow/red):</div>
-            <select type="text" name="cardType[` + cardIndex + `]" required>
-            <option value="red">yellow</option>  
-            <option value="yellow">red</option>   
-            <select>
-            <div>Time (minute):</div>
-            <input type="number" style="width: 50px" name="cardTime[` + cardIndex + `]" required><br>
-        `;
-                                cardDiv.appendChild(cardInput);
-                                cardIndex++;
+                            function addGoalInputB() {
+                                const goalDiv = document.getElementById('goalsB');
+                                const goalInput = document.createElement('div');
+                                goalInput.innerHTML = `
+                                <div class="row">
+            <input type="hidden" name="goalTeamId[` + goalIndex + `]" value="${MATCH.awayTeamId}"/>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                    <label style="width: 150px">Player</label>
+                    <select class="goalInput"  type="number" name="goalPlayerId[` + goalIndex + `]">
+                <c:forEach items="${TEAMB}" var="teamB" >
+                    <option value="${teamB.id}">${teamB.number}-${teamB.name} - ${MATCH.awayteamShortName}</option>
+                 </c:forEach>
+                    </select>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-3">  
+                             <label>Time (minute):</label>
+                <input class="goalInput" type="number"  min="0" max="130" name="goalTime[` + goalIndex + `]" required><br>
+            </div>
+        </div>`;
+                                goalDiv.appendChild(goalInput);
+                                goalIndex++;
+                                console.log(goalIndex);
                             }
 
 
-    </script>
+                            function addCardInputA() {
+                                const cardDiv = document.getElementById('cardsA');
+                                const cardInput = document.createElement('div');
+                                cardInput.innerHTML = `
+                                <div class="row">
+                                        <input type="hidden" name="cardTeamId[` + cardIndex + `]" value="${MATCH.homeTeamId}"/>
+                                      <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                                             <label style="width: 150px">Player</label>
+              <select class="goalInput" type="number" name="cardPlayerId[` + cardIndex + `]">
+    <c:forEach items="${TEAMA}" var="teamA" >
+        <option class="goalInput" value="${teamA.id}">${teamA.number}-${teamA.name} - ${MATCH.hometeamShortName}</option>
+    </c:forEach>
+        </select>
+                                      </div>
+                                      <div class="col-xs-12 col-sm-6 col-md-6 col-lg-3">
+                                            <div>Type (yellow/red):</div>
+        <select type="text" name="cardType[` + cardIndex + `]" required>
+        <option value="red">yellow</option>  
+        <option value="yellow">red</option>   
+        <select>
+                                      </div>
+                                      <div class="col-xs-12 col-sm-6 col-md-6 col-lg-3">
+                                            <div>Time (minute):</div>
+                                            <input type="number" style="width: 100px" name="cardTime[` + cardIndex + `]" required><br>
+                                      </div>
+                                </div>
+    `;
+                                cardDiv.appendChild(cardInput);
+                                cardIndex++;
+                                cardQuantityDiv.value = cardIndex;
+                            }
+
+                            function addCardInputB() {
+                                const cardDiv = document.getElementById('cardsB');
+                                cardQuantityDiv.value = cardIndex;
+
+                                const cardInput = document.createElement('div');
+                                cardInput.innerHTML = `
+                                
+                                
+                                 <div class="row">
+                                               <input type="hidden" name="cardTeamId[` + cardIndex + `]" value="${MATCH.awayTeamId}"/>
+
+                                      <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                                             <label style="width: 150px">Player</label>
+              <select class="goalInput" type="number" name="cardPlayerId[` + cardIndex + `]">
+    <c:forEach items="${TEAMB}" var="teamB" >
+        <option class="goalInput" value="${teamB.id}">${teamB.number}-${teamB.name} - ${MATCH.awayteamShortName}</option>
+    </c:forEach>
+        </select>
+                                      </div>
+                                      <div class="col-xs-12 col-sm-6 col-md-6 col-lg-3">
+                                            <div>Type (yellow/red):</div>
+                                            <select type="text" name="cardType[` + cardIndex + `]" required>
+                                            <option value="red">yellow</option>  
+                                            <option value="yellow">red</option>   
+                                    <select>
+                                      </div>
+                                      <div class="col-xs-12 col-sm-6 col-md-6 col-lg-3">
+                                          <div>Time (minute):</div>
+                                            <input type="number" style="width: 100px" name="cardTime[` + cardIndex + `]" required><br>
+                                      </div>
+                                </div>
+    `;
+                                cardDiv.appendChild(cardInput);
+                                cardIndex++;
+                                cardQuantityDiv.value = cardIndex;
+                            }
+
+
+
+</script>
 </html>

@@ -37,67 +37,15 @@
                     </li>
                     
                       <li class="nav-item">
-                        <a class="nav-link" href="#">
-
-Admin
+                        <a class="nav-link" href="admin/GetAllUser">
+                            User Management
                         </a>
                     </li>
                     
                        <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            Manager 
+                           <a class="nav-link" href="${pageContext.request.contextPath}/admin?action=list-request-create-league">
+                            Create league permission
                         </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-
-                            Student
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            Lecturers
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-
-
-                            Teacher Assistant
-                        </a>
-                    </li>
-                    
-                  
-
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            Course
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            Orders
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            Sale
-                        </a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="designWebDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Design Web
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="designWebDropdown">
-                            <li><a class="dropdown-item" href="#">Edit Header</a></li>
-                            <li><a class="dropdown-item" href="#">Edit Banner</a></li>
-                            <li><a class="dropdown-item" href="#">Edit Slogan</a></li>
-                            <li><a class="dropdown-item" href="#">Edit Footer</a></li>
-                        </ul>
                     </li>
                 </ul>
             </div>

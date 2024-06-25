@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
+    <filter>
+        <filter-name>RouteFilter</filter-name>
+        <filter-class>Filter.RouteFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>RouteFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
     <servlet>
         <servlet-name>AuthenticateController</servlet-name>
         <servlet-class>Controller.AuthenticateController</servlet-class>
@@ -19,6 +27,14 @@
     <servlet>
         <servlet-name>UserLeagueController</servlet-name>
         <servlet-class>Controller.UserLeagueController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetAllUserController</servlet-name>
+        <servlet-class>Controller.Admin.GetAllUserController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ChangeUserStatusController</servlet-name>
+        <servlet-class>Controller.Admin.ChangeUserStatusController</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>MatchDetailController</servlet-name>
@@ -43,6 +59,14 @@
     <servlet-mapping>
         <servlet-name>UserLeagueController</servlet-name>
         <url-pattern>/league</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetAllUserController</servlet-name>
+        <url-pattern>/admin/GetAllUser</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ChangeUserStatusController</servlet-name>
+        <url-pattern>/admin/ChangeUserStatus</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>MatchDetailController</servlet-name>

@@ -29,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
@@ -160,7 +161,7 @@ public class UserLeagueController extends HttpServlet {
         }
     }
 
-    private void viewLeague(HttpServletRequest request, HttpServletResponse response) {
+     private void viewLeague(HttpServletRequest request, HttpServletResponse response) {
         try {
             HttpSession session = request.getSession();
             String url = "views/user/list-league.jsp";
@@ -202,11 +203,21 @@ public class UserLeagueController extends HttpServlet {
 
                 var _startDate = LocalDateTime.parse(startDate);
                 var _endDate = LocalDateTime.parse(endDate);
-                LocalDate date = LocalDate.parse(registerDate);
-                LocalDateTime _dateRegister = date.atStartOfDay();
+//                LocalDateTime _dateRegister = LocalDateTime.parse(registerDate);
 
-                // validate ngay cach ngay ket thuc dang ki voi ngay bat dau
+                DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+
+                // Parse the string to LocalDate
+                LocalDate localDate = LocalDate.parse(registerDate, formatter);
+
+                // Convert to LocalDateTime at start of day
+                LocalDateTime _dateRegister = localDate.atStartOfDay();
+
+                System.out.println("Parsed LocalDateTime: " + _dateRegister);
+                System.out.println("Start Date " + _startDate);
+
                 boolean isValid = validateDate(_dateRegister, _startDate);
+                System.out.println("_dateRegister" + _dateRegister);
                 // validate them ngay bat dau voi ngay ket thuc
                 int status = validateDateStartAndDateEdn(_startDate, _endDate);
                 if (status == 0) {
@@ -222,6 +233,7 @@ public class UserLeagueController extends HttpServlet {
                     _league.setType(leagueType);
                     _league.setName(name);
                     _league.setDateRegister(registerDate);
+                    System.out.println("" + registerDate);
                     _league.setAddress(address);
                     _league.setTeamSize(Integer.parseInt(teamsizeS));
                     _league.setDescription(desc);
@@ -483,7 +495,6 @@ public class UserLeagueController extends HttpServlet {
                     request.setAttribute("ERROR", "Chưa có đội bóng nào tham gia giải đấu của bạn");
                 }
                 request.getRequestDispatcher(url).forward(request, response);
-
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -563,7 +574,7 @@ public class UserLeagueController extends HttpServlet {
                     matchDAO.InsertMatchGoal(goal);
                 }
 
-                for (int i = 0; i <= cardQuantity; i++) {
+                for (int i = 0; i < cardQuantity; i++) {
                     String cardPlayerId = request.getParameter("cardPlayerId[" + i + "]");
                     String cardTeamId = request.getParameter("cardTeamId[" + i + "]");
                     String cardTime = request.getParameter("cardTime[" + i + "]");

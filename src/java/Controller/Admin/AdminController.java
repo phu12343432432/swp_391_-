@@ -4,8 +4,12 @@
  */
 package Controller.Admin;
 
+import DAO.LeagueDAO;
 import DAO.UserManageDAO;
+import DAO.UserWalletDAO;
 import Model.User;
+import Model.UserWalletOrder;
+import Model.ViewModel.UserWalletOrderVM;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -13,6 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -32,7 +37,47 @@ public class AdminController extends HttpServlet {
             if (session != null && session.getAttribute("USER") != null) {
                 switch (action) {
                     case "dashboard": {
-                        url = "admin/dashboard.jsp";
+                        url = "views/manage/dashboard.jsp";
+                        // Get the total number of users     
+                        UserManageDAO userManageDAO = new UserManageDAO();
+                        int totalUsers = userManageDAO.GetAllUserTotal();
+                        // Get the total number of active leagues    
+                        LeagueDAO leagueDAO = new LeagueDAO();
+                        int totalActiveLeagues = leagueDAO.getActiveLeasguesCount();
+                        // Get the total amount in user wallets                   
+                        UserWalletDAO userWalletDAO = new UserWalletDAO();
+                        float totalWalletBalance = userWalletDAO.getTotalWalletBalance();
+                        // Set the attributes and forward to the dashboard.jsp                 
+
+                        LocalDateTime now = LocalDateTime.now();
+                        int currentMonth = now.getMonthValue();
+                        int currentYear = now.getYear();
+
+                        float monthlyWalletRevenueCurentMonth = 0.0f;
+                        List<UserWalletOrder> monthlyWalletOrders = userWalletDAO.getMonthlyWalletOrders(currentMonth, currentYear);
+                        for (int i = 1; i <= 12; i++) {
+                            float revenueMoneth = 0.0f;
+                            List<UserWalletOrder> monthlyWalletOrdersMonth = userWalletDAO.getMonthlyWalletOrders(i, currentYear);
+                            for (UserWalletOrder order : monthlyWalletOrdersMonth) {
+                                System.out.println("Month" + i + " " + order.getAmmount());
+                                if (order.getAmmount() == 0) {
+                                    revenueMoneth += 0;
+                                } else {
+                                    revenueMoneth += order.getAmmount();
+                                }
+                                if (i == currentMonth) {
+                                    monthlyWalletRevenueCurentMonth += order.getAmmount();
+                                }
+                            }
+                            request.setAttribute("REVENUE_MOUNTH_" + i, revenueMoneth);
+                        }
+                        UserWalletDAO walletDAO = new UserWalletDAO();
+                        List<UserWalletOrderVM> orders = walletDAO.getWalletOrdersPending();
+                        request.setAttribute("MONTHLY_WALLET_REVENUE", monthlyWalletRevenueCurentMonth);
+                        request.setAttribute("WALLET_ORDERS", monthlyWalletOrders);
+                        request.setAttribute("TOTAL_USERS", totalUsers);
+                        request.setAttribute("TOTAL_ACTIVE_LEAGUES", totalActiveLeagues);
+                        request.setAttribute("TOTAL_WALLET_BALANCE", totalWalletBalance);
                         request.getRequestDispatcher(url).forward(request, response);
                         break;
                     }
@@ -96,16 +141,14 @@ public class AdminController extends HttpServlet {
             UserManageDAO userMangeDAO = new UserManageDAO();
             int total = userMangeDAO.getListUserRequiredCreateLeaguePermissionTotal();
             List<User> listUser = userMangeDAO.getListUserRequiredCreateLeaguePermission(index);
-            request.setAttribute("USER", listUser);
-            url = "views/manage/manage.jsp";
-
             int lastPage = total / 10;
             if (total % 10 != 0) {
                 lastPage++;
             }
+            request.setAttribute("LIST_USER", listUser);
             request.setAttribute("endP", lastPage);
             request.setAttribute("selectedPage", index);
-            request.getRequestDispatcher(url).forward(request, response);
+            request.getRequestDispatcher("views/manage/manage.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
         }

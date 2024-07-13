@@ -46,18 +46,11 @@ public class UserTeamController extends HttpServlet {
                     break;
 
             }
-        } else {
-            boolean isRedirect = false;
-            switch (action) {
-                case "view-team":
-                    viewTeamDetails(request, response);
-                    isRedirect = true;
-                    break;
-            }
-            if (!isRedirect) {
-                url = "views/common/sign-in.jsp";
-                request.getRequestDispatcher("views/common/sign-in.jsp").forward(request, response);
-            }
+        }
+        switch (action) {
+            case "view-team":
+                viewTeamDetails(request, response);
+                break;
         }
     }
 
@@ -108,10 +101,16 @@ public class UserTeamController extends HttpServlet {
                 total = teamDAO.getListTeamMemberByTeamIdSeachTotal(userTeam.getId(), searchS);
                 teamMember = teamDAO.getListTeamMemberByTeamIdSearch(userTeam.getId(), searchS, index);
                 request.setAttribute("search", searchS);
+                request.setAttribute("TEAM_MEMBERS", teamMember);
             }
             int lastPage = total / 10;
             if (total % 10 != 0) {
                 lastPage++;
+            }
+
+            if (session.getAttribute("ERROR") != null) {
+                request.setAttribute("ERROR", (String) session.getAttribute("ERROR"));
+                session.removeAttribute("ERROR");
             }
             request.setAttribute("endP", lastPage);
             request.setAttribute("selectedPage", index);
@@ -135,19 +134,20 @@ public class UserTeamController extends HttpServlet {
 
             // lu anh dan binary
             Part image = request.getPart("image");
-            // => local D:/...
 
             TeamDAO teamDAO = new TeamDAO();
             Team _team = new Team();
+            _team.setTeamSize(0);
             _team.setName(teamName);
             _team.setShortName(shortName);
-            _team.setTeamSize(Integer.parseInt(teamsizeS));
+
             _team.setDescription(desc);
             _team.setUserId(userLogin.getId());
 
             Team teamUpdated = new Team();
             // ton tai teamid co team roi.
             if (!(teamIdS.equals(""))) {
+                _team.setTeamSize(Integer.parseInt(teamsizeS));
                 // goi phunog thuc DAO update team.
                 int teamId = Integer.parseInt(teamIdS);
                 _team.setId(teamId);
@@ -161,6 +161,15 @@ public class UserTeamController extends HttpServlet {
             if (teamUpdated != null) {
                 session.setAttribute("TEAM", teamUpdated);
                 request.setAttribute("MESSAGE", "Cập nhật team thành công");
+
+                Team userTeam = teamDAO.getTeamByUserId(userLogin.getId());
+                List<Team_Member> teamMember = new ArrayList();
+                if (userTeam != null) {
+                    teamMember = teamDAO.getListTeamMemberByTeamId(userTeam.getId(), 1);
+                    request.setAttribute("TEAM", userTeam);
+                    request.setAttribute("TEAM_MEMBERS", teamMember);
+                    request.setAttribute("userTeamId", userTeam.getId());
+                }
             } else {
                 request.setAttribute("ERRORMESSAGE", "Cập nhật team không thành công");
             }
@@ -185,6 +194,31 @@ public class UserTeamController extends HttpServlet {
             if (userTeam != null) {
                 request.setAttribute("TEAM", userTeam);
             }
+            
+             String indexS = request.getParameter("index");
+            String searchS = request.getParameter("search");
+            if (indexS == null) {
+                indexS = "1";
+            }
+            if (searchS == null) {
+                searchS = "";
+            }
+            int index = Integer.parseInt(indexS);
+
+            List<Team_Member> teamMember = new ArrayList();
+            if (userTeam != null) {
+                teamMember = teamDAO.getListTeamMemberByTeamId(userTeam.getId(), index);
+                request.setAttribute("TEAM", userTeam);
+                request.setAttribute("TEAM_MEMBERS", teamMember);
+                request.setAttribute("userTeamId", userTeam.getId());
+            }
+
+            if (session.getAttribute("ERROR") != null) {
+                request.setAttribute("ERROR", (String) session.getAttribute("ERROR"));
+                session.removeAttribute("ERROR");
+            }
+            request.setAttribute("selectedPage", index);
+            
             request.getRequestDispatcher("views/user/team-details.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
@@ -208,11 +242,17 @@ public class UserTeamController extends HttpServlet {
             teamMember.setTeamId(Integer.parseInt(teamIdS));
 
             TeamDAO teamDAO = new TeamDAO();
-            boolean result = teamDAO.AddTeam_Member(teamMember);
-            if (result) {
-                request.setAttribute("MESSAGE", "Add team member sucessfully");
+            boolean isDuplicated = teamDAO.isDuplicateNumber(teamMember);
+            if (isDuplicated) {
+                session.setAttribute("ERROR", "Số áo này đã được sử dụng trong team");
             } else {
-                request.setAttribute("ERROR", "Add team member failed");
+                boolean result = teamDAO.AddTeam_Member(teamMember);
+                if (result) {
+                    request.setAttribute("MESSAGE", "Add team member sucessfully");
+                    teamDAO.updateTeamSize(Integer.parseInt(teamIdS));
+                } else {
+                    request.setAttribute("ERROR", "Add team member failed");
+                }
             }
             response.sendRedirect(url);
         } catch (Exception e) {
@@ -230,12 +270,15 @@ public class UserTeamController extends HttpServlet {
             String id = request.getParameter("id");
             int teamMemberId = Integer.parseInt(id);
 
+            System.out.println("TeamMember ID" + teamMemberId);
             TeamDAO teamDAO = new TeamDAO();
+            int teamId = teamDAO.getTeamIdByTeamMemberId(teamMemberId);
             boolean result = teamDAO.DeleteTeam_Member(teamMemberId);
             if (result) {
+                teamDAO.updateTeamSize(teamId);
                 request.setAttribute("MESSAGE", "Delete team member sucessfully");
             } else {
-                request.setAttribute("ERROR", "Delete team member failed");
+                session.setAttribute("ERROR", "Cầu thủ trên đã tham giải đấu bạn không thể xóa cầu thủ này!");
             }
             response.sendRedirect(url);
         } catch (Exception e) {

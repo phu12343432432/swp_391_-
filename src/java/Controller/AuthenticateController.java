@@ -5,10 +5,14 @@
 package Controller;
 
 import DAO.AuthenticationDAO;
+import DAO.BlogDAO;
 import DAO.TeamDAO;
+import DAO.UserWalletDAO;
+import Model.Blog;
 import Model.CreateModel.UserSignUp;
 import Model.Team;
 import Model.User;
+import Model.UserWallet;
 import Service.MailService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -16,6 +20,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.List;
 
 /**
  *
@@ -26,7 +31,7 @@ public class AuthenticateController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
+        HttpSession session = request.getSession();
         String action = request.getParameter("action") == null ? "" : request.getParameter("action");
         String url = "views/common/index.jsp";
         switch (action) {
@@ -38,6 +43,22 @@ public class AuthenticateController extends HttpServlet {
                 break;
             case "logout":
                 session.removeAttribute("USER");
+        }
+
+        BlogDAO blogDAO = new BlogDAO();
+        List<Blog> listBlog = blogDAO.getAllBlogs();
+        if (listBlog != null || listBlog.size() > 0) {
+            session.setAttribute("BLOG_LIST", listBlog);
+        }
+        if (session != null & session.getAttribute("USER") != null) {
+            User userLogedIn = (User) session.getAttribute("USER");
+            UserWalletDAO userWalletDAO = new UserWalletDAO();
+            UserWallet userWallet = userWalletDAO.getUserWalletById(userLogedIn.getId());
+            if (userWallet == null) {
+                session.setAttribute("WALLET", 0);
+            } else {
+                session.setAttribute("WALLET", userWallet.getAmmount());
+            }
         }
         request.getRequestDispatcher(url).forward(request, response);
 
@@ -79,10 +100,19 @@ public class AuthenticateController extends HttpServlet {
             String password = request.getParameter("password");
             HttpSession session = request.getSession(false);
             AuthenticationDAO authDAO = new AuthenticationDAO();
+
             User userLogedIn = authDAO.Login(userName, password);
             if (userLogedIn != null) {
                 if (userLogedIn.isIsActive() && userLogedIn.isIsCofirm()) {
                     // Login thanh cong
+                    UserWalletDAO userWalletDAO = new UserWalletDAO();
+                    UserWallet userWallet = userWalletDAO.getUserWalletById(userLogedIn.getId());
+                    if (userWallet == null) {
+                        session.setAttribute("WALLET", 0);
+                    } else {
+                        session.setAttribute("WALLET", userWallet.getAmmount());
+                    }
+
                     session.setAttribute("USER", userLogedIn);
                     session.setAttribute("EMAIL", userLogedIn.getEmail());
                     TeamDAO teamDAO = new TeamDAO();
@@ -93,7 +123,7 @@ public class AuthenticateController extends HttpServlet {
                         url = "views/common/index.jsp";
                         // Admin
                     } else if (userLogedIn.getRoleId() == 2) {
-                        url = "admin?action=list-request-create-league";
+                        url = "admin?action=dashboard";
                         response.sendRedirect(url);
                         return;
                     }

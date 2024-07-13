@@ -6,6 +6,8 @@ package Controller;
 
 import DAO.AuthenticationDAO;
 import DAO.ProfileDAO;
+import DAO.UserWalletDAO;
+import Model.TransitionHistory;
 import Model.User;
 import Service.MailService;
 import Service.OtpService;
@@ -17,6 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.IOException;
+import java.util.List;
 
 /**
  *
@@ -40,6 +43,9 @@ public class ProfileController extends HttpServlet {
                         // set thong tin cua user vao bien requestScope user
                         request.setAttribute("USER", user);
                         url = "views/user/profile.jsp";
+                        if (user.getRoleId() == 2) {
+                            url = "views/manage/profile.jsp";
+                        }
                         break;
                     }
                     case "changePassword": {
@@ -52,6 +58,12 @@ public class ProfileController extends HttpServlet {
                         break;
                     case "send-request":
                         SendRequets(request, response);
+                        break;
+                    case "send-order":
+                        SendOrder(request, response);
+                        break;
+                    case "wallet-history":
+                        ViewWalletHistory(request, response);
                         break;
 
                 }
@@ -192,17 +204,60 @@ public class ProfileController extends HttpServlet {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-    
     private void SendRequets(HttpServletRequest request, HttpServletResponse response) {
         try {
             HttpSession session = request.getSession();
             User user = (User) session.getAttribute("USER");
             ProfileDAO profileDAO = new ProfileDAO();
             boolean result = profileDAO.createLeaguePermissionRequest(user.getId());
-            if(result){
+            if (result) {
                 request.setAttribute("MESSAGE", "Gửi yêu cầu thành công. Bạn vui lòng đợi quản trị viên duyệt nhé");
             }
             request.getRequestDispatcher("league?action=listLeague").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void SendOrder(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            String url = "views/user/send-order.jsp";
+            HttpSession session = request.getSession(false);
+            User user = (User) session.getAttribute("USER");
+            request.setAttribute("USER", user);
+            request.getRequestDispatcher(url).forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void ViewWalletHistory(HttpServletRequest request, HttpServletResponse response) {
+        try {
+
+            String indexS = request.getParameter("index");
+            String searchS = request.getParameter("search");
+            if (indexS == null) {
+                indexS = "1";
+            }
+            int index = Integer.parseInt(indexS);
+            String url = "views/user/wallet-history.jsp";
+            HttpSession session = request.getSession(false);
+            User user = (User) session.getAttribute("USER");
+            request.setAttribute("USER", user);
+            UserWalletDAO userWalletDAO = new UserWalletDAO();
+            int walletId = userWalletDAO.getUserWalletByUserId(user.getId()).getWalletId();
+            int total = userWalletDAO.getWalletHistoryTotal(walletId);
+            List<TransitionHistory> listWalletHistory = userWalletDAO.getWalletHistory(walletId, index);
+            int lastPage = total / 8;
+            if (total % 8 != 0) {
+                lastPage++;
+            }
+            request.setAttribute("endP", lastPage);
+            request.setAttribute("selectedPage", index);
+            if (listWalletHistory.size() > 0) {
+                request.setAttribute("WALLET_HISTORY", listWalletHistory);
+            }
+            request.getRequestDispatcher(url).forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
         }

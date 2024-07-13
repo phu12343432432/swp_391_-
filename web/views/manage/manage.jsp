@@ -52,7 +52,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <c:forEach items="${USER}" var="user" varStatus="count">
+                                <c:forEach items="${LIST_USER}" var="user" varStatus="count">
                                     <tr>
                                         <td>${count.count}</td>
                                         <td>${user.userName}</td>

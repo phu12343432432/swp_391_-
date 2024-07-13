@@ -31,20 +31,31 @@
             <div class="position-sticky pt-3">
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">
+                        <a class="nav-link active" aria-current="page" href="${pageContext.request.contextPath}/admin?action=dashboard">
                             Dashboard
                         </a>
                     </li>
-                    
-                      <li class="nav-item">
-                        <a class="nav-link" href="admin/GetAllUser">
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/admin/GetAllUser">
                             User Management
                         </a>
                     </li>
-                    
-                       <li class="nav-item">
-                           <a class="nav-link" href="${pageContext.request.contextPath}/admin?action=list-request-create-league">
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/admin?action=list-request-create-league">
                             Create league permission
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/admin/ManageLeagueController">
+                            League Manage
+                        </a>
+                    </li>
+                     <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/admin/UserWalletManageController">
+                            Wallet Management
                         </a>
                     </li>
                 </ul>

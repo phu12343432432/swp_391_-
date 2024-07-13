@@ -3,7 +3,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <head>
     <meta charset="utf-8">
-    <title>Sân Bóng FBK74</title>
+    <title>Sân Bóng FLeague</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
@@ -40,7 +40,7 @@
                     <div class="col-lg-4 col-md-6 footer-about">
                         <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 bg-primary p-4">
                             <a href="index.html" class="navbar-brand">
-                                <h1 class="m-0 text-white"><i class="fa fa-user-tie me-2"></i>FBK74</h1>
+                                <h1 class="m-0 text-white"><i class="fa fa-user-tie me-2"></i>FLeague</h1>
                             </a>
                             <p class="mt-3 mb-4">Địa chỉ chuyên nghiệp dành cho mọi lứa tuổi, hãy cùng nhau trải nghiệm sân chơi đẳng cấp của chúng tôi ngay nhé.</p>
                             <form action="">
@@ -63,7 +63,7 @@
                                 </div>
                                 <div class="d-flex mb-2">
                                     <i class="bi bi-envelope-open text-primary me-2"></i>
-                                    <p class="mb-0">fbk74@gmail.com</p>
+                                    <p class="mb-0">FLeague@gmail.com</p>
                                 </div>
                                 <div class="d-flex mb-2">
                                     <i class="bi bi-telephone text-primary me-2"></i>

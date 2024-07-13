@@ -141,6 +141,17 @@
                     <input type="hidden" name="action" value="user-league"/>
                     <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search" value="${search}">
                     <button class="btn btn-outline-success" type="submit">Search</button>
+                    <select name="status" class="form-select" aria-label="Default select example">
+                        <option  value="" selected>Tất cả</option>
+                        <option   ${status == 0 ? 'selected' : ''} value="0">Đang gửi yêu cầu</option>
+                        <option   ${status == 2 ? 'selected' : ''} value="2">Duyệt thành công</option>
+                        <option   ${status == 1 ? 'selected' : ''}  value="1">Bị từ chối</option>
+                        <option   ${status == 3 ? 'selected' : ''}  value="3">Đã hủy</option>
+                        <option   ${status == 4 ? 'selected' : ''}  value="4">Đang diễn ra</option>   
+                        <option   ${status == 5 ? 'selected' : ''}  value="5">Đã kết thúc</option>
+
+                    </select>
+                    <button style="margin-left: 15px" type="submit" class="btn btn-success">Filter</button>
                 </form>
                 <c:if test="${USER_LEAGUE.size() == 0}">
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -148,7 +159,7 @@
                             <div class="row">
                                 <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
                                     <div class="blog-details">
-                                        <h2>"Bạn chưa có giải đấu nào"</h2>
+                                        <h2>"Không có giải đấu"</h2>
                                     </div>
                                     <a class="btn btn-sm btn-warning" href="league?action=create" class="btn btn-sm" style="width: 30%;padding: 5px 0; margin-left: 15px">Tạo giải đấu</a>
                                 </div>
@@ -174,10 +185,43 @@
                                             ${league.description}
                                         </p>
                                         <p>
-                                            Thời gian bắt đầu: ${league.startDate}
+                                            <b>Thời gian bắt đầu: </b>${league.startDate}
                                         </p>
                                         <p>
-                                            Thời gian kết thúc: ${league.endDate}
+                                            <b> Thời gian kết thúc: </b> ${league.endDate}
+                                        </p>
+                                        <p>
+                                            <c:if test="${league.status == 0}">
+                                            <p style="color: blue">
+                                                Status:  <b>Chờ được duyệt</b>
+                                            </p>
+                                            <a class="btn btn-primary" href="league?action=cancle-league&leagueId=${league.id}">Hủy yêu cầu</a>
+                                        </c:if>
+                                        <c:if test="${league.status == 1}">
+                                            <p style="color: red">
+                                                Status:  <b>Bị từ chối</b>
+                                            </p>
+                                        </c:if>
+                                        <c:if test="${league.status == 2}">
+                                            <p style="color: green">
+                                                Status:  <b>Đã chấp nhận</b>
+                                            </p>
+                                        </c:if>
+                                        <c:if test="${league.status == 3}">
+                                            <p style="color: red">
+                                                Status:  <b>Đã hủy yêu cầu</b>
+                                            </p>
+                                        </c:if>
+                                        <c:if test="${league.status == 4}">
+                                            <p style="color: yellowgreen">
+                                                Status:  <b>Đang diễn ra</b>
+                                            </p>
+                                        </c:if>
+                                        <c:if test="${league.status == 5}">
+                                            <p style="color: #777">
+                                                Status:  <b>Đã kết thúc</b>
+                                            </p>
+                                        </c:if>
                                         </p>
                                     </div>
                                     <a class="btn btn-sm btn-warning" href="league?action=detail&leagueId=${league.id}" class="btn btn-sm" style="width: 30%;padding: 5px 0; margin-left: 15px">Xem chi tiết</a>
@@ -196,11 +240,11 @@
                                 </li>
                             </c:when>
                             <c:otherwise>
-                                <li class="page-item"><a class="page-link" href="league?action=user-league&search=${search}&index=${selectedPage-1}">«</a></li>
+                                <li class="page-item"><a class="page-link" href="league?action=user-league&search=${search}&status=${status}&index=${selectedPage-1}">«</a></li>
                                 </c:otherwise>
                             </c:choose>
                             <c:forEach var="i" begin="1" end="${endP}">
-                            <li class="page-item ${i == selectedPage ? "active" : "" }"> <a class="page-link" href="league?action=user-league&search=${search}&index=${i}">${i}</a> <li>
+                            <li class="page-item ${i == selectedPage ? "active" : "" }"> <a class="page-link" href="league?action=user-league&search=${search}&status=${status}&index=${i}">${i}</a> <li>
                             </c:forEach>
                             <c:choose>
                                 <c:when test ="${selectedPage >= endP}">
@@ -209,7 +253,7 @@
                                 </li>
                             </c:when>
                             <c:otherwise>
-                                <li class="page-item"><a class="page-link" href="league?action=user-league&search=${search}&index=${selectedPage+1}">»</a></li>
+                                <li class="page-item"><a class="page-link" href="league?action=user-league&search=${search}&status=${status}&index=${selectedPage+1}">»</a></li>
                                 </c:otherwise>
                             </c:choose>
                     </ul>

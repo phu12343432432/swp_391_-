@@ -38,6 +38,7 @@
         <!-- Template Stylesheet -->
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     </head>
+
     <style>
 
         .input-bordered {
@@ -54,6 +55,13 @@
         .radio-button:checked + .radio-label {
             background-color: #f97316;
             border-color: #f97316;
+        }
+
+        .blog-content {
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            display: -webkit-box;
         }
 
 
@@ -133,162 +141,150 @@
                 </div>
                 <div>
                     <div style="margin: 30px 0px">
-                        <a href="league?action=league-rank&leagueId=${USER_LEAGUE.id}" class="bg-green-500 text-white px-4 py-2 rounded shadow peer-checked:bg-green-500 transition-colors" 
-                           style="background-image: linear-gradient(to right top,#45af2a,#3ba023,#30901c,#268215,#1b730d,#1b730d,#1b730d,#1b730d,#268215,#30901c,#3ba023,#45af2a);">Xem bảng xếp hạng</a>
-                           
-                           <a href="ViewBlogLeagueListController?leagueId=${USER_LEAGUE.id}" class="btn btn-warning">Danh sách blog của giải</a>
+                        <a href="${pageContext.request.contextPath}/CreateBlogLeagueController?leagueId=${USER_LEAGUE.id}" class="bg-green-500 text-white px-4 py-2 rounded shadow peer-checked:bg-green-500 transition-colors" 
+                           style="background-image: linear-gradient(to right top,#45af2a,#3ba023,#30901c,#268215,#1b730d,#1b730d,#1b730d,#1b730d,#268215,#30901c,#3ba023,#45af2a);">Thêm blog mới</a>
                     </div>
 
-                    <label for="surname" class="text-gray-700">Các đội đăng kí:</label>
-                    <c:if test="${LEAGUE_TEAM.size() == 0}">
-                        <h2>"Chưa có đội bóng nào đăng kí giải đấu này"</h2>
-                    </c:if>
-                    <c:forEach items="${LEAGUE_TEAM}" var="team">
-                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <div class="row">
-                                <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                                    <div class="image">
-                                        <img src="data:image/png;base64,${team.image}" alt="Profile picture"  style="width: 100%; height: 100px; cursor: pointer; margin: 10px auto;border: 2px solid #1b730d">
-                                    </div>
-                                </div>
-                                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                    <div class="blog-details">
-                                        <p class="card-text" style="color: #198754; font-weight: bold;">${league.name}</p>      
-                                        <p class="card-text">Tên đội: <b>${team.teamName}</b></p>
-                                        <p class="card-text">Đăng kí vào: ${team.registerAt}</p>
-                                        <small class="text-muted">${league.type}</small>
+                </div>
+                <div>
+                    Danh sách các bài blog
+                </div>
+                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">
+                                #
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Image
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Title
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Content
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach items="${LIST_BLOG}" var="blog" varStatus="status">
+                            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                <th scope="row" class="px-6 py-4 ">
+                                    ${status.count}
+                                </th>
+                                <th scope="row" class="px-6 py-4 ">
+                                    <img src="data:image/png;base64,${blog.image}" alt="Blog Image" id="profile-picture" class=" border-3 border-green-500 p-1 mb-3" style="width: 100px; cursor: pointer; margin: 10px auto;border: 2px solid #1b730d">
+                                </th>
+                                <td class="px-6 py-4 px-6 py-4 font-medium text-gray-900 whitespace-wrap">
+                                    ${blog.title}
+                                </td>
+                                <td class="px-6 py-4 blog-content" style="
+                                    overflow: hidden;
+                                    height: 80px;
+                                    ">
+                                    ${blog.description}
+                                </td>
+                                <td class="px-6 py-4">
+                                    <a href="blog-league?action=view&blogId=${blog.id}&leagueId=${blog.leagueId}" class="btn btn-primary">Xem</a>
+                                    <a href="DeleteBlogController?blogId=${blog.id}&leagueId=${blog.leagueId}" class="btn btn-danger">Xóa</a>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
 
-                                    </div>
-                                </div>
-                                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4" style="">
-                                    <div class="d-flex justify-content-between align-items-center" style="margin-top: 15px">
-                                        <div class="btn-group">
-                                            <a class="btn btn-sm btn-secondary" href="team?action=view-team&id=${team.teamId}" class="btn btn-sm" style="width: 100%">Xem thông tin đội</a>
-                                        </div>
-                                    </div>
 
-                                    <div class="d-flex justify-content-between align-items-center" style="margin-top: 15px">
-                                        <c:if test="${team.status == 0 && USER_LEAGUE.status == 2}">
-                                            <div class="btn-group">
-                                                <a class="btn btn-sm btn-success" href="league?action=accept-team&teamId=${team.teamId}&leagueId=${leagueId}" class="btn btn-sm" style="width: 100%">Chấp nhận</a>
-                                            </div>  
-                                        </c:if>
-                                             <c:if test="${team.status == 1}">
-                                            <div class="btn-group">
-                                                <a disalb class="btn btn-sm btn-primary" href="#" class="btn btn-sm" style="width: 100%">Đã xác nhận</a>
-                                            </div>  
-                                        </c:if>
-                                    </div>
-                                </div>
 
-                            </div>
-                        </div>
-                    </c:forEach>
-                    <div style="display: flex; justify-content: center; margin-top: 15px">
-                        <c:if test="${USER_LEAGUE.status == 2}">
-                            <a href="league?action=start&leagueId=${USER_LEAGUE.id}" class="bg-green-500 text-white px-4 py-2 rounded shadow peer-checked:bg-green-500 transition-colors" 
-                               style="background-image: linear-gradient(to right top,#45af2a,#3ba023,#30901c,#268215,#1b730d,#1b730d,#1b730d,#1b730d,#268215,#30901c,#3ba023,#45af2a);">Bắt đầu giải đấu</a>
-                        </c:if> 
-                        <c:if test="${USER_LEAGUE.status == 4}">
-                            <a href="league?action=league-match&leagueId=${USER_LEAGUE.id}"  class="btn btn-primary" >Đang diễn ra - xem chi tiết</a>
-                        </c:if> 
-                        <c:if test="${USER_LEAGUE.status == 5}">
-                            <a  href="league?action=league-match&leagueId=${USER_LEAGUE.id}"  class="btn btn-danger">Đã kết thúc - xem chi tiết</a>
-                        </c:if> 
-                    </div>
-                </div>              
+            </form>
         </div>
 
 
 
-
-    </form>
-</div>
-
+        <jsp:include page="footer.jsp"/>
+        <!-- Footer End -->
 
 
-<jsp:include page="footer.jsp"/>
-<!-- Footer End -->
+        <!-- Back to Top -->
+        <a href="timsan_nhat.jsp" class="btn btn-lg btn-primary btn-lg-square rounded back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+    </body>
 
 
-<!-- Back to Top -->
-<a href="timsan_nhat.jsp" class="btn btn-lg btn-primary btn-lg-square rounded back-to-top"><i class="bi bi-arrow-up"></i></a>
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="${pageContext.request.contextPath}/lib/wow/wow.min.js"></script>
+    <script src="${pageContext.request.contextPath}/lib/easing/easing.min.js"></script>
+    <script src="${pageContext.request.contextPath}/lib/waypoints/waypoints.min.js"></script>
+    <script src="${pageContext.request.contextPath}/lib/counterup/counterup.min.js"></script>
+    <script src="${pageContext.request.contextPath}/lib/owlcarousel/owl.carousel.min.js"></script>
 
-</body>
+    <!-- Template Javascript -->
+    <script src="${pageContext.request.contextPath}/js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        var error = document.getElementById('error');
+        var message = document.getElementById('success');
 
+        if (error.value) {
+            Swal.fire({
+                title: error.value,
+                icon: "info",
+                showCancelButton: true,
+                confirmButtonText: "Xác nhận",
+            })
+        }
 
-<!-- JavaScript Libraries -->
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="${pageContext.request.contextPath}/lib/wow/wow.min.js"></script>
-<script src="${pageContext.request.contextPath}/lib/easing/easing.min.js"></script>
-<script src="${pageContext.request.contextPath}/lib/waypoints/waypoints.min.js"></script>
-<script src="${pageContext.request.contextPath}/lib/counterup/counterup.min.js"></script>
-<script src="${pageContext.request.contextPath}/lib/owlcarousel/owl.carousel.min.js"></script>
+        if (message.value) {
+            Swal.fire({
+                title: message.value,
+                icon: "success",
+                showCancelButton: true,
+                confirmButtonText: "Xác nhận",
+            })
+        }
+        const profilePicture = document.getElementById('profile-picture');
+        const imageInput = document.getElementById('image-input');
 
-<!-- Template Javascript -->
-<script src="${pageContext.request.contextPath}/js/main.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    var error = document.getElementById('error');
-    var message = document.getElementById('success');
-
-    if (error.value) {
-        Swal.fire({
-            title: error.value,
-            icon: "info",
-            showCancelButton: true,
-            confirmButtonText: "Xác nhận",
-        })
-    }
-
-    if (message.value) {
-        Swal.fire({
-            title: message.value,
-            icon: "success",
-            showCancelButton: true,
-            confirmButtonText: "Xác nhận",
-        })
-    }
-    const profilePicture = document.getElementById('profile-picture');
-    const imageInput = document.getElementById('image-input');
-
-    profilePicture.addEventListener('click', () => {
-        imageInput.disabled = false;
-        imageInput.click();
-    });
-    const updateAvatar = false;
-    imageInput.addEventListener('change', () => {
-        imageInput.disabled = false;
-        const file = imageInput.files[0];
-        const formData = new FormData();
-        formData.append('image', file);
-
-        const reader = new FileReader();
-        reader.onload = () => {
-            profilePicture.src = reader.result;
-            profilePicture.width = '100%';
-        };
-        reader.readAsDataURL(file);
-        updateAvatar = true;
-    });
-    if (!updateAvatar && imageInput.value != null) {
-        imageInput.disabled = true;
-    }
-    document.addEventListener("DOMContentLoaded", function () {
-        const phoneInput = document.getElementById("Phone");
-
-        phoneInput.addEventListener("input", function () {
-            const regex = /^\d{0,10}$/;
-            if (!regex.test(phoneInput.value)) {
-                // If validation fails, show a custom error message
-                phoneInput.setCustomValidity("Số điện thoại phải gồm 10 chữ số và không chứa ký tự đặc biệt.");
-            } else {
-                // Clear custom error message
-                phoneInput.setCustomValidity("");
-            }
+        profilePicture.addEventListener('click', () => {
+            imageInput.disabled = false;
+            imageInput.click();
         });
-    });
+        const updateAvatar = false;
+        imageInput.addEventListener('change', () => {
+            imageInput.disabled = false;
+            const file = imageInput.files[0];
+            const formData = new FormData();
+            formData.append('image', file);
 
-</script>
+            const reader = new FileReader();
+            reader.onload = () => {
+                profilePicture.src = reader.result;
+                profilePicture.width = '100%';
+            };
+            reader.readAsDataURL(file);
+            updateAvatar = true;
+        });
+        if (!updateAvatar && imageInput.value != null) {
+            imageInput.disabled = true;
+        }
+        document.addEventListener("DOMContentLoaded", function () {
+            const phoneInput = document.getElementById("Phone");
+
+            phoneInput.addEventListener("input", function () {
+                const regex = /^\d{0,10}$/;
+                if (!regex.test(phoneInput.value)) {
+                    // If validation fails, show a custom error message
+                    phoneInput.setCustomValidity("Số điện thoại phải gồm 10 chữ số và không chứa ký tự đặc biệt.");
+                } else {
+                    // Clear custom error message
+                    phoneInput.setCustomValidity("");
+                }
+            });
+        });
+
+    </script>
 </html>

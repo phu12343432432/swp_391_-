@@ -87,7 +87,7 @@
                             </button>
                         </a>
                         <a href="profile?action=changePassword">
-                            <button class="bg-green-500 text-white text-lg px-6 py-2 rounded-full shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-700 focus:ring-opacity-50" style="background-image: linear-gradient(to right top,#45af2a,#3ba023,#30901c,#268215,#1b730d,#1b730d,#1b730d,#1b730d,#268215,#30901c,#3ba023,#45af2a);">
+                            <button class="bg-green-500 text-white text-lg px-6 py-2 rounded-full shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-700 focus:ring-opacity-50" style="background-image: linear-gradient(to right top,#45af2a,#3ba023,#30901c,#268215,#1b730d,#1b730d,#1b730d,#1b730d,#268215,#30901c,#3ba023,#45af2a); margin:10px auto">
                                 Nhấn để đổi mật khẩu
                             </button>
                         </a>
@@ -109,29 +109,19 @@
                         <div style="color: green; margin-top: 10px">${MESSAGE}</div>
                     </div>
                     <div class="mt-8 md:mt-0 md:ml-10 w-full max-w-lg">
-                        <form class="space-y-4" action="profile" method="POST" enctype="multipart/form-data">
-                            <input type="hidden" name="action" value="updateProfile" />         
-                            <input type="file" id="image-input" name="image" style="display: none;" value="${USER.image}">
-                            <input type="hidden" name="accountId" value="${user.IDAccount}" />
+                        <form action="SendOrderWalletController">
+                            <div>
+                                <label for="inputOne" class="text-gray-700">Số tiền bạn muốn nạp (Vnđ)</label>
+                                <input placeholder="1000 vnđ" type="number" name="ammount"  id="inputOne"  class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
 
-                            <div>
-                                <label for="surname" class="text-gray-700">Họ</label>
-                                <input name="firstName" value="${USER.firstName}" type="text" id="surname" placeholder="Họ" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" pattern="^[a-zA-Z\s]+$" title="Tên chỉ được chứa chữ cái và khoảng trắng, không chứa số hoặc ký tự đặc biệt.">
+                                <label for="inputTwo" class>Tiền trong ví (điểm) (1.000vnđ sẽ tương ứng với 1 điểm):</label>
+                                <input  type="number" id="inputTwo" placeholder="1 điểm" readonly class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required"/>
+                                <label for="surname" class="text-gray-700">Vui lòng khi chuyển tiền hãy ghi nội dụng phần giao dịch gồm</label>    
+                                <div for="surname" class="text-gray-700">- Email - Sđt - Yêu cầu nạp tiền vào tài khoản</div>  
+                                <button type="submit" class="w-full bg-green-500 text-white px-4 py-2 rounded shadow peer-checked:bg-green-500 transition-colors" style="background-image: linear-gradient(to right top,#45af2a,#3ba023,#30901c,#268215,#1b730d,#1b730d,#1b730d,#1b730d,#268215,#30901c,#3ba023,#45af2a); margin-top: 50px">Gửi yêu cầu</button>
                             </div>
-                            <div>
-                                <label for="surname" class="text-gray-700">Tên</label>
-                                <input name="lastName" value="${USER.lastName}" type="text" id="surname" placeholder="Họ" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" pattern="^[a-zA-Z\s]+$" title="Tên chỉ được chứa chữ cái và khoảng trắng, không chứa số hoặc ký tự đặc biệt.">
-                            </div>
-                            <div>
-                                <label for="Phone" class="text-gray-700">Số Điện Thoại</label>
-                                <input name="phone" value="${USER.phone}" type="text" id="Phone" placeholder="Số điện thoại" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" pattern="^\d{1,10}$" title="Số điện thoại phải gồm 10 chữ số và không chứa ký tự đặc biệt." required>
-                            </div>
-                            <div>
-                                <label for="Email" class="text-gray-700">Email</label>
-                                <input name="email" value="${USER.email}" type="email" id="Email" placeholder="Email" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Email phải chứa ký tự '@' và không được chứa các ký tự đặc biệt không hợp lệ." required>
-                            </div>
-                            <button type="submit" class="w-full bg-green-500 text-white px-4 py-2 rounded shadow peer-checked:bg-green-500 transition-colors" style="background-image: linear-gradient(to right top,#45af2a,#3ba023,#30901c,#268215,#1b730d,#1b730d,#1b730d,#1b730d,#268215,#30901c,#3ba023,#45af2a);">Lưu</button>
                         </form>
+
                     </div>
 
                 </div>
@@ -153,6 +143,12 @@
     <!-- Template Javascript -->
     <script src="${pageContext.request.contextPath}/js/main.js"></script>
     <script>
+
+        document.getElementById('inputOne').addEventListener('input', function () {
+            var inputOneValue = this.value;
+            var resultValue = inputOneValue * 0.001; 
+            document.getElementById('inputTwo').value = resultValue.toFixed(2); // Rounds the number to 2 decimal places
+        });
         const profilePicture = document.getElementById('profile-picture');
         const imageInput = document.getElementById('image-input');
 

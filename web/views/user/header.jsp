@@ -15,7 +15,7 @@
 <div class="container-fluid position-relative p-0">
     <nav class="navbar navbar-expand-lg px-5 py-3 py-lg-0 bg-dark navbar-dark position-sticky">
         <a href="${pageContext.request.contextPath}/auth" class="navbar-brand">
-            <h1 class="m-0">FBK74</h1>
+            <h1 class="m-0">FLeague</h1>
         </a>
 
         <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -52,14 +52,16 @@
                     </c:if>  
                     <c:if test="${sessionScope.account!=null }">
                         <div class="dropdown">
-                            <button type="button" id="dropdownMenuButton1" class="btn dropdown-toggle " data-bs-toggle="dropdown" aria-expanded="false"style="color: #06A3DA;
+                            <button type="button" id="dropdownMenuButton1" class="btn dropdown-toggle " data-bs-toggle="dropdown" aria-expanded="false" style="color: #06A3DA;
                                     font-size: 20px;">
                                 ${sessionScope.account.name}
                             </button>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                                 <a class="dropdown-item " href="#">Profile</a>
-                                <a class="dropdown-item " href="#">Update</a>
-                                <a class="dropdown-item " href="logout">Logout</a>
+                                <a class="dropdown-item " href="#">Ví tiền: <fmt:formatNumber value="${WALLET}" pattern="#"/>
+                                    <a class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#addWallet" aria-hidden="true" >+</a> 
+                                </a>
+                                <a class="dropdown-item " href="${pageContext.request.contextPath}/auth?action=logout">Logout</a>
                             </div>
                         </div>
                     </c:if> 

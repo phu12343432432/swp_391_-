@@ -109,7 +109,7 @@
                 </br>
                 <div>
                     <label for="desc" class="text-gray-700">Mô tả về giải đấu *:</label>
-                    <textarea name="desc" type="email" id="Email" placeholder="Mô tả về team của bạn" 
+                    <textarea name="desc" type="email" id="Email" placeholder="Mô tả về giải đấu của bạn" 
                               class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                               pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Email phải chứa ký tự '@' và không được chứa các ký tự đặc biệt không hợp lệ." required></textarea>
                 </div>
@@ -130,8 +130,15 @@
                         <option value="Thi đấu theo bảng">Thi đấu theo bảng</option>
                     </select>
                 </div>
+
+                <hr>
+
                 <div>
-                    Hành động này cần được sự kiểm duyệt của admin nếu bạn chưa được phê duyệt quyền tạo giải đấu <a href="profile?action=send-request" class="btn btn-warning">Gửi yêu cầu</a>
+                    Hệ thống sẽ thu phí là <b>10 điểm</b> trên 1 lần đăng giải đấu, số tiền sẽ được trừ sau khi quản trị viên phê duyệt yêu cầu của bạn.
+                </div>
+                <div>
+                    <input type="checkbox" name="checkbox" id="checkbox_id" value="value" required>
+                    <label for="checkbox_id">Bạn đã chắc muốn tạo giải đấu này ?</label>
                 </div>
                 <div style="display: flex; justify-content: center; margin-top: 15px">
                     <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded shadow peer-checked:bg-green-500 transition-colors" 

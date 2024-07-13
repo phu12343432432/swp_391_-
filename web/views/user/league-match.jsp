@@ -100,15 +100,21 @@
                                 <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4" style="">
                                     <div class="d-flex justify-content-center align-items-center" style="margin-top: 15px">
                                         <div class="btn-group">
-                                            <c:if test="${team.status == 0}">
+                                            <c:if test="${team.status == 2}">
                                                 <a href="league?action=match-detail&matchId=${team.id}" class="btn btn-sm btn-secondary" class="btn btn-sm" style="width: 100%">
                                                     Sắp diễn ra
                                                 </a>
                                             </c:if>
-                                            <c:if test="${team.status == 1}">
+                                            <c:if test="${team.status == 4}">
 
-                                                <a href="match-detail?matchId=${team.id}" class="btn btn-sm btn-danger" class="btn btn-sm" style="width: 100%">
+                                                <a href="league?action=match-detail?matchId=${team.id}" class="btn btn-sm btn-danger" class="btn btn-sm" style="width: 100%">
                                                     Đã diễn ra 
+                                                </a>
+                                            </c:if>
+                                            <c:if test="${team.status == 5}">
+
+                                                <a href="league?action=match-detail?matchId=${team.id}" class="btn btn-sm btn-danger" class="btn btn-sm" style="width: 100%">
+                                                    Đã kết thúc - xem kết quả
                                                 </a>
                                             </c:if>
 
@@ -116,8 +122,17 @@
                                     </div>
                                     <div class="d-flex justify-content-center align-items-center" style="margin-top: 15px">
                                         <div class="btn-group">
-                                           ${team.scoreHome} - ${team.scoreAway}
+                                            <c:if test="${team.status == 4}">
+                                                <b>${team.scoreHome} - ${team.scoreAway}</b>
+                                            </c:if>
+                                            <c:if test="${team.status == 2}">
+                                                <b> __ - __</b>
+                                            </c:if>
                                         </div>
+
+                                    </div>
+                                    <div class="d-flex justify-content-center align-items-center" >
+                                        ${team.startAt.substring(11, 16)} - ${team.endAt.substring(11, 16)}
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-sm-6 col-md-6 col-lg-2">
@@ -134,7 +149,7 @@
                                 </div>
                             </div>
                         </div>
-                                    </hr>
+                        </hr>
                     </c:forEach>
                     <div style="display: flex; justify-content: center; margin-top: 15px">
                         <a href="league?action=finish-league&leagueId=${USER_LEAGUE.id}" class="btn btn-danger" >Trở lại</a>

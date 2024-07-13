@@ -91,7 +91,9 @@
                                     Trở về trang chủ 
                                 </button>
                             </a>    
-                            <div style="color: green; margin-top: 10px">${MESSAGE}</div>
+                            <div style="color: green; margin-top: 10px">${MESSAGE}</div>        
+                            <div style="color: red; margin-top: 10px">${ERROR}</div>
+                            
                         </div>
                         <div class="mt-8 md:mt-0 md:ml-10 w-full max-w-lg">
                             <!--<form class="space-y-4" action="team" method="POST" >-->                       
@@ -109,11 +111,11 @@
                                 </div>
                                 <div>
                                     <label for="Phone" class="text-gray-700">Số lượng thành viên</label>
-                                    <input name="teamsize" value="${TEAM.teamSize}" type="int" id="Phone" placeholder="Số lượng thành viên trong team" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"  required>
+                                    <input name="teamsize" value="${TEAM.teamSize}" type="int" id="Phone" placeholder="Số lượng sẽ tự cập nhật với số lượng thành viên" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"  required readonly>
                                 </div>
                                 <div>
                                     <label for="desc" class="text-gray-700">Mô tả về đội của bạn:</label>
-                                    <textarea name="desc" type="email" id="Email" placeholder="Mô tả về team của bạn" 
+                                    <textarea name="desc" id="desc" type="email" id="Email" placeholder="Mô tả về team của bạn" 
                                               class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                               pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Email phải chứa ký tự '@' và không được chứa các ký tự đặc biệt không hợp lệ." required>${TEAM.description}</textarea>
                                 </div>
@@ -125,12 +127,12 @@
                     <div class="container">
                         <form action="team" class="d-flex" style="margin-bottom: 15px;">
                             <!--<input type="hidden" name="" />-->
-                            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search" value="${search}">
+                            <input class="form-control me-2" type="search" placeholder="Tìm theo tên cầu thủ" aria-label="Search" name="search" value="${search}">
                             <button class="btn btn-outline-success" type="submit">Search</button>
                         </form>
                         <div class="row">
                             <c:if test="${TEAM_MEMBERS ==  null}">
-                                <h3>You dont have any member in your team</h3>
+                                <h3>Bạn chưa có thành viên nào trong team</h3>
                             </c:if>
                             <form action="team" method="POST" style="display: flex; justify-content: space-between; align-items: center">
                                 <input type="hidden" name="action" value="add-team-member"/>      

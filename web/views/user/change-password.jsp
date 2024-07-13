@@ -64,7 +64,7 @@
                             <button type="submit" class="inline-block align-baseline font-bold text-sm text-gray-500 hover:text-gray-800 border border-gray-300 py-2 px-4 rounded hover:border-gray-500 focus:outline-none focus:border-gray-500" type="button" >
                                 Lưu
                             </button>
-                            <a href="profile1">
+                            <a href="profile?action=view">
                                 <button class="inline-block align-baseline font-bold text-sm text-gray-500 hover:text-gray-800 border border-gray-300 py-2 px-4 rounded hover:border-gray-500 focus:outline-none focus:border-gray-500" type="button" >
                                     Hủy
                                 </button>

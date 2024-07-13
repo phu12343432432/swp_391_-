@@ -83,8 +83,8 @@
                     <input type="hidden" id="error" name="ERROR" value="${ERROR}"/>              
                     <input type="hidden" id="success" name="MESSAGE" value="${MESSAGE}"/>
 
-           
-                    
+
+
                     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
                         <c:forEach items="${LEAGUE}" var="league">
                             <div class="col">
@@ -94,7 +94,7 @@
                                         <p class="card-text" style="color: #198754; font-weight: bold;">${league.name}</p>      
                                         <p class="card-text">Bắt đầu: ${league.startDate}</p>
                                         <p class="card-text">Kết thúc: ${league.endDate}</p>
-                                        
+
                                         <p class="card-text">Hạn đăng kí giải: ${league.dateRegister}</p>
                                         <small class="text-muted">${league.type}</small>
                                         <div class="d-flex justify-content-between align-items-center" style="margin-top: 15px">
@@ -113,10 +113,15 @@
                                                     </c:if>
                                                     <c:if test="${league.status == 2}">
                                                         <div style="display: flex">
-                                                            <a class="btn  btn-primary" style="width: 200px">Đang diễn ra</a>
+                                                            <a class="btn  btn-primary" style="width: 200px">Sắp diễn ra</a>
                                                         </div>
                                                     </c:if>
-                                                    <c:if test="${league.status == 3}">
+                                                    <c:if test="${league.status == 4}">
+                                                        <div style="display: flex">
+                                                            <a class="btn  btn-warning" style="width: 200px">Đang diễn ra</a>
+                                                        </div>
+                                                    </c:if>
+                                                    <c:if test="${league.status == 5}">
                                                         <div style="display: flex">
                                                             <a class="btn btn-danger" style="width: 200px">Đã kết thúc</a>
                                                         </div>

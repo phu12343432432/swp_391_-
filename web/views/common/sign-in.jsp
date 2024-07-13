@@ -352,6 +352,7 @@
 </div>
 </div>
 
+
 <script>
     const signUpButton = document.getElementById('signUp');
     const signInButton = document.getElementById('signIn');
@@ -383,21 +384,24 @@
 
         submitButton.disabled = !isValid;
     });
-    
-    
-     passwordConfirm.addEventListener('keyup', (event) => {
+
+
+    passwordConfirm.addEventListener('keyup', (event) => {
         const password = event.target.value;
         let isValid = true;
         passwordMessage.textContent = '';
 
-        if (!(password == passwordInput.value)) {
+        if (!passwordRegex.test(password)) {
+            isValid = false;
+            passwordMessage.textContent = 'Mật khẩu phải chứa ít nhất 8 kí tự và ít nhất một kí tự hoa,1 kí tự thường, 1 số, và 1 kí tự đặc biệt.';
+        } else if (!(password == passwordInput.value)) {
             isValid = false;
             passwordMessage.textContent = 'Mật khẩu không khớp với mật khẩu bạn đăng kí';
         }
 
         submitButton.disabled = !isValid;
     });
-    
+
 
 //
     document.addEventListener('DOMContentLoaded', function () {
@@ -435,7 +439,6 @@
         phoneInput.addEventListener('keyup', validatePhone);
     });
 
-//moi
 
     document.addEventListener('DOMContentLoaded', function () {
         const form = document.querySelector('form[action="register"]');
@@ -473,7 +476,7 @@
 
             // Kiểm tra mật khẩu phức tạp
             const passwordInput = form.querySelector('input[name="password"]');
-            const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!"#$%&'*+,-\./:;<=>?@\[\]^_`{|}~])[^\s]{8,}$/;
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!"#$%&'()*+,-./:;<=>?@[\\\]^_`{|}~]).{8,}$/;
             if (!passwordRegex.test(passwordInput.value)) {
                 isValid = false;
             }

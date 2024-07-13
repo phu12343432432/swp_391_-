@@ -1,10 +1,10 @@
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset = UTF-8" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Sân Bóng FBK74</title>
+        <title>Sân Bóng FLeague</title>
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <meta content="Free HTML Templates" name="keywords">
         <meta content="Free HTML Templates" name="description">
@@ -34,6 +34,14 @@
         <!-- Customized Bootstrap Stylesheet -->
         <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <style>
+                .blog-content {
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            display: -webkit-box;
+        }
+        </style>
     </head>
 
     <body>
@@ -51,7 +59,7 @@
                     <div class="d-inline-flex align-items-center" style="height: 45px;">
                         <small class="me-3 text-light"><i class="fa fa-map-marker-alt me-2"></i>78 Bình Kỳ, Ngũ Hành Sơn, Đà Nẵng</small>
                         <small class="me-3 text-light"><i class="fa fa-phone-alt me-2"></i>+012 345 6789</small>
-                        <small class="text-light"><i class="fa fa-envelope-open me-2"></i>fbk74@gmail.com</small>
+                        <small class="text-light"><i class="fa fa-envelope-open me-2"></i>FLeague@gmail.com</small>
                     </div>
                 </div>
                 <div class="col-lg-4 text-center text-lg-end">
@@ -71,7 +79,7 @@
         <div class="container-fluid position-relative p-0">
             <nav class="navbar navbar-expand-lg navbar-dark px-5 py-3 py-lg-0">
                 <a href="index.jsp" class="navbar-brand p-0">
-                    <h1 class="m-0"><i class="fa fa-user-tie me-2"></i>FBK74</h1>
+                    <h1 class="m-0"><i class="fa fa-user-tie me-2"></i>FLeague</h1>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                     <span class="fa fa-bars"></span>
@@ -111,14 +119,21 @@
                                 <a href="${pageContext.request.contextPath}/auth?action=login" class="bi-person custom-icon me-3">Login!</a>
                             </c:if>  
                             <c:if test="${sessionScope.USER != null }">
-                                <div class="dropdown">
+                                <div class="dropdown" style="width: 250px">
                                     <button type="button" id="dropdownMenuButton1" class="btn dropdown-toggle " data-bs-toggle="dropdown" aria-expanded="false"style="color: #06A3DA;
                                             font-size: 20px;">
                                         ${sessionScope.USER.firstName} ${sessionScope.USER.lastName}
                                     </button>
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton1" style="width: 150px">
                                         <a class="dropdown-item " href="profile?action=view">Profile</a>
-                                        <a class="dropdown-item " href="#">Update</a>
+                                        <a class="dropdown-item " href="profile?action=send-order">
+                                            <div style="display: flex">
+                                                <div>
+                                                    Ví tiền: <fmt:formatNumber value="${WALLET}" pattern="#"/>
+                                                </div>
+                                                <a class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#addWallet" aria-hidden="true" >+</a> 
+                                            </div>
+                                        </a>
                                         <a class="dropdown-item " href="auth?action=logout">Logout</a>
                                     </div>
                                 </div>
@@ -135,24 +150,13 @@
                         <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
                             <div class="p-3" style="max-width: 900px;">
                                 <h5 class="text-white text-uppercase mb-3 animated slideInDown">Chuyên Nghiệp & Chất Lượng</h5>
-                                <h1 class="display-1 text-white mb-md-4 animated zoomIn">Sân cỏ nhân tạo dành cho thi đấu bóng đá</h1>
+                                <h1 class="display-1 text-white mb-md-4 animated zoomIn">Cập nhật những giải đấu mới nhất</h1>
                                 <a href="league?action=listLeague" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Tham gia giải đấu</a>
                                 <a href="team" class="btn btn-outline-light py-md-3 px-md-5 animated slideInRight">Team của bạn</a>
                                 </br>
                                 </br>
                                 <a href="league?action=create" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Tạo giải đấu</a>
-                                <a href="contact" class="btn btn-outline-light py-md-3 px-md-5 animated slideInRight">Liên lạc</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="carousel-item">
-                        <img class="w-100" src="${pageContext.request.contextPath}/img/anh1.jpg" alt="Image">
-                        <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
-                            <div class="p-3" style="max-width: 900px;">
-                                <h5 class="text-white text-uppercase mb-3 animated slideInDown">Nhanh Chóng & Hiệu Quả</h5>
-                                <h1 class="display-1 text-white mb-md-4 animated zoomIn">Thỏa sức cháy hết mình với đam mê</h1>
-                                <a href="about.html" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Đặt Sân</a>
-                                <a href="" class="btn btn-outline-light py-md-3 px-md-5 animated slideInRight">Liên hệ</a>
+                                <a href="#lienlac" class="btn btn-outline-light py-md-3 px-md-5 animated slideInRight">Liên lạc</a>
                             </div>
                         </div>
                     </div>
@@ -244,7 +248,7 @@
                             <h1 class="mb-0">Sân bóng nhân tạo hàng đầu Đà Nẵng</h1>
                         </div>
                         <p class="mb-4">
-                            Chào mừng bạn đến với trung tâm quản lý sân bóng đá nhân tạo FBK74 Đà Nẵng! Với hơn 10 năm kinh nghiệm, chúng tôi tự hào giới thiệu đến bạn một không gian chất lượng và hiện đại, đáp ứng đầy đủ nhu cầu cho mọi đội bóng và đấu trường thể thao.</p>
+                            Chào mừng bạn đến với trung tâm quản lý sân bóng đá nhân tạo FLeague Đà Nẵng! Với hơn 10 năm kinh nghiệm, chúng tôi tự hào giới thiệu đến bạn một không gian chất lượng và hiện đại, đáp ứng đầy đủ nhu cầu cho mọi đội bóng và đấu trường thể thao.</p>
                         <div class="row g-0 mb-3">
                             <div class="col-sm-6 wow zoomIn" data-wow-delay="0.2s">
                                 <h5 class="mb-3"><i class="fa fa-check text-primary me-3"></i>CHẤT LƯỢNG KIỂM CHỨNG</h5>
@@ -278,7 +282,7 @@
 
 
         <!-- Features Start -->
-        <div class="container-fluid py-5 wow fadeInUp" data-wow-delay="0.1s">
+        <div class="container-fluid py-5 wow fadeInUp" data-wow-delay="0.1s" id="lienlac">
             <div class="container py-5">
                 <div class="section-title text-center position-relative pb-3 mb-5 mx-auto" style="max-width: 1000px;">
                     <h5 class="fw-bold text-primary text-uppercase">Tại sao bạn nên chọn chúng tôi</h5>
@@ -550,57 +554,24 @@
             <div class="container py-5">
                 <div class="section-title text-center position-relative pb-3 mb-4 mx-auto" style="max-width: 600px;">
                     <h5 class="fw-bold text-primary text-uppercase">Người dùng chia sẻ</h5>
-                    <h1 class="mb-0">Khách hàng nói gì về Website của chúng tôi</h1>
+                    <h1 class="mb-0">Danh sách bài blog</h1>
                 </div>
                 <div class="owl-carousel testimonial-carousel wow fadeInUp" data-wow-delay="0.6s">
-                    <div class="testimonial-item bg-light my-4">
-                        <div class="d-flex align-items-center border-bottom pt-5 pb-4 px-5">
-                            <img class="img-fluid rounded" src="https://vcdn-thethao.vnecdn.net/2023/01/24/lionel-messi-4-jpeg-8016-1674528922.jpg" style="width: 60px; height: 60px;" >
-                            <div class="ps-4">
-                                <h4 class="text-primary mb-1">Messi</h4>
-                                <small class="text-uppercase">Nhân Viên Văn Phòng</small>
+                    <c:forEach items="${BLOG_LIST}" var="blog">
+                        <div class="testimonial-item bg-light my-4">
+                            <div class="d-flex align-items-center border-bottom pt-5 pb-4 px-5">
+                                <img class="w-full h-48 object-cover" src="data:image/png;base64,${Base64.getEncoder().encodeToString(blog.getImage())}" alt="${blog.getTitle()}" style="width: 60px; height: 60px;">
+                                <div class="ps-4">
+                                    <h4 class="text-primary mb-1">${blog.title}</h4>
+                                    <small class="text-uppercase">${blog.createAt}</small>
+                                </div>
+                            </div>
+                            <div class="pt-4 pb-5 px-5 blog-content" style="height: 80px; overflow: hidden">
+                                ${blog.description}
                             </div>
                         </div>
-                        <div class="pt-4 pb-5 px-5">
-                            "Trang web rất dễ sử dụng, tìm kiếm và đặt sân nhanh chóng. Giao diện thân thiện với người dùng. Tính năng xem sẵn có và đặt sân online làm tăng tính thuận tiện, tiết kiệm thời gian."
-                        </div>
-                    </div>
-                    <div class="testimonial-item bg-light my-4">
-                        <div class="d-flex align-items-center border-bottom pt-5 pb-4 px-5">
-                            <img class="img-fluid rounded" src="https://images.ladepeche.fr/api/v1/images/view/6564ffd0ee16960696387567/large/image.jpg?v=1" style="width: 60px; height: 60px;" >
-                            <div class="ps-4">
-                                <h4 class="text-primary mb-1">Ronaldo</h4>
-                                <small class="text-uppercase">IT</small>
-                            </div>
-                        </div>
-                        <div class="pt-4 pb-5 px-5">
-                            "Giao diện trực quan và dễ sử dụng, nhưng tôi mong muốn có thêm tính năng nhắc nhở thông qua tin nhắn hoặc email để đảm bảo không bỏ lỡ các đặt sân. Hỗ trợ từ ban quản trị rất nhanh chóng và nhiệt tình khi có vấn đề xuất hiện."
-                        </div>
-                    </div>
-                    <div class="testimonial-item bg-light my-4">
-                        <div class="d-flex align-items-center border-bottom pt-5 pb-4 px-5">
-                            <img class="img-fluid rounded" src="https://img.a.transfermarkt.technology/portrait/big/342229-1682683695.jpg?lm=1" style="width: 60px; height: 60px;" >
-                            <div class="ps-4">
-                                <h4 class="text-primary mb-1">Mbappe</h4>
-                                <small class="text-uppercase">Giảng Viên</small>
-                            </div>
-                        </div>
-                        <div class="pt-4 pb-5 px-5">
-                            "Thông tin chi tiết về sân giúp tôi chọn được sân phù hợp với nhu cầu. Các hình ảnh và đánh giá từ người chơi trước cũng rất hữu ích. Quá trình thanh toán trực tuyến làm cho mọi thứ trở nên thuận tiện và an toàn."
-                        </div>
-                    </div>
-                    <div class="testimonial-item bg-light my-4">
-                        <div class="d-flex align-items-center border-bottom pt-5 pb-4 px-5">
-                            <img class="img-fluid rounded" src="https://b.fssta.com/uploads/application/soccer/headshots/713.vresize.350.350.medium.34.png" style="width: 60px; height: 60px;" >
-                            <div class="ps-4">
-                                <h4 class="text-primary mb-1">Neymar</h4>
-                                <small class="text-uppercase">Sinh Viên</small>
-                            </div>
-                        </div>
-                        <div class="pt-4 pb-5 px-5">
-                            "Dịch vụ chăm sóc khách hàng vô cùng tốt, tìm sân kèo nhanh chóng, dễ bắt cặp với đối thủ tương xứng"
-                        </div>
-                    </div>
+                    </c:forEach>
+
                 </div>
             </div>
         </div> -->
@@ -765,7 +736,7 @@
                     <div class="col-lg-4 col-md-6 footer-about">
                         <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 bg-primary p-4">
                             <a href="index.html" class="navbar-brand">
-                                <h1 class="m-0 text-white"><i class="fa fa-user-tie me-2"></i>FBK74</h1>
+                                <h1 class="m-0 text-white"><i class="fa fa-user-tie me-2"></i>FLeague</h1>
                             </a>
                             <p class="mt-3 mb-4">Địa chỉ chuyên nghiệp dành cho mọi lứa tuổi, hãy cùng nhau trải nghiệm sân chơi đẳng cấp của chúng tôi ngay nhé.</p>
                             <form action="">
@@ -788,7 +759,7 @@
                                 </div>
                                 <div class="d-flex mb-2">
                                     <i class="bi bi-envelope-open text-primary me-2"></i>
-                                    <p class="mb-0">fbk74@gmail.com</p>
+                                    <p class="mb-0">FLeague@gmail.com</p>
                                 </div>
                                 <div class="d-flex mb-2">
                                     <i class="bi bi-telephone text-primary me-2"></i>
@@ -853,7 +824,7 @@
         <!-- Back to Top -->
         <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded back-to-top"><i class="bi bi-arrow-up"></i></a>
 
-
+        <input type="hidden" id="error" name="error" value="${ERROR}"/>
         <!-- JavaScript Libraries -->
         <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -865,6 +836,19 @@
 
         <!-- Template Javascript -->
         <script src="${pageContext.request.contextPath}/js/main.js"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            var error = document.getElementById('error');
+            if (error.value) {
+                Swal.fire({
+                    icon: "info",
+                    title: "Oops...",
+                    text: error.value,
+                    footer: '<a href="profile?action=send-request">Xin cấp quyền tạo giải tại đây</a>'
+                });
+            }
+        </script>
     </body>
 
 </html>

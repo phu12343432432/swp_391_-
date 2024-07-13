@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
-    <filter>
+    <!--    <filter>
         <filter-name>RouteFilter</filter-name>
         <filter-class>Filter.RouteFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>RouteFilter</filter-name>
         <url-pattern>/*</url-pattern>
-    </filter-mapping>
+    </filter-mapping>-->
     <servlet>
         <servlet-name>AuthenticateController</servlet-name>
         <servlet-class>Controller.AuthenticateController</servlet-class>
@@ -40,6 +40,46 @@
         <servlet-name>MatchDetailController</servlet-name>
         <servlet-class>Controller.MatchDetailController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>UserWalletManageController</servlet-name>
+        <servlet-class>Controller.Admin.UserWalletManageController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>LeagueCommentController</servlet-name>
+        <servlet-class>Controller.LeagueCommentController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ManageLeagueController</servlet-name>
+        <servlet-class>Controller.Admin.ManageLeagueController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ChangeStatusLeagueController</servlet-name>
+        <servlet-class>Controller.Admin.ChangeStatusLeagueController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SendOrderWalletController</servlet-name>
+        <servlet-class>Controller.SendOrderWalletController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateBlogListController</servlet-name>
+        <servlet-class>Controller.CreateBlogListController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ViewBlogLeagueListController</servlet-name>
+        <servlet-class>Controller.ViewBlogLeagueListController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateBlogLeagueController</servlet-name>
+        <servlet-class>Controller.CreateBlogLeagueController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>BlogLeagueDetailController</servlet-name>
+        <servlet-class>Controller.BlogLeagueDetailController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteBlogController</servlet-name>
+        <servlet-class>Controller.DeleteBlogController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>AuthenticateController</servlet-name>
         <url-pattern>/auth</url-pattern>
@@ -71,5 +111,45 @@
     <servlet-mapping>
         <servlet-name>MatchDetailController</servlet-name>
         <url-pattern>/match-detail</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UserWalletManageController</servlet-name>
+        <url-pattern>/admin/UserWalletManageController</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LeagueCommentController</servlet-name>
+        <url-pattern>/LeagueCommentController</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ManageLeagueController</servlet-name>
+        <url-pattern>/admin/ManageLeagueController</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ChangeStatusLeagueController</servlet-name>
+        <url-pattern>/admin/ChangeStatusLeagueController</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SendOrderWalletController</servlet-name>
+        <url-pattern>/SendOrderWalletController</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateBlogListController</servlet-name>
+        <url-pattern>/CreateBlogListController</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ViewBlogLeagueListController</servlet-name>
+        <url-pattern>/ViewBlogLeagueListController</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateBlogLeagueController</servlet-name>
+        <url-pattern>/CreateBlogLeagueController</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BlogLeagueDetailController</servlet-name>
+        <url-pattern>/blog-league</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteBlogController</servlet-name>
+        <url-pattern>/DeleteBlogController</url-pattern>
     </servlet-mapping>
 </web-app>

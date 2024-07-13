@@ -33,8 +33,8 @@ public class MatchVM {
     private int LeagueId;
     private String Name;
     private String Address;
-    private LocalDateTime StartAt;
-    private LocalDateTime EndAt;
+    private String StartAt;
+    private String EndAt;
     private int TeamSize;
     private LocalDateTime UpdateAt;
     private int ScoreHome;

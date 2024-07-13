@@ -2,34 +2,24 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package Model;
+package Model.ViewModel;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
-/**
- *
- * @author ADMIN
- */
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
-public class LeagueRegisterVM {
-
-    private int TeamId;
-    private String TeamName;
-    private String ShortName;
-    private String RegisterAt;
+public class UserWalletOrderVM {
+    private int Id;
+    private int UserWalletId;
+    private float Ammount;
+    private String CreateAt;
+    private int Status;
+    private int UserId;
+    private String Email;
     private String Image;
-    private int Point;
-    private int Wins;
-    private int Loses;
-    private int Ties;
-    private int TotalGoals;
-    private int TotalCards;
 }

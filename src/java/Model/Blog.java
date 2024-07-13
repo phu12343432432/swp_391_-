@@ -22,9 +22,10 @@ public class Blog {
     public int Id;
     public String Title;
     public String Description;
-    public byte[] Image;
-    public Date CreateAt;
-    public Date UpdateAt;
-    public Date DeleteAt;
+    public String Image;
+    public String CreateAt;
+    public String UpdateAt;
+    public String DeleteAt;
     public int Status;
+    public int LeagueId;
 }

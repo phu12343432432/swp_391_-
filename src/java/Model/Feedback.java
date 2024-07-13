@@ -4,24 +4,20 @@
  */
 package Model;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
-public class Goal {
-
+public class Feedback {
     private int Id;
-    private int Goal_Time;
-    private int TeamMemberId;
-    private int TeamId;
-    private int MatchId;
-    private String PlayerName;
-    private String TeamName;
+    private int LeagueId;
+    private String Content;   
+    private int UserId;
+    private String CreateAt;
 }

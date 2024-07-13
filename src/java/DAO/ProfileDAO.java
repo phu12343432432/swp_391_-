@@ -83,9 +83,9 @@ public class ProfileDAO extends DBContext {
                     String lastName = rs.getString("LastName");
                     String phone = rs.getString("Phone");
                     String email = rs.getString("Email");
-                    byte[] imgData = rs.getBytes("Image");
+                    
+byte[] imgData = rs.getBytes("Image");
                     String base64Image = Base64.getEncoder().encodeToString(imgData);
-
                     userUpdate.setFirstName(firstName);
                     userUpdate.setLastName(lastName);
                     userUpdate.setPhone(phone);

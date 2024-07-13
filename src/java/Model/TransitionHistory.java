@@ -8,20 +8,19 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
+/**
+ *
+ * @author Datnt
+ */
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
-public class Goal {
-
+public class TransitionHistory {
     private int Id;
-    private int Goal_Time;
-    private int TeamMemberId;
-    private int TeamId;
-    private int MatchId;
-    private String PlayerName;
-    private String TeamName;
+    private int WalletId;
+    private String Content;
+    private String CreateAt;
+    private String UpdateAt;
 }

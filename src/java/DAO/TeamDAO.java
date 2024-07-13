@@ -290,8 +290,22 @@ public class TeamDAO extends DBContext {
         return null;
     }
 
-    
-    
+    public boolean isDuplicateNumber(Team_Member teamMember) {
+        try {
+            String sql = "SELECT * FROM  dbo.[Team_Member] WHERE  TeamId = ? AND Number = ? ";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, teamMember.getTeamId());
+            ps.setInt(2, teamMember.getNumber());
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public boolean AddTeam_Member(Team_Member teamMember) {
         try {
             String sql = "INSERT  dbo.[Team_Member] ([Name], [Number], [TeamId]) VALUES (?, ?, ?)";
@@ -324,14 +338,66 @@ public class TeamDAO extends DBContext {
 
     public boolean DeleteTeam_Member(int id) {
         try {
-            String sql = "DELETE  dbo.[Team_Member]  WHERE Id = ?";
+            String sql = "DELETE dbo.[Team_Member] WHERE Id = ?";
             ps = con.prepareStatement(sql);
             ps.setInt(1, id);
+            int affectedRow = ps.executeUpdate();
+            return affectedRow > 0;
+        } catch (Exception e) {
+            System.out.println("Cầu thủ đã ghi tham gia vào trận đấu không thể xóa thông tin cầu thủ này.");
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public int getTeamSize(int id) {
+        try {
+            String sql = "SELECT COUNT(*) FROM dbo.[Team_Member]  WHERE TeamId = ?";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, id);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int getTeamIdByTeamMemberId(int team_memberId) {
+        try {
+            String sql = "SELECT * FROM dbo.[Team_Member] WHERE Id = ?";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, team_memberId);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("TeamId");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public boolean updateTeamSize(int teamId) {
+        try {
+            int teamSize = getTeamSize(teamId);
+            System.out.println("teamSize " + teamSize);
+            String sql = "UPDATE dbo.[Team] SET TeamSize = ? WHERE Id = ?";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, teamSize);
+            ps.setInt(2, teamId);
             int affectedRow = ps.executeUpdate();
             return affectedRow > 0;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
+    }
+    public static void main(String[] args) {
+        TeamDAO teamDAO = new TeamDAO();
+        int teamID = teamDAO.getTeamIdByTeamMemberId(534);
+        System.out.println("TeamTeam " + teamID);
     }
 }

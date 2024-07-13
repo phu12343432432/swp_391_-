@@ -7,10 +7,10 @@ package DAO;
 import DAL.DBContext;
 import Model.Card;
 import Model.Goal;
-import Model.ViewModel.MatchDetailsVM;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -107,5 +107,42 @@ public class MatchDAO extends DBContext {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public boolean updateMatchTime(int matchId, LocalDateTime startDate, LocalDateTime endDate) {
+        try {
+            String sql = "UPDATE Match SET StartAt = ?, EndAt = ? WHERE Id = ?";
+            ps = con.prepareStatement(sql);
+            ps.setTimestamp(1, java.sql.Timestamp.valueOf(startDate));
+            ps.setTimestamp(2, java.sql.Timestamp.valueOf(endDate));
+            ps.setInt(3, matchId);
+            int affectedRows = ps.executeUpdate();
+            return affectedRows > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean hasMatchTimeConflict(int matchId, LocalDateTime startDate, LocalDateTime endDate) {
+        try {
+            int matchTime = endDate.getHour() - startDate.getHour();
+            if(matchTime > 2) {
+                return false;
+            }
+            String sql = "SELECT COUNT(*) FROM Match WHERE Id != ? AND (? BETWEEN StartAt AND EndAt AND ? BETWEEN StartAt AND EndAt)";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, matchId);
+            ps.setTimestamp(2, java.sql.Timestamp.valueOf(startDate));
+            ps.setTimestamp(3, java.sql.Timestamp.valueOf(endDate));
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                return count > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 };

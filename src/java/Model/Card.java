@@ -10,20 +10,20 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-
-
-
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
 public class Card {
+
     private int Id;
     private String Type;
     private int TeamMemberId;
     private int TeamId;
-    private int MatchId;    
+    private int MatchId;
     private int Card_Time;
+    private String PlayerName;
+    private String TeamName;
 
 }

@@ -8,20 +8,16 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
-public class Goal {
-
+public class UserWalletOrder {
     private int Id;
-    private int Goal_Time;
-    private int TeamMemberId;
-    private int TeamId;
-    private int MatchId;
-    private String PlayerName;
-    private String TeamName;
+    private int UserWalletId;
+    private float Ammount;
+    private String CreateAt;
+    private int Status;
+
 }

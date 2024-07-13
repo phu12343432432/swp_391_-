@@ -30,6 +30,8 @@ public class LeagueRegister {
     private int Loses;
     private int Ties;
     private int Status;
+    private int TotalGoals;
+    private int TotalCards;
     // 0 là mới đăng kí
     // 1 đã duyệt 
     // 2 từ chối

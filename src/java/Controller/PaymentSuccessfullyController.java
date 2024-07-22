@@ -4,47 +4,48 @@
  */
 package Controller;
 
-import DAO.NotificationDAO;
+import DAO.AuthenticationDAO;
 import DAO.UserWalletDAO;
+import Model.TransitionHistory;
 import Model.User;
 import Model.UserWallet;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.List;
 
-public class SendOrderWalletController extends HttpServlet {
+
+@WebServlet(name = "PaymentSuccessfullyController", urlPatterns = {"/PaymentSuccessfullyController"})
+public class PaymentSuccessfullyController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            HttpSession session = request.getSession();
+             HttpSession session = request.getSession();
             User user = (User) session.getAttribute("USER");
-            String ammount = request.getParameter("ammount");
+            String ammount = request.getParameter("vnp_Amount");
             UserWalletDAO userWalletDAO = new UserWalletDAO();
             UserWallet userWallet = userWalletDAO.getUserWalletByUserId(user.getId());
             if (userWallet != null) {
-                float ammountPrice = Float.parseFloat(ammount);
+                float ammountPrice = Float.parseFloat(ammount) / 100;
                 boolean result = userWalletDAO.addWalletOrder(userWallet.getWalletId(), user.getId(), ammountPrice);
                 if (result) {
-                    String content = "Gửi yêu cầu nạp " + ammount + " vào ví";
+                    String content = "Gửi yêu cầu thêm  " + ammount + " vào ví của bạn thành công";
                     userWalletDAO.addTransitionHistory(content, userWallet.getWalletId());
-
-                    NotificationDAO notiDAO = new NotificationDAO();
-                    String title = "NẠP TIỀN VÀO VÍ";
-                    String _content = "Yêu cầu nạp tiền của bạn đã được gửi, vui lòng đợi admin phê duyệt!";
-                    notiDAO.createNotification(user.getId(), title, _content);
-                    request.setAttribute("MESSAGE", "Gửi yêu cầu thành công vui lòng đợi admin duyệt");
+                    request.setAttribute("MESSAGE", "Send request successfully please wait admin approve");
                 }
             }
-            request.getRequestDispatcher("profile?action=view").forward(request, response);
+            request.getRequestDispatcher("profile?action=wallet-history").forward(request, response);
         } catch (Exception e) {
-            request.setAttribute("ERROR", "Error while sending order");
             e.printStackTrace();
         }
+        
+
     }
 
     @Override
@@ -52,11 +53,6 @@ public class SendOrderWalletController extends HttpServlet {
             throws ServletException, IOException {
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
         return "Short description";

@@ -49,7 +49,13 @@ public class UserManageDAO extends DBContext {
             ps.setInt(2, 3);
             ps.setInt(3, userId);
             int affectedRow = ps.executeUpdate();
-            return affectedRow > 0;
+            if (affectedRow > 0) {
+                NotificationDAO notiDAO = new NotificationDAO();
+                String title = "YÊU CẦU QUYỀN TẠO GIẢI ĐẤU";
+                String contentNoti = "Bạn đã được Quản trị viên chấp nhận bạn có thể tạo giải đấu cho riêng bạn";
+                notiDAO.createNotification(userId, title, contentNoti);
+                return true;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -64,7 +70,13 @@ public class UserManageDAO extends DBContext {
             ps.setInt(2, 1);
             ps.setInt(3, userId);
             int affectedRow = ps.executeUpdate();
-            return affectedRow > 0;
+            if (affectedRow > 0) {
+                NotificationDAO notiDAO = new NotificationDAO();
+                String title = "YÊU CẦU QUYỀN TẠO GIẢI ĐẤU";
+                String contentNoti = "Yêu cầu trở thành nhà tạo giải của bạn đã bị từ chối, vui lòng kiểm tra lại!";
+                notiDAO.createNotification(userId, title, contentNoti);
+                return true;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -77,7 +89,7 @@ public class UserManageDAO extends DBContext {
             ps = con.prepareStatement(sql);
             rs = ps.executeQuery();
             if (rs.next()) {
-              return rs.getInt(1);
+                return rs.getInt(1);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -125,7 +137,6 @@ public class UserManageDAO extends DBContext {
         return null;
     }
 
-    
     public List<User> GetAllUser(int index) {
         String sql = "SELECT * FROM [User] WHERE RoleId != 2 ORDER BY Id DESC OFFSET ? ROW FETCH NEXT 12 ROWS ONLY";
         User user = null;
@@ -304,6 +315,7 @@ public class UserManageDAO extends DBContext {
         }
         return false;
     }
+
     public static void main(String[] args) {
 
     }

@@ -93,6 +93,7 @@ public class TeamDAO extends DBContext {
                 _team.setDescription(Description);
                 _team.setTeamSize(teamSize);
                 _team.setId(teamId);
+                _team.setUserId(rs.getInt("UserId"));
                 return _team;
             }
         } catch (Exception e) {
@@ -246,11 +247,9 @@ public class TeamDAO extends DBContext {
 
     public int getListTeamMemberByTeamIdTotal(int teamId) {
         try {
-            List<Team_Member> listTeamMember = new ArrayList<>();
             String sql = "SELECT COUNT(*) FROM Team_Member WHERE TeamId = ?";
             ps = con.prepareStatement(sql);
             ps.setInt(1, teamId);
-
             rs = ps.executeQuery();
             if (rs.next()) {
                 return rs.getInt(1);
@@ -276,7 +275,12 @@ public class TeamDAO extends DBContext {
                 int Number = rs.getInt("Number");
                 int TeamId = rs.getInt("TeamId");
                 int Id = rs.getInt("Id");
-
+                byte[] imgData = rs.getBytes("Image");
+                String base64Image = null;
+                if (imgData != null) {
+                    base64Image = Base64.getEncoder().encodeToString(imgData);
+                }
+                teamMember.setImage(base64Image);
                 teamMember.setId(Id);
                 teamMember.setName(Name);
                 teamMember.setNumber(Number);
@@ -306,13 +310,15 @@ public class TeamDAO extends DBContext {
         return false;
     }
 
-    public boolean AddTeam_Member(Team_Member teamMember) {
+    public boolean AddTeam_Member(Team_Member teamMember, Part image) {
         try {
-            String sql = "INSERT  dbo.[Team_Member] ([Name], [Number], [TeamId]) VALUES (?, ?, ?)";
+            String sql = "INSERT  dbo.[Team_Member] ([Name], [Number], [TeamId], Image) VALUES (?, ?, ?, ?)";
             ps = con.prepareStatement(sql);
             ps.setString(1, teamMember.getName());
             ps.setInt(2, teamMember.getNumber());
             ps.setInt(3, teamMember.getTeamId());
+            InputStream fileContent = image.getInputStream();
+            ps.setBinaryStream(4, fileContent, (int) image.getSize());
             int affectedRow = ps.executeUpdate();
             return affectedRow > 0;
         } catch (Exception e) {
@@ -395,6 +401,22 @@ public class TeamDAO extends DBContext {
         }
         return false;
     }
+
+    public int getUserIdByTeamID(int TeamId) {
+        try {
+            String sql = "SELECT * FROM dbo.[Team] WHERE Id = ?";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, TeamId);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("UserId");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     public static void main(String[] args) {
         TeamDAO teamDAO = new TeamDAO();
         int teamID = teamDAO.getTeamIdByTeamMemberId(534);

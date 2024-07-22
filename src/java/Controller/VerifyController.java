@@ -37,8 +37,8 @@ public class VerifyController extends HttpServlet {
         String action = request.getParameter("action") == null ? "" : request.getParameter("action");
         switch (action) {
             case "check": {
-              ValidateOtp(request, response);
-              break;
+                ValidateOtp(request, response);
+                break;
             }
             case "sendOtpToMail": {
                 sendMail(request, response);
@@ -102,15 +102,25 @@ public class VerifyController extends HttpServlet {
 
     private void sendMail(HttpServletRequest request, HttpServletResponse response) {
         try {
+            String url = "views/user/send-mail-noti.jsp";
             String email = request.getParameter("email");
             HttpSession session = request.getSession();
             OtpService optService = new OtpService();
             String otp = OtpService.genarateOtp();
             session.setAttribute("otp", otp);
             session.setAttribute("EMAIL", email.trim());
-            MailService mailService = new MailService();
-            mailService.sendOtpToMail(email, otp);
-            request.getRequestDispatcher("views/user/send-mail-noti.jsp").forward(request, response);
+
+            AuthenticationDAO dao = new AuthenticationDAO();
+            boolean result = dao.CheckEmail(email);
+            if (result) {
+                MailService mailService = new MailService();
+                mailService.sendOtpToMail(email, otp);
+            } else {
+                request.setAttribute("ERROR", "Email của bạn không tồn tại trên hệ thống");
+                url = "views/common/forgot-password.jsp";
+            }
+
+            request.getRequestDispatcher(url).forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
         }

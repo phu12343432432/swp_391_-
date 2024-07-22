@@ -97,7 +97,7 @@ public class BlogLeagueDetailController extends HttpServlet {
                 lastPage++;
             }
             request.setAttribute("BLOG", blog);
-            request.setAttribute("leagueId", leagueIds);
+            request.setAttribute("leagueId", blog.getLeagueId());
             request.setAttribute("endP", lastPage);
             request.setAttribute("selectedPage", index);
             request.setAttribute("COMMENTS", listComment);

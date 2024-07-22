@@ -32,6 +32,7 @@ public class UpdateMatchController extends HttpServlet {
             throws ServletException, IOException {
         try {
             String matchIds = request.getParameter("matchId");
+            String groupIds = request.getParameter("groupId");
             int matchId = Integer.parseInt(matchIds);
             LeagueDAO leagueDAO = new LeagueDAO();
             TeamDAO teamDAO = new TeamDAO();
@@ -57,8 +58,10 @@ public class UpdateMatchController extends HttpServlet {
                 }
             }
             request.setAttribute("MATCH", match);
+            request.setAttribute("groupId", groupIds);
+
             HttpSession session = request.getSession();
-            if (session.getAttribute("SCHEDULE") != null ) {
+            if (session.getAttribute("SCHEDULE") != null) {
                 String message = (String) session.getAttribute("SCHEDULE");
                 request.setAttribute("ERROR", message);
                 session.removeAttribute("SCHEDULE");
@@ -77,6 +80,7 @@ public class UpdateMatchController extends HttpServlet {
         try {
             HttpSession session = request.getSession();
             String matchIds = request.getParameter("matchId");
+            String groupdIds = request.getParameter("groupId");
             int matchId = Integer.parseInt(matchIds);
             String startDateS = request.getParameter("startAt");
             String endDateS = request.getParameter("endAt");
@@ -86,9 +90,10 @@ public class UpdateMatchController extends HttpServlet {
             MatchDAO matchDAO = new MatchDAO();
             // Validate if the updated time is not conflicting with other matches         
             boolean hasConflict = matchDAO.hasMatchTimeConflict(matchId, startDate, endDate);
+            String url = "UpdateMatchController?matchId=" + matchIds + "&groupId=" + groupdIds;
             if (hasConflict) {
                 session.setAttribute("SCHEDULE", "Thời gian này đã trùng với trận đấu khác");
-                response.sendRedirect("UpdateMatchController?matchId=" + matchIds);
+                response.sendRedirect(url);
                 return;
             }            // Update the match detail       
             boolean result = matchDAO.updateMatchTime(matchId, startDate, endDate);
@@ -97,7 +102,8 @@ public class UpdateMatchController extends HttpServlet {
             } else {
                 request.setAttribute("ERROR", "Failed to update the match.");
             }
-            response.sendRedirect("UpdateMatchController?matchId=" + matchIds);
+
+            response.sendRedirect(url);
         } catch (Exception e) {
             e.printStackTrace();
         }

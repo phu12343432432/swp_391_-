@@ -32,4 +32,5 @@ public class LeagueRegisterVM {
     private int Ties;
     private int TotalGoals;
     private int TotalCards;
+    private int totalCardPoint;
 }

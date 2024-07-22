@@ -194,8 +194,8 @@ public class UserTeamController extends HttpServlet {
             if (userTeam != null) {
                 request.setAttribute("TEAM", userTeam);
             }
-            
-             String indexS = request.getParameter("index");
+
+            String indexS = request.getParameter("index");
             String searchS = request.getParameter("search");
             if (indexS == null) {
                 indexS = "1";
@@ -207,7 +207,15 @@ public class UserTeamController extends HttpServlet {
 
             List<Team_Member> teamMember = new ArrayList();
             if (userTeam != null) {
+                int total = teamDAO.getListTeamMemberByTeamIdTotal(teamId);
                 teamMember = teamDAO.getListTeamMemberByTeamId(userTeam.getId(), index);
+                int lastPage = total / 9;
+                if (total % 9 != 0) {
+                    lastPage++;
+                }
+                request.setAttribute("endP", lastPage);
+                request.setAttribute("selectedPage", index);
+
                 request.setAttribute("TEAM", userTeam);
                 request.setAttribute("TEAM_MEMBERS", teamMember);
                 request.setAttribute("userTeamId", userTeam.getId());
@@ -217,8 +225,7 @@ public class UserTeamController extends HttpServlet {
                 request.setAttribute("ERROR", (String) session.getAttribute("ERROR"));
                 session.removeAttribute("ERROR");
             }
-            request.setAttribute("selectedPage", index);
-            
+
             request.getRequestDispatcher("views/user/team-details.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
@@ -235,6 +242,7 @@ public class UserTeamController extends HttpServlet {
             String name = request.getParameter("name");
             String numberS = request.getParameter("number");
             String teamIdS = request.getParameter("teamId");
+            Part image = request.getPart("file");
 
             Team_Member teamMember = new Team_Member();
             teamMember.setName(name);
@@ -246,7 +254,7 @@ public class UserTeamController extends HttpServlet {
             if (isDuplicated) {
                 session.setAttribute("ERROR", "Số áo này đã được sử dụng trong team");
             } else {
-                boolean result = teamDAO.AddTeam_Member(teamMember);
+                boolean result = teamDAO.AddTeam_Member(teamMember, image);
                 if (result) {
                     request.setAttribute("MESSAGE", "Add team member sucessfully");
                     teamDAO.updateTeamSize(Integer.parseInt(teamIdS));

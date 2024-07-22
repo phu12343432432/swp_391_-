@@ -21,4 +21,5 @@ public class Team_Member {
     private String Name;
     private int Number;
     private int TeamId;
+    private String Image;
 }

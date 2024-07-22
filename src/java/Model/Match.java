@@ -34,4 +34,5 @@ public class Match {
     private LocalDateTime UpdateAt; 
     private int ScoreHome;   
     private int ScoreAway;
+    private int GroupId;
 }

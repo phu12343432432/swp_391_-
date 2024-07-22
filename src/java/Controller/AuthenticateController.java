@@ -6,6 +6,7 @@ package Controller;
 
 import DAO.AuthenticationDAO;
 import DAO.BlogDAO;
+import DAO.NotificationDAO;
 import DAO.TeamDAO;
 import DAO.UserWalletDAO;
 import Model.Blog;
@@ -50,16 +51,25 @@ public class AuthenticateController extends HttpServlet {
         if (listBlog != null || listBlog.size() > 0) {
             session.setAttribute("BLOG_LIST", listBlog);
         }
+        int userId = 0;
         if (session != null & session.getAttribute("USER") != null) {
+            AuthenticationDAO authDAO = new AuthenticationDAO();
             User userLogedIn = (User) session.getAttribute("USER");
+            userId = userLogedIn.getId();
+            userLogedIn = authDAO.getUserById(userLogedIn.getId());
             UserWalletDAO userWalletDAO = new UserWalletDAO();
             UserWallet userWallet = userWalletDAO.getUserWalletById(userLogedIn.getId());
+
             if (userWallet == null) {
                 session.setAttribute("WALLET", 0);
             } else {
                 session.setAttribute("WALLET", userWallet.getAmmount());
             }
+            session.setAttribute("USER", userLogedIn);
         }
+        NotificationDAO notiDAO = new NotificationDAO();
+        int notifyTotal = notiDAO.getTotalNewNotificationByUserId(userId);
+        session.setAttribute("NOTIFY", notifyTotal);
         request.getRequestDispatcher(url).forward(request, response);
 
     }
@@ -120,6 +130,9 @@ public class AuthenticateController extends HttpServlet {
                     session.setAttribute("TEAM", userTeam);
                     // User 
                     if (userLogedIn.getRoleId() == 1 || userLogedIn.getRoleId() == 3) {
+                        NotificationDAO notiDAO = new NotificationDAO();
+                        int notifyTotal = notiDAO.getTotalNewNotificationByUserId(userLogedIn.getId());
+                        session.setAttribute("NOTIFY", notifyTotal);
                         url = "views/common/index.jsp";
                         // Admin
                     } else if (userLogedIn.getRoleId() == 2) {

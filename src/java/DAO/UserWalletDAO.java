@@ -6,9 +6,11 @@ package DAO;
 
 import DAL.DBContext;
 import Model.TransitionHistory;
+import Model.User;
 import Model.UserWallet;
 import Model.UserWalletOrder;
 import Model.ViewModel.UserWalletOrderVM;
+import Service.MailService;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -125,7 +127,7 @@ public class UserWalletDAO extends DBContext {
             String sql = "SELECT uwo.Id, uwo.UserId, uwo.Ammount, uwo.UserId, uwo.UserWalletId, uwo.Status, u.Email, u.Image "
                     + "FROM UserWalletOrder uwo JOIN [User] u ON uwo.UserId = u.Id ORDER BY uwo.CreateAt DESC OFFSET ? ROWS FETCH NEXT 5 ROWS ONLY";
             ps = con.prepareStatement(sql);
-            ps.setInt(1, (index -1) * 5);
+            ps.setInt(1, (index - 1) * 5);
             rs = ps.executeQuery();
             while (rs.next()) {
                 UserWalletOrderVM order = new UserWalletOrderVM();
@@ -195,6 +197,12 @@ public class UserWalletDAO extends DBContext {
                     float amount = rs.getFloat("Ammount");
                     int walletId = rs.getInt("UserWalletId");
                     updateUserWalletBalance(userId, walletId, amount);
+
+                    NotificationDAO notiDAO = new NotificationDAO();
+                    String title = "NẠP TIỀN VÀO VÍ";
+                    String contentNoti = "Bạn đã nạp tiền thành công!";
+                    notiDAO.createNotification(userId, title, contentNoti);
+
                 }
                 return true;
             } else {
@@ -212,11 +220,29 @@ public class UserWalletDAO extends DBContext {
             ps = con.prepareStatement(sql);
             ps.setInt(1, orderId);
             int affectedRows = ps.executeUpdate();
-            return affectedRows > 0;
+            if (affectedRows > 0) {
+                sql = "SELECT UserId, Ammount, UserWalletId FROM UserWalletOrder WHERE Id = ?";
+                ps = con.prepareStatement(sql);
+                ps.setInt(1, orderId);
+                rs = ps.executeQuery();
+                if (rs.next()) {
+                    int userId = rs.getInt("UserId");
+                    float amount = rs.getFloat("Ammount");
+                    int walletId = rs.getInt("UserWalletId");
+                    updateUserWalletBalance(userId, walletId, amount);
+
+                    NotificationDAO notiDAO = new NotificationDAO();
+                    String title = "NẠP TIỀN VÀO VÍ";
+                    String contentNoti = "Yêu cầu nạp tiền của bạn đã bị từ chối, vui lòng kiểm tra lại";
+                    notiDAO.createNotification(userId, title, contentNoti);
+                }
+                return true;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
+        return false;
     }
 
     private boolean updateUserWalletBalance(int userId, int userWalletId, float amount) {
@@ -231,6 +257,12 @@ public class UserWalletDAO extends DBContext {
             if (affectedRows > 0) {
                 String content = "Bạn nạp thành công vào ví tiền " + amount;
                 addTransitionHistory(content, userWalletId);
+
+                AuthenticationDAO authDAO = new AuthenticationDAO();
+                User user = authDAO.getUserById(userId);
+                // send mail
+                String contentEmail = "Bạn đã được thêm " + amount + " tiền bởi admin. Mọi thắc mắc vui lòng liên hệ!";
+                MailService.sendMailWithInfo(user.getEmail(), contentEmail);
                 return true;
             }
         } catch (Exception e) {

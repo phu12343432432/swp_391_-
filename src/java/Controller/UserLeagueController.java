@@ -6,13 +6,16 @@ package Controller;
 
 import DAO.LeagueDAO;
 import DAO.MatchDAO;
+import DAO.NotificationDAO;
 import DAO.TeamDAO;
 import DAO.UserWalletDAO;
 import Model.Card;
 import Model.Goal;
+import Model.Group;
 import Model.League;
 import Model.LeagueRegister;
 import Model.LeagueRegisterVM;
+import Model.Match;
 import Model.Team;
 import Model.Team_Member;
 import Model.User;
@@ -36,6 +39,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -78,7 +82,14 @@ public class UserLeagueController extends HttpServlet {
                 viewLeagueMatch(request, response);
                 isRedirect = true;
                 break;
-
+            case "view-final":
+                viewFinalMatch(request, response);
+                isRedirect = true;
+                break;
+            case "league-group-result":
+                leagueGroupTypeResult(request, response);
+                isRedirect = true;
+                break;
         }
         if (session != null && session.getAttribute("USER") != null) {
             User user = (User) session.getAttribute("USER");
@@ -91,6 +102,9 @@ public class UserLeagueController extends HttpServlet {
                     break;
                 case "user-league":
                     getUserLeague(request, response);
+                    break;
+                case "update-league":
+                    updateLeague(request, response);
                     break;
                 case "list-registered":
                     getUserLeagueRegistered(request, response);
@@ -107,6 +121,12 @@ public class UserLeagueController extends HttpServlet {
                 case "accept-team":
                     acceptRegisterToLeague(request, response);
                     break;
+                case "remove-team-from-league":
+                    removeTeamRegisterFromLeague(request, response);
+                    break;
+                case "reject-team":
+                    rejectRegisterTeamToLeague(request, response);
+                    break;
                 case "league-match":
                     viewLeagueMatch(request, response);
                     isRedirect = true;
@@ -114,6 +134,19 @@ public class UserLeagueController extends HttpServlet {
                 case "cancle-league":
                     cancleLeague(request, response);
                     break;
+                case "start-knockout-stage":
+                    startKnockoutStage(request, response);
+                    isRedirect = true;
+                    break;
+                case "knockout-stage":
+                    ViewKnockoutMatch(request, response);
+                    isRedirect = true;
+                    break;
+                case "start-final":
+                    generateFinalMatch(request, response);
+                    isRedirect = true;
+                    break;
+
             }
         } else {
             // trang login
@@ -196,6 +229,12 @@ public class UserLeagueController extends HttpServlet {
             int index = Integer.parseInt(indexS);
             List<League> listLeague = leagueDAO.getLeaguePaged(index);
             int total = leagueDAO.getTotalLeague();
+
+            if (searchS != "") {
+                listLeague = leagueDAO.searchLeagueByName(index, searchS);
+                total = leagueDAO.searchLeagueByNameTotal(searchS);
+            }
+
             int lastPage = total / 9;
             if (total % 9 != 0) {
                 lastPage++;
@@ -234,6 +273,7 @@ public class UserLeagueController extends HttpServlet {
                 String address = request.getParameter("address");
                 String teamsizeS = request.getParameter("teamsize");
                 Part image = request.getPart("image");
+                String teamMemberSize = request.getParameter("team_member_size");
                 String leagueType = request.getParameter("type");
 
                 var _startDate = LocalDateTime.parse(startDate);
@@ -283,11 +323,16 @@ public class UserLeagueController extends HttpServlet {
                         _league.setDescription(desc);
                         _league.setStartDate(_startDate);
                         _league.setEndDate(_endDate);
+                        _league.setTeamMemberSize(Integer.parseInt(teamMemberSize));
 
                         _league.setUserId(userLogin.getId());
                         boolean result = leagueDAO.createLeague(_league, image);
                         if (result) {
-                            // tao giai thanh cong tru tien
+                            // Tao notify
+                            NotificationDAO notiDAO = new NotificationDAO();
+                            String title = "QUẢN LÍ GIẢI ĐẤU";
+                            String content = "Yêu cầu tạo giải của bạn đã được gửi, vui lòng đợi admin phê duyệt!";
+                            notiDAO.createNotification(userLogin.getId(), title, content);
 
                             request.setAttribute("MESSAGE", "Tạo giải đấu thành công thành công, vui lòng đợi kiểm duyệt");
                         } else {
@@ -331,12 +376,18 @@ public class UserLeagueController extends HttpServlet {
             if (leagueIdS != null) {
                 int leagueId = Integer.parseInt(leagueIdS);
                 Team userTeam = teamDAO.getTeamByUserId(userLogin.getId());
+
                 if (userTeam == null) {
 //                    url = "views/user/user-team.jsp";
                     request.setAttribute("TEAMERROR", "Bạn chưa có team để tham gia giải đấu, vui lòng tạo team!");
                 } else {
                     LeagueDAO leagueDAO = new LeagueDAO();
                     League league = leagueDAO.getLeagueById(leagueId);
+
+                    // số lượng cầu thủ hiện tại của đội.
+                    int currentTeamSize = userTeam.getTeamSize();
+                    int requiredTeamSize = league.getTeamMemberSize();
+
                     String dateRemains = league.getDateRegister();
 
                     DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -344,8 +395,9 @@ public class UserLeagueController extends HttpServlet {
                     Date currentDate = dateFormat.parse(dateRemains);
                     if (date.compareTo(currentDate) > 0) {
                         request.setAttribute("ERROR", "Đã hết hạn đăng kí giải đấu");
+                    } else if (currentTeamSize < requiredTeamSize) {
+                        request.setAttribute("ERROR", "Số lượng thành viên của đội bóng bạn không đủ để tham gia. Vui lòng tạo thêm");
                     } else {
-
 //                        boolean hasConflict = leagueDAO.hasTeamRegisteredOtherLeague(userTeam.getId(), league.getStartDate(), league.getEndDate());
 //                        if (hasConflict) {
 //                            request.setAttribute("ERROR", "Đội bóng của bạn đã đăng ký tham gia một giải đấu khác trong khoảng thời gian này.");
@@ -353,12 +405,17 @@ public class UserLeagueController extends HttpServlet {
                         int status = leagueDAO.registerLeague(userTeam.getId(), leagueId);
                         if (status == 0) {
                             request.setAttribute("MESSAGE", "Đăng kí thành công");
+
+                            NotificationDAO notiDAO = new NotificationDAO();
+                            String title = "THAM GIA GIẢI ĐẤU";
+                            String contentNoti = "Yêu cầu tham gia giải đấu [" + league.getName() + "] của bạn đã được gửi!";
+                            notiDAO.createNotification(userTeam.getUserId(), title, contentNoti);
+
                         } else if (status == 1) {
                             request.setAttribute("ERROR", "Giải đấu đã đủ cảm ơn bạn đã quan tâm");
                         } else if (status == 2) {
                             request.setAttribute("ERROR", "Bạn đã đăng kí giải đấu này rồi");
                         }
-//                        }
                     }
                 }
             }
@@ -513,7 +570,9 @@ public class UserLeagueController extends HttpServlet {
             int leagueId = Integer.parseInt(idS);
             LeagueDAO leagueDAO = new LeagueDAO();
             League league = leagueDAO.getLeagueById(leagueId);
+
             if (league != null) {
+
                 int total = leagueDAO.getListUserFeedbackInLeagueTotal(leagueId);
                 List<CommentViewModel> listComment = leagueDAO.getListUserFeedbackInLeague(leagueId, index);
                 List<LeagueRegister> listTeamRegister = leagueDAO.getTeamRegisterLeagueApprove(leagueId);
@@ -545,6 +604,40 @@ public class UserLeagueController extends HttpServlet {
                     request.setAttribute("TOP_TEAM_FL", topTeamFairPlay);
                 }
 
+                // get top 1 top 2 top 3
+                if (league.getType().equals("2")) {
+                    MatchDAO matchDAO = new MatchDAO();
+                    if (league.getStatus() == 5) {
+                        // gồm info id của 2 đội giải 3
+                        List<MatchVM> listTop3Team = leagueDAO.getLoserInKnockoutStage(leagueId);
+                        Match match = matchDAO.getLastMatchInLeague(leagueId);
+                        int top1TeamId = 0;
+                        int top2TeamId = 0;
+
+                        if (match.getScoreAway() > match.getScoreHome()) {
+                            top1TeamId = match.getAwayTeamId();
+                            top2TeamId = match.getHomeTeamId();
+                        } else {
+                            top1TeamId = match.getHomeTeamId();
+                            top2TeamId = match.getAwayTeamId();
+                        }
+
+                        Team top1 = teamDAO.getTeamById(top1TeamId);
+                        Team top2 = teamDAO.getTeamById(top2TeamId);
+
+                        List<Team> listTop3 = new ArrayList<>();
+                        for (MatchVM team : listTop3Team) {
+                            Team top3 = teamDAO.getTeamById(team.getLosingId());
+                            listTop3.add(top3);
+                        }
+
+                        request.setAttribute("TEAM1", top1);
+                        request.setAttribute("TEAM2", top2);
+                        request.setAttribute("TEAM3", listTop3);
+                    }
+
+                }
+
                 // get blog league
                 List<BlogLeagueVM> blogList = leagueDAO.getActiveBlogsByLeagueId(leagueId);
 
@@ -556,6 +649,15 @@ public class UserLeagueController extends HttpServlet {
                 request.setAttribute("USER_LEAGUE", league);
                 request.setAttribute("LEAGUE_TEAM", listTeamRegister);
                 request.setAttribute("leagueId", idS);
+
+                // set groupdIDs 
+                if (league.getType().equals("2")) {
+                    List<Group> listGroup = leagueDAO.getListGroup(leagueId);
+                    if (listGroup.size() > 0) {
+                        System.out.println("LeagueId tu trang view detail " + listGroup.get(0).getId());
+                        request.setAttribute("groupId", listGroup.get(0).getId());
+                    }
+                }
             } else {
                 System.out.println("Cannto get value in ViewLeagueDetail");
             }
@@ -567,7 +669,23 @@ public class UserLeagueController extends HttpServlet {
     }
 
     private void updateLeague(HttpServletRequest request, HttpServletResponse response) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            String name = request.getParameter("name");
+            String description = request.getParameter("desc");
+            String ids = request.getParameter("leagueId");
+            LeagueDAO leagueDAO = new LeagueDAO();
+            League _league = new League();
+            _league.setId(Integer.parseInt(ids));
+            _league.setName(name);
+            _league.setDescription(name);
+
+            League league = leagueDAO.updateLeagueDetail(_league);
+            request.setAttribute("USER_LEAGUE", league);
+            String url = "views/user/league-owner/league-details.jsp";
+            request.getRequestDispatcher(url).forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void viewLeagueDetail_Owner(HttpServletRequest request, HttpServletResponse response) {
@@ -578,7 +696,45 @@ public class UserLeagueController extends HttpServlet {
             int id = Integer.parseInt(idS);
             LeagueDAO leagueDAO = new LeagueDAO();
             League league = leagueDAO.getLeagueById(id);
+            if (league.getType().equals("2")) {
+                List<Group> listGroup = leagueDAO.getListGroup(id);
+                if (listGroup.size() > 0) {
+                    request.setAttribute("groupId", listGroup.get(0).getId());
+                }
+            }
             if (league != null) {
+                TeamDAO teamDAO = new TeamDAO();
+                MatchDAO matchDAO = new MatchDAO();
+                // gồm info id của 2 đội giải 3
+
+                if (league.getType().equals("2") && league.getStatus() == 5) {
+                    List<MatchVM> listTop3Team = leagueDAO.getLoserInKnockoutStage(id);
+                    Match match = matchDAO.getLastMatchInLeague(id);
+                    int top1TeamId = 0;
+                    int top2TeamId = 0;
+
+                    if (match.getScoreAway() > match.getScoreHome()) {
+                        top1TeamId = match.getAwayTeamId();
+                        top2TeamId = match.getHomeTeamId();
+                    } else {
+                        top1TeamId = match.getHomeTeamId();
+                        top2TeamId = match.getAwayTeamId();
+                    }
+
+                    Team top1 = teamDAO.getTeamById(top1TeamId);
+                    Team top2 = teamDAO.getTeamById(top2TeamId);
+
+                    List<Team> listTop3 = new ArrayList<>();
+                    for (MatchVM team : listTop3Team) {
+                        Team top3 = teamDAO.getTeamById(team.getLosingId());
+                        listTop3.add(top3);
+                    }
+
+                    request.setAttribute("TEAM1", top1);
+                    request.setAttribute("TEAM2", top2);
+                    request.setAttribute("TEAM3", listTop3);
+                }
+
                 List<LeagueRegister> listTeamRegister = leagueDAO.getTeamRegisterLeague(id);
                 request.setAttribute("USER_LEAGUE", league);
                 request.setAttribute("LEAGUE_TEAM", listTeamRegister);
@@ -603,7 +759,18 @@ public class UserLeagueController extends HttpServlet {
                 int id = Integer.parseInt(leagueIds);
                 LeagueDAO leagueDAO = new LeagueDAO();
                 League league = leagueDAO.getLeagueById(id);
-                List<MatchVM> listMatch = leagueDAO.generateMatch(id);
+                List<MatchVM> listMatch = new ArrayList<>();
+                List<Group> listGroup = new ArrayList<>();
+                System.out.println("");
+
+                if (league.getType().equals("2")) {
+                    listMatch = leagueDAO.generateMatchWithGroup(id);
+                    listGroup = leagueDAO.getListGroup(id);
+                    session.setAttribute("GROUPS", listGroup);
+                } else {
+                    listMatch = leagueDAO.generateMatch(id);
+                }
+
                 List<LeagueRegister> listTeamRegister = leagueDAO.getTeamRegisterLeague(id);
                 request.setAttribute("LEAGUE_TEAM", listTeamRegister);
                 request.setAttribute("USER_LEAGUE", league);
@@ -613,7 +780,14 @@ public class UserLeagueController extends HttpServlet {
                 } else if (listMatch.size() == 0) {
                     request.setAttribute("ERROR", "Chưa có đội bóng nào tham gia giải đấu của bạn");
                 } else if (listMatch.size() > 0) {
+                    if (league.getType().equals("2")) {
+                        listMatch = leagueDAO.getMatchByLeagueType2(id, listGroup.get(0).getId());
+                        request.setAttribute("groupId", listGroup.get(0).getId());
+                    } else {
+                        listMatch = leagueDAO.getMatchByLeagueType1(id);
+                    }
                     request.setAttribute("LIST_MATCH", listMatch);
+
                     url = "views/user/league-owner/league-match.jsp";
                 }
 
@@ -637,13 +811,13 @@ public class UserLeagueController extends HttpServlet {
         try {
             String url = "views/user/league-owner/league-details.jsp";
             String leagueIds = request.getParameter("leagueId");
+            String groupIds = request.getParameter("groupId");
             HttpSession session = request.getSession();
 
             if (leagueIds != null) {
                 int id = Integer.parseInt(leagueIds);
                 LeagueDAO leagueDAO = new LeagueDAO();
                 League league = leagueDAO.getLeagueById(id);
-
                 if (session != null && session.getAttribute("USER") != null) {
                     User user = (User) session.getAttribute("USER");
                     if (user.getId() == league.getUserId()) {
@@ -651,10 +825,20 @@ public class UserLeagueController extends HttpServlet {
                     }
                 }
 
-                List<MatchVM> listMatch = leagueDAO.getMatchByLeague(id);
+                List<MatchVM> listMatch = new ArrayList<>();
+                if (league.getType().equals("2")) {
+                    listMatch = leagueDAO.getMatchByLeagueType2(id, Integer.parseInt(groupIds));
+                    List<Group> listGroup = leagueDAO.getListGroup(id);
+                    request.setAttribute("GROUPS", listGroup);
+                    request.setAttribute("groupId", groupIds);
+                } else {
+                    listMatch = leagueDAO.getMatchByLeagueType1(id);
+                }
                 request.setAttribute("USER_LEAGUE", league);
                 if (listMatch.size() > 0) {
+
                     request.setAttribute("LIST_MATCH", listMatch);
+
                     url = "views/user/league-owner/league-match.jsp";
                 } else {
                     request.setAttribute("ERROR", "Chưa có đội bóng nào tham gia giải đấu của bạn");
@@ -670,6 +854,7 @@ public class UserLeagueController extends HttpServlet {
         try {
             String url = "views/user/league-owner/league-details.jsp";
             String matchIds = request.getParameter("matchId");
+            String groupIds = request.getParameter("groupId");
             if (matchIds != null) {
                 int id = Integer.parseInt(matchIds);
                 LeagueDAO leagueDAO = new LeagueDAO();
@@ -682,6 +867,7 @@ public class UserLeagueController extends HttpServlet {
                 List<Team_Member> teamB = teamDAO.getListTeamMemberByTeamId(match.getAwayTeamId(), 1);
                 request.setAttribute("USER_LEAGUE", league);
                 if (match != null) {
+                    request.setAttribute("groupId", groupIds);
                     request.setAttribute("TEAMA", teamA);
                     request.setAttribute("TEAMB", teamB);
                     request.setAttribute("MATCH", match);
@@ -689,6 +875,8 @@ public class UserLeagueController extends HttpServlet {
                 } else {
                     request.setAttribute("ERROR", "Chưa có đội bóng nào tham gia giải đấu của bạn");
                 }
+
+                request.setAttribute("groupId", groupIds);
                 request.getRequestDispatcher(url).forward(request, response);
 
             }
@@ -707,6 +895,8 @@ public class UserLeagueController extends HttpServlet {
             String teamBIds = request.getParameter("teamBId");
             String leagueIds = request.getParameter("leagueId");
             String cardQuantityS = request.getParameter("cardQuantity");
+
+            String groupIds = request.getParameter("groupId");
 
             int scoreA = Integer.parseInt(scoreAs);
             int scoreB = Integer.parseInt(scoreBs);
@@ -757,8 +947,12 @@ public class UserLeagueController extends HttpServlet {
                     matchDAO.InsertMatchCard(card);
                 }
 
-                url = "league?action=league-match&leagueId=" + leagueIds;
-
+                League league = leagueDAO.getLeagueById(leagueId);
+                if (league.getType().equals("2") && league.getStatus() == 8) {
+                    url = "league?action=view-final&leagueId=" + leagueIds + "&groupId=" + groupIds;
+                } else {
+                    url = "league?action=league-match&leagueId=" + leagueIds + "&groupId=" + groupIds;
+                }
             } else {
                 request.setAttribute("ERROR", "Cập nhật tỉ số thất bại");
             }
@@ -772,6 +966,7 @@ public class UserLeagueController extends HttpServlet {
         try {
             String url = "views/user/league-owner/league-details.jsp";
             String leagueIds = request.getParameter("leagueId");
+            String groupIds = request.getParameter("groupId");
             if (leagueIds != null) {
                 int leagueId = Integer.parseInt(leagueIds);
                 LeagueDAO leagueDAO = new LeagueDAO();
@@ -779,8 +974,47 @@ public class UserLeagueController extends HttpServlet {
                 // validate các trận đấu điều đã kết thúc mới kết thúc giải được.
                 boolean isFinishAllMatch = leagueDAO.isFinishAllMatch(leagueId);
                 if (isFinishAllMatch) {
-                    System.out.println("Goi vao day luon roi");
-                    boolean result = leagueDAO.finishLeague(leagueId);
+                    // trường hợp này check cả 2 loại giải số trận hết thì mới cho kết thúc giải.
+                    boolean result = false;
+                    League league = leagueDAO.getLeagueById(leagueId);
+
+                    // trường hợp giải xoay vòng thi coi như kết thúc.
+                    result = leagueDAO.finishLeague(leagueId);
+
+                    if (league.getType().equals("2")) {
+                        MatchDAO matchDAO = new MatchDAO();
+
+                        // gồm info id của 2 đội giải 3
+                        List<MatchVM> listTop3Team = leagueDAO.getLoserInKnockoutStage(leagueId);
+                        Match match = matchDAO.getLastMatchInLeague(leagueId);
+                        int top1TeamId = 0;
+                        int top2TeamId = 0;
+
+                        if (match.getScoreAway() > match.getScoreHome()) {
+                            top1TeamId = match.getAwayTeamId();
+                            top2TeamId = match.getHomeTeamId();
+                        } else {
+                            top1TeamId = match.getHomeTeamId();
+                            top2TeamId = match.getAwayTeamId();
+                        }
+                        System.out.println("TeamTop 1" + top1TeamId);
+                        System.out.println("TeamTop 2" + top2TeamId);
+
+                        TeamDAO teamDAO = new TeamDAO();
+                        Team top1 = teamDAO.getTeamById(top1TeamId);
+                        Team top2 = teamDAO.getTeamById(top2TeamId);
+
+                        List<Team> listTop3 = new ArrayList<>();
+                        for (MatchVM team : listTop3Team) {
+                            Team top3 = teamDAO.getTeamById(team.getLosingId());
+                            listTop3.add(top3);
+                        }
+
+                        request.setAttribute("TEAM1", top1);
+                        request.setAttribute("TEAM2", top2);
+                        request.setAttribute("TEAM3", listTop3);
+                    }
+
                     if (result) {
                         request.setAttribute("MESSAGE", "Giải đấu của bạn đã hoàn thành cảm ơn bạn");
                     } else {
@@ -789,6 +1023,8 @@ public class UserLeagueController extends HttpServlet {
                 } else {
                     request.setAttribute("ERROR", "Các trận đấu vẫn chưa được diễn ra, không thể kết thúc giải");
                 }
+                request.setAttribute("groupId", groupIds);
+
                 League league = leagueDAO.getLeagueById(leagueId);
                 if (league != null) {
                     List<LeagueRegister> listTeamRegister = leagueDAO.getTeamRegisterLeague(leagueId);
@@ -807,10 +1043,32 @@ public class UserLeagueController extends HttpServlet {
         try {
             String url = "views/user/league-ranking.jsp";
             String leagueIds = request.getParameter("leagueId");
+            String groupIds = request.getParameter("groupId");
             if (leagueIds != null) {
                 int leagueId = Integer.parseInt(leagueIds);
                 LeagueDAO leagueDAO = new LeagueDAO();
-                List<LeagueRegisterVM> listRank = leagueDAO.getTeamLeaugeRank(leagueId);
+                List<LeagueRegisterVM> listRank = new ArrayList<LeagueRegisterVM>();
+                League league = leagueDAO.getLeagueById(leagueId);
+
+                // xet theo loaij giai chia lam 2 truong hop 
+                // 1 la giai xoay vong 
+                // 2 la giai chia theo bang
+                if (league.getType().equals("2")) {
+                    List<Group> listGroup = leagueDAO.getListGroup(leagueId);
+                    request.setAttribute("GROUPS", listGroup);
+                    request.setAttribute("groupId", listGroup.get(0).getId());
+                    int groupId = 0;
+                    if (groupIds == null) {
+                        groupId = listGroup.get(0).getId();
+                    } else {
+                        groupId = Integer.parseInt(groupIds);
+                        request.setAttribute("groupId", groupId);
+                    }
+                    listRank = leagueDAO.getTeamLeaugeRankInGroupId(leagueId, groupId);
+                } else {
+                    listRank = leagueDAO.getTeamLeaugeRank(leagueId);
+                }
+
                 if (listRank != null) {
                     request.setAttribute("LIST_RANK", listRank);
                 } else {
@@ -838,18 +1096,35 @@ public class UserLeagueController extends HttpServlet {
                 Team teamRegister = teamDAO.getTeamById(teamId);
 
                 LeagueDAO leagueDAO = new LeagueDAO();
-                boolean result = leagueDAO.acceptToJoinLeague(teamId, leagueId);
                 League league = leagueDAO.getLeagueById(leagueId);
                 if (league != null) {
+
+                    List<LeagueRegister> listConfirm = leagueDAO.getTeamRegisterLeagueApprove(leagueId);
+                    int leagueTeamRegisterSize = league.getTeamSize();
+
+                    // get teamLeagueSize();
+                    if (listConfirm.size() < leagueTeamRegisterSize) {
+                        boolean result = leagueDAO.acceptToJoinLeague(teamId, leagueId);
+                        if (result) {
+                            int userId = teamDAO.getUserIdByTeamID(teamId);
+                            NotificationDAO notiDAO = new NotificationDAO();
+                            String title = "THAM GIA GIẢI ĐẤU";
+                            String contentNoti = "Yêu cầu tham gia giải đấu [" + league.getName() + "] đã được duyệt!";
+                            notiDAO.createNotification(userId, title, contentNoti);
+
+                            request.setAttribute("MESSAGE", "Bạn đã đồng ý coho " + teamRegister.getName() + " tham gia vào giải đấu này");
+                        } else {
+                            request.setAttribute("ERROR", "Cho đội - " + teamIds + " tham gia vào giải không thành công.");
+                        }
+                    } else {
+                        request.setAttribute("ERROR", "Bạn đã duyệt đủ số lượng yêu cầu tối đa của giải đấu");
+                    }
                     List<LeagueRegister> listTeamRegister = leagueDAO.getTeamRegisterLeague(leagueId);
+                    // getlist confirm
                     request.setAttribute("USER_LEAGUE", league);
                     request.setAttribute("LEAGUE_TEAM", listTeamRegister);
                     request.setAttribute("leagueId", leagueIds);
-                    if (result) {
-                        request.setAttribute("MESSAGE", "You was accept " + teamRegister.getName() + " to join for your league");
-                    } else {
-                        request.setAttribute("ERROR", "Cannot accept teamid  - " + teamIds);
-                    }
+
                     request.getRequestDispatcher(url).forward(request, response);
                 }
             }
@@ -868,6 +1143,387 @@ public class UserLeagueController extends HttpServlet {
             }
             request.getRequestDispatcher("league?action=user-league").forward(request, response);
         } catch (Exception e) {
+        }
+    }
+
+    private void ViewKnockoutMatch(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            LeagueDAO leagueDAO = new LeagueDAO();
+            HttpSession session = request.getSession();
+            String leagueIds = request.getParameter("leagueId");
+            String groupIds = request.getParameter("groupId");
+            String url = "";
+            List<MatchVM> listMatch = new ArrayList<>();
+            int leagueId = Integer.parseInt(leagueIds);
+            League league = leagueDAO.getLeagueById(leagueId);
+            if (leagueIds != null) {
+
+                if (session != null && session.getAttribute("USER") != null) {
+                    User user = (User) session.getAttribute("USER");
+                    if (user.getId() == league.getUserId()) {
+                        request.setAttribute("OWNER", true);
+                    }
+                }
+            }
+            listMatch = leagueDAO.getMatchByLeagueKnowoutStage(leagueId, Integer.parseInt(groupIds));
+            List<Group> listGroup = leagueDAO.getListGroup(leagueId);
+            request.setAttribute("GROUPS", listGroup);
+            request.setAttribute("groupId", groupIds);
+            request.setAttribute("USER_LEAGUE", league);
+            if (listMatch.size() > 0) {
+                request.setAttribute("LIST_MATCH", listMatch);
+                request.setAttribute("ISKNOCKOUT", true);
+                url = "views/user/league-owner/league-match.jsp";
+            } else {
+                request.setAttribute("ERROR", "Chưa có đội bóng nào tham gia giải đấu của bạn");
+            }
+            request.getRequestDispatcher(url).forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void generateFinalMatch(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            LeagueDAO leagueDAO = new LeagueDAO();
+            HttpSession session = request.getSession();
+            String leagueIds = request.getParameter("leagueId");
+            String groupIds = request.getParameter("groupId");
+            String url = "";
+            List<MatchVM> listMatch = new ArrayList<>();
+            int leagueId = Integer.parseInt(leagueIds);
+            League league = leagueDAO.getLeagueById(leagueId);
+
+            if (leagueIds != null) {
+                if (session != null && session.getAttribute("USER") != null) {
+                    User user = (User) session.getAttribute("USER");
+                    if (user.getId() == league.getUserId()) {
+                        request.setAttribute("OWNER", true);
+                    }
+                }
+            }
+
+            // validate các trận đấu điều đã kết thúc mới kết thúc giải được.
+            boolean isFinishAllMatch = leagueDAO.isFinishAllMatchInGroup(leagueId);
+            if (isFinishAllMatch) {
+                MatchDAO matchDAO = new MatchDAO();
+                boolean result = false;
+                List<LeagueRegisterVM[]> matchups = new ArrayList<>();
+                TeamDAO teamDAO = new TeamDAO();
+
+                Team team = teamDAO.getTeamById(leagueId);
+
+                // trả về id của team đã thắng ở các bảng knock out.
+                listMatch = leagueDAO.getWinnerInKnockoutStage(leagueId);
+                for (var i = 0; i < listMatch.size(); i += 2) {
+
+                    String endDate = league.getEndDate().toString();
+
+                    Match match = matchDAO.getLastMatchInLeague(leagueId);
+
+                    LeagueRegisterVM teamWin1 = new LeagueRegisterVM();
+                    MatchVM matchVM1 = listMatch.get(i);
+                    teamWin1.setTeamId(matchVM1.getWinningId());
+
+                    LeagueRegisterVM teamWin2 = new LeagueRegisterVM();
+                    MatchVM matchVM2 = listMatch.get(i + 1);
+                    teamWin2.setTeamId(matchVM2.getWinningId());
+
+                    matchups.add(new LeagueRegisterVM[]{teamWin1, teamWin2});
+                    LocalDateTime _startTime = match.getEndAt();
+                    LocalDateTime _endTime = _startTime.plusHours(2);
+                    int groupId = Integer.parseInt(groupIds);
+                    result = leagueDAO.generateFinalMatchWithGroupInKnockoutStage(matchups, leagueId, _startTime, _endTime);
+
+                    // update thong tin thanh cong
+                    if (result) {
+                        listMatch = leagueDAO.getFinalMatchByLeagueId(leagueId);
+                        league = leagueDAO.getLeagueById(leagueId);
+                        //update thanh congf xong get lai
+                        if (listMatch.size() > 0) {
+                            List<Group> listGroup = leagueDAO.getListGroup(leagueId);
+                            request.setAttribute("USER_LEAGUE", league);
+                            request.setAttribute("LIST_MATCH", listMatch);
+                            request.setAttribute("ISKNOCKOUT", true);
+                            request.setAttribute("GROUPS", listGroup);
+                            request.setAttribute("groupId", groupIds);
+                            url = "views/user/league-owner/league-match.jsp";
+                        } else {
+                            request.setAttribute("ERROR", "Chưa có đội bóng nào tham gia giải đấu của bạn");
+                        }
+                    }
+                }
+            } else {
+                request.setAttribute("ERROR", "Các trận đấu vẫn chưa được diễn ra, không thể kết thúc giải");
+                url = "league?action=knockout-stage&leagueId=" + leagueIds + "&groupId=" + groupIds;
+            }
+
+            request.getRequestDispatcher(url).forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void viewFinalMatch(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            LeagueDAO leagueDAO = new LeagueDAO();
+            HttpSession session = request.getSession();
+            String leagueIds = request.getParameter("leagueId");
+            String groupIds = request.getParameter("groupId");
+            String url = "";
+            List<MatchVM> listMatch = new ArrayList<>();
+            int leagueId = Integer.parseInt(leagueIds);
+            League league = leagueDAO.getLeagueById(leagueId);
+            if (leagueIds != null) {
+
+                if (session != null && session.getAttribute("USER") != null) {
+                    User user = (User) session.getAttribute("USER");
+                    if (user.getId() == league.getUserId()) {
+                        request.setAttribute("OWNER", true);
+                    }
+                }
+            }
+            MatchDAO matchDAO = new MatchDAO();
+            boolean result = false;
+            List<LeagueRegisterVM[]> matchups = new ArrayList<>();
+            TeamDAO teamDAO = new TeamDAO();
+
+            Team team = teamDAO.getTeamById(leagueId);
+
+            Match match = matchDAO.getLastMatchInLeague(leagueId);
+            List<Group> listGroup = leagueDAO.getListGroup(leagueId);
+            request.setAttribute("GROUPS", listGroup);
+            request.setAttribute("groupId", groupIds);
+            request.setAttribute("USER_LEAGUE", league);
+            listMatch = leagueDAO.getFinalMatchByLeagueId(leagueId);
+            if (listMatch.size() > 0) {
+                // bắt đầu trân chugn kết xong update lại status của giải thành 7 => Đã bắt đầu trận chung kết.
+
+                request.setAttribute("LIST_MATCH", listMatch);
+                request.setAttribute("ISKNOCKOUT", true);
+                url = "views/user/league-owner/league-match.jsp";
+            } else {
+                request.setAttribute("ERROR", "Chưa có đội bóng nào tham gia giải đấu của bạn");
+            }
+            request.getRequestDispatcher(url).forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void leagueGroupTypeResult(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            LeagueDAO leagueDAO = new LeagueDAO();
+            HttpSession session = request.getSession();
+            String leagueIds = request.getParameter("leagueId");
+            String groupIds = request.getParameter("groupId");
+            String url = "";
+            List<MatchVM> listMatch = new ArrayList<>();
+            int leagueId = Integer.parseInt(leagueIds);
+            League league = leagueDAO.getLeagueById(leagueId);
+            if (leagueIds != null) {
+                if (session != null && session.getAttribute("USER") != null) {
+                    User user = (User) session.getAttribute("USER");
+                    if (user.getId() == league.getUserId()) {
+                        request.setAttribute("OWNER", true);
+                    }
+                }
+            }
+            MatchDAO matchDAO = new MatchDAO();
+            boolean result = false;
+            List<LeagueRegisterVM[]> matchups = new ArrayList<>();
+            TeamDAO teamDAO = new TeamDAO();
+
+            // gồm info id của 2 đội giải 3
+            List<MatchVM> listTop3Team = leagueDAO.getLoserInKnockoutStage(leagueId);
+            Match match = matchDAO.getLastMatchInLeague(leagueId);
+            int top1TeamId = 0;
+            int top2TeamId = 0;
+
+            if (match.getScoreAway() > match.getScoreHome()) {
+                top1TeamId = match.getAwayTeamId();
+                top2TeamId = match.getHomeTeamId();
+            } else {
+                top1TeamId = match.getHomeTeamId();
+                top2TeamId = match.getAwayTeamId();
+            }
+
+            Team top1 = teamDAO.getTeamById(top1TeamId);
+            Team top2 = teamDAO.getTeamById(top2TeamId);
+
+            List<Team> listTop3 = new ArrayList<>();
+            for (MatchVM team : listTop3Team) {
+                Team top3 = teamDAO.getTeamById(team.getLosingId());
+                listTop3.add(top3);
+            }
+
+            request.setAttribute("TEAM1", top1);
+            request.setAttribute("TEAM2", top2);
+            request.setAttribute("TEAM3", listTop3);
+
+            Team team = teamDAO.getTeamById(leagueId);
+
+            List<Group> listGroup = leagueDAO.getListGroup(leagueId);
+            request.setAttribute("GROUPS", listGroup);
+            request.setAttribute("groupId", groupIds);
+            request.setAttribute("USER_LEAGUE", league);
+            listMatch = leagueDAO.getFinalMatchByLeagueId(leagueId);
+            if (listMatch.size() > 0) {
+                // bắt đầu trân chugn kết xong update lại status của giải thành 7 => Đã bắt đầu trận chung kết.
+
+                request.setAttribute("LIST_MATCH", listMatch);
+                request.setAttribute("ISKNOCKOUT", true);
+                url = "views/user/user/league-group-result.jsp";
+            } else {
+                request.setAttribute("ERROR", "Chưa có đội bóng nào tham gia giải đấu của bạn");
+            }
+            request.getRequestDispatcher(url).forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void startKnockoutStage(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            String url = "views/user/league-owner/league-details.jsp";
+            String leagueIds = request.getParameter("leagueId");
+            String groupIds = request.getParameter("groupId");
+            if (leagueIds != null) {
+                int leagueId = Integer.parseInt(leagueIds);
+                LeagueDAO leagueDAO = new LeagueDAO();
+
+                // validate các trận đấu điều đã kết thúc mới kết thúc giải được.
+                boolean isFinishAllMatch = leagueDAO.isFinishAllMatch(leagueId);
+                if (isFinishAllMatch) {
+                    // trường hợp này check cả 2 loại giải số trận hết thì mới cho kết thúc giải.
+                    boolean result = false;
+                    League league = leagueDAO.getLeagueById(leagueId);
+                    if (league.getType().equals("2")) {
+
+                        // nếu là vòng bảng thì sẽ lấy nhất bảng của thằng bảng 1 tạo cặp trận với thằng trận kia bảng B 
+                        List<LeagueRegisterVM[]> matchups = new ArrayList<>();
+                        List<Group> listGroup = leagueDAO.getListGroup(leagueId);
+                        // chạy 1 lần 
+                        for (int i = 0; i < listGroup.size(); i += 2) {
+                            // doi ban A_C
+                            List<LeagueRegisterVM> listRankTable1 = leagueDAO.getTeamLeaugeRankInGroupId(leagueId, listGroup.get(i).getId());
+                            // doi bang B_D
+                            List<LeagueRegisterVM> listRankTable2 = leagueDAO.getTeamLeaugeRankInGroupId(leagueId, listGroup.get(i + 1).getId());
+
+                            // Tạo trận đấu giữa nhất bảng A và nhì bảng B
+                            matchups.add(new LeagueRegisterVM[]{listRankTable1.get(0), listRankTable2.get(1)});
+                            matchups.add(new LeagueRegisterVM[]{listRankTable1.get(1), listRankTable2.get(0)});
+
+                            // tạo hàm generate trận đấy.
+                            // 1.get thoi gian startDate = end day cua tran đấu cuối cùng.
+                            MatchDAO matchDAO = new MatchDAO();
+                            String endDate = league.getEndDate().toString();
+                            Match match = matchDAO.getLastMatchInLeague(leagueId);
+
+                            LocalDateTime _startTime = match.getEndAt();
+                            LocalDateTime _endTime = _startTime.plusHours(2);
+                            int groupId = Integer.parseInt(groupIds);
+                            result = leagueDAO.generateMatchWithGroupInKnockoutStage(matchups, leagueId, _startTime, _endTime);
+
+                        }
+
+                    }
+                    if (result) {
+                        request.setAttribute("MESSAGE", "Giải đấu của bạn đã hoàn thành cảm ơn bạn");
+                    } else {
+                        request.setAttribute("ERROR", "Không thể kết thúc giải đấu");
+                    }
+                } else {
+                    request.setAttribute("ERROR", "Các trận đấu vẫn chưa được diễn ra, không thể kết thúc giải");
+                }
+                request.setAttribute("groupId", groupIds);
+
+                League league = leagueDAO.getLeagueById(leagueId);
+                if (league != null) {
+                    List<LeagueRegister> listTeamRegister = leagueDAO.getTeamRegisterLeague(leagueId);
+                    request.setAttribute("USER_LEAGUE", league);
+                    request.setAttribute("LEAGUE_TEAM", listTeamRegister);
+                    request.setAttribute("leagueId", leagueId);
+                }
+                request.getRequestDispatcher(url).forward(request, response);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void removeTeamRegisterFromLeague(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            String url = "views/user/league-owner/league-details.jsp";
+            String leagueIds = request.getParameter("leagueId");
+            String teamIds = request.getParameter("teamId");
+            if (leagueIds != null && teamIds != null) {
+                int leagueId = Integer.parseInt(leagueIds);
+                int teamId = Integer.parseInt(teamIds);
+                TeamDAO teamDAO = new TeamDAO();
+                Team teamRegister = teamDAO.getTeamById(teamId);
+
+                LeagueDAO leagueDAO = new LeagueDAO();
+                League league = leagueDAO.getLeagueById(leagueId);
+                if (league != null) {
+                    // get teamLeagueSize();
+                    boolean result = leagueDAO.changeStatusTeamRegsiterFromLeague(teamId, leagueId);
+                    if (result) {
+                        List<LeagueRegister> listTeamRegister = leagueDAO.getTeamRegisterLeague(leagueId);
+                        request.setAttribute("USER_LEAGUE", league);
+                        request.setAttribute("LEAGUE_TEAM", listTeamRegister);
+                        request.setAttribute("leagueId", leagueIds);
+                        request.setAttribute("MESSAGE", "Bạn đã loại bỏ " + teamRegister.getName() + "khỏi danh sách phê duyệt");
+                    } else {
+                        request.setAttribute("ERROR", "Cho đội - " + teamIds + " tham gia vào giải không thành công.");
+                    }
+
+                    request.getRequestDispatcher(url).forward(request, response);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void rejectRegisterTeamToLeague(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            String url = "views/user/league-owner/league-details.jsp";
+            String leagueIds = request.getParameter("leagueId");
+            String teamIds = request.getParameter("teamId");
+            if (leagueIds != null && teamIds != null) {
+                int leagueId = Integer.parseInt(leagueIds);
+                int teamId = Integer.parseInt(teamIds);
+                TeamDAO teamDAO = new TeamDAO();
+                Team teamRegister = teamDAO.getTeamById(teamId);
+
+                LeagueDAO leagueDAO = new LeagueDAO();
+                League league = leagueDAO.getLeagueById(leagueId);
+                if (league != null) {
+                    // get teamLeagueSize();
+                    boolean result = leagueDAO.removeTeamRegsiterFromLeague(teamId, leagueId);
+                    if (result) {
+                        List<LeagueRegister> listTeamRegister = leagueDAO.getTeamRegisterLeague(leagueId);
+                        request.setAttribute("USER_LEAGUE", league);
+                        request.setAttribute("LEAGUE_TEAM", listTeamRegister);
+                        request.setAttribute("leagueId", leagueIds);
+                        request.setAttribute("MESSAGE", "Bạn đã loại bỏ " + teamRegister.getName() + " ra khỏi giải đấu");
+
+                        int userId = teamDAO.getUserIdByTeamID(teamId);
+                        NotificationDAO notiDAO = new NotificationDAO();
+                        String title = "THAM GIA GIẢI ĐẤU";
+                        String contentNoti = "Yêu cầu tham gia giải đấu [" +league.getName()+"] đã bị từ chối. Vui lòng kiểm tra lại!";
+                        notiDAO.createNotification(userId, title, contentNoti);
+
+                    } else {
+                        request.setAttribute("ERROR", "Cho đội - " + teamIds + " tham gia vào giải không thành công.");
+                    }
+
+                    request.getRequestDispatcher(url).forward(request, response);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

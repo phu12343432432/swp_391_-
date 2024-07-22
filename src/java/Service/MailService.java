@@ -115,4 +115,51 @@ public class MailService {
             throw new RuntimeException(e);
         }
     }
+    
+    
+    public static void sendMailWithInfo(String email, String Info) {
+
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
+
+        Session session = Session.getInstance(props,
+                new jakarta.mail.Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(username, password);
+            }
+        });
+
+        try {
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(username));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
+            message.setSubject("GrammarGuradian Trasition"); // Email subject
+
+            // Email content with enhanced design
+            String htmlBody = "<html><head><style>"
+                    + "body { font-family: Arial, sans-serif; }"
+                    + ".header { color: #007bff; }"
+                    + ".otp { color: #28a745; }"
+                    + ".footer { margin-top: 20px; text-align: center; color: #6c757d; }"
+                    + ".content { color: #343a40; }"
+                    + "</style></head>"
+                    + "<body>"
+                    + "<h1 class='header'>Wallet Transistion</h1>"
+                    + "<p class='content'></p>"
+                    + "<p class='content'> " + Info +" </p>"
+                    + "<p class='footer'>Thanks you.</p>"
+                    + "</body></html>";
+
+            message.setContent(htmlBody, "text/html");
+
+            Transport.send(message);
+            System.out.println("Email sent successfully.");
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

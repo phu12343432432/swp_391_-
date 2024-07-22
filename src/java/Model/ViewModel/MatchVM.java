@@ -40,5 +40,10 @@ public class MatchVM {
     private int ScoreHome;
     private int ScoreAway;    
     private int Status;
+    
+    private int Knockout;
+    private int WinningId;   
+    private int LosingId;
+
 
 }

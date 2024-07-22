@@ -7,6 +7,7 @@ package DAO;
 import DAL.DBContext;
 import Model.Card;
 import Model.Goal;
+import Model.Match;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -144,5 +145,33 @@ public class MatchDAO extends DBContext {
             e.printStackTrace();
         }
         return false;
+    }
+    
+    public Match getLastMatchInLeague(int leagueId) {
+        try {
+            String sql = "SELECT * FROM [Match] WHERE LeagueId = ? ORDER BY Id DESC ";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, leagueId);
+            rs = ps.executeQuery();
+            if(rs.next()) {
+                Match match = new Match();
+                match.setEndAt(rs.getTimestamp("EndAt").toLocalDateTime());
+                match.setGroupId(rs.getInt("GroupId"));
+                match.setAwayTeamId(rs.getInt("AwayTeamId"));    
+                match.setHomeTeamId(rs.getInt("HomeTeamId"));
+                match.setScoreHome(rs.getInt("ScoreHome"));       
+                match.setScoreAway(rs.getInt("ScoreAway"));
+                match.setLeaugeId(rs.getInt("LeagueId"));
+                return match;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    public static void main(String[] args) {
+        MatchDAO matchDAO = new MatchDAO();
+        System.out.println(matchDAO.getLastMatchInLeague(7));
     }
 };

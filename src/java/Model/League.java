@@ -36,4 +36,5 @@ public class League {
     private String Image;
     private String Type;
     private int UserId;
+    private int TeamMemberSize;
 }

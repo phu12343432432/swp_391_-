@@ -212,4 +212,63 @@ public class AuthenticationDAO extends DBContext {
         }
         return false;
     }
+
+    public User getUserById(int Id) {
+        String sql = "SELECT * FROM [User] WHERE [Id] = ?";
+        User user = null;
+        try {
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, Id);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                user = new User();
+                int userId = rs.getInt("Id");
+                String userName = rs.getString("UserName");
+                String firstName = rs.getString("FirstName");
+                String lastName = rs.getString("LastName");
+                String phone = rs.getString("Phone");
+                String email = rs.getString("Email");
+                boolean isActive = rs.getBoolean("IsActive");
+                boolean IsConfirm = rs.getBoolean("IsConfirm");
+                String _password = rs.getString("Password");
+                int roleId = rs.getInt("RoleId");
+                byte[] imgData = rs.getBytes("Image");
+                String base64Image = null;
+                if (imgData != null) {
+                    base64Image = Base64.getEncoder().encodeToString(imgData);
+                }
+
+                user.setId(userId);
+                user.setUserName(userName);
+                user.setFirstName(firstName);
+                user.setLastName(lastName);
+                user.setPhone(phone);
+                user.setEmail(email);
+                user.setIsActive(isActive);
+                user.setIsCofirm(IsConfirm);
+                user.setImage(base64Image);
+                user.setRoleId(roleId);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Cannot found");
+        }
+        return user;
+    }
+
+    public boolean checkValidateEmail(String email) {
+        try {
+            String sql = "SELECT COUNT(*) FROM [User] WHERE Email = ? ";
+            ps = con.prepareStatement(sql);
+            ps.setString(1, email);
+            rs = ps.executeQuery();
+            if(rs.next()) {
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

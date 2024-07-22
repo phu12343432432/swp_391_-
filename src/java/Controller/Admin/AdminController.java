@@ -4,6 +4,7 @@
  */
 package Controller.Admin;
 
+import DAO.DashboardDAO;
 import DAO.LeagueDAO;
 import DAO.UserManageDAO;
 import DAO.UserWalletDAO;
@@ -18,7 +19,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -52,6 +55,10 @@ public class AdminController extends HttpServlet {
                         LocalDateTime now = LocalDateTime.now();
                         int currentMonth = now.getMonthValue();
                         int currentYear = now.getYear();
+                        String months = request.getParameter("month");
+                        if (months != null) {
+                            currentMonth = Integer.parseInt(months);
+                        }
 
                         float monthlyWalletRevenueCurentMonth = 0.0f;
                         List<UserWalletOrder> monthlyWalletOrders = userWalletDAO.getMonthlyWalletOrders(currentMonth, currentYear);
@@ -73,6 +80,13 @@ public class AdminController extends HttpServlet {
                         }
                         UserWalletDAO walletDAO = new UserWalletDAO();
                         List<UserWalletOrderVM> orders = walletDAO.getWalletOrdersPending();
+
+                        DashboardDAO dashboardDAO = new DashboardDAO();
+                        Map<YearMonth, Integer> monthlyLeagueFinish = dashboardDAO.getMonthlyFinishedLeague();
+                        Map<YearMonth, Integer> monthlyLeague = dashboardDAO.getMonthlyLeague();
+                        request.setAttribute("MONTHLY_FINISHED_LEAGUE", monthlyLeagueFinish);
+                        request.setAttribute("MONTHLY_LEAGUE", monthlyLeague);
+                        request.setAttribute("currentMonth", currentMonth);
                         request.setAttribute("MONTHLY_WALLET_REVENUE", monthlyWalletRevenueCurentMonth);
                         request.setAttribute("WALLET_ORDERS", monthlyWalletOrders);
                         request.setAttribute("TOTAL_USERS", totalUsers);
@@ -153,5 +167,4 @@ public class AdminController extends HttpServlet {
             e.printStackTrace();
         }
     }
-
 }

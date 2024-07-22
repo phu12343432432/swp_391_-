@@ -7,6 +7,7 @@ package DAO;
 import DAL.DBContext;
 import Model.Card;
 import Model.Goal;
+import Model.Group;
 import Model.League;
 import Model.LeagueRegister;
 import Model.LeagueRegisterVM;
@@ -148,6 +149,7 @@ public class LeagueDAO {
                 league.setTeamSize(rs.getInt("TeamSize"));
                 league.setType(rs.getString("Type"));
                 league.setUserId(rs.getInt("UserId"));
+                league.setTeamMemberSize(rs.getInt("TeamMemberSize"));
                 byte[] imgData = rs.getBytes("Image");
                 String base64Image = Base64.getEncoder().encodeToString(imgData);
                 league.setImage(base64Image);
@@ -187,6 +189,7 @@ public class LeagueDAO {
                 league.setTeamSize(rs.getInt("TeamSize"));
                 league.setType(rs.getString("Type"));
                 league.setUserId(rs.getInt("UserId"));
+                league.setTeamMemberSize(rs.getInt("TeamMemberSize"));
                 byte[] imgData = rs.getBytes("Image");
                 String base64Image = Base64.getEncoder().encodeToString(imgData);
                 league.setImage(base64Image);
@@ -253,6 +256,7 @@ public class LeagueDAO {
                 league.setDateRegister(rs.getString("DateRegister"));
                 league.setTeamSize(rs.getInt("TeamSize"));
                 league.setType(rs.getString("Type"));
+                league.setTeamMemberSize(rs.getInt("TeamMemberSize"));
                 byte[] imgData = rs.getBytes("Image");
                 String base64Image = Base64.getEncoder().encodeToString(imgData);
                 league.setImage(base64Image);
@@ -284,6 +288,7 @@ public class LeagueDAO {
                 league.setDateRegister(rs.getString("DateRegister"));
                 System.out.println("REgistered Date" + rs.getDate("DateRegister"));
                 league.setType(rs.getString("Type"));
+                league.setTeamMemberSize(rs.getInt("TeamMemberSize"));
                 league.setUserId(rs.getInt("UserId"));
 
                 byte[] imgData = rs.getBytes("Image");
@@ -319,6 +324,7 @@ public class LeagueDAO {
                 league.setDateRegister(rs.getString("DateRegister"));
                 System.out.println("REgistered Date" + rs.getDate("DateRegister"));
                 league.setType(rs.getString("Type"));
+                league.setTeamMemberSize(rs.getInt("TeamMemberSize"));
                 league.setUserId(rs.getInt("UserId"));
 
                 byte[] imgData = rs.getBytes("Image");
@@ -367,6 +373,7 @@ public class LeagueDAO {
                 league.setDateRegister(rs.getString("DateRegister"));
                 league.setTeamSize(rs.getInt("TeamSize"));
                 league.setType(rs.getString("Type"));
+                league.setTeamMemberSize(rs.getInt("TeamMemberSize"));
                 byte[] imgData = rs.getBytes("Image");
                 String base64Image = Base64.getEncoder().encodeToString(imgData);
                 league.setImage(base64Image);
@@ -386,8 +393,8 @@ public class LeagueDAO {
             // reject la 2.
             // cancle là 3.
             String sql = "INSERT  dbo.[League] ([Name], [Description], [TeamSize], "
-                    + "[StartDate], [EndDate], [Address], [Image] ,[CreateAt], [UserId], [Type], [DateRegister], [Status]) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)";
+                    + "[StartDate], [EndDate], [Address], [Image] ,[CreateAt], [UserId], [Type], [DateRegister], [TeamMemberSize],  [Status]) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)";
             ps = con.prepareStatement(sql);
             ps.setString(1, league.getName());
             ps.setString(2, league.getDescription());
@@ -405,6 +412,8 @@ public class LeagueDAO {
             ps.setInt(9, league.getUserId());
             ps.setString(10, league.getType());
             ps.setString(11, league.getDateRegister());
+            ps.setInt(12, league.getTeamMemberSize());
+
             int affectedRow = ps.executeUpdate();
             return affectedRow > 0;
         } catch (Exception e) {
@@ -548,6 +557,7 @@ public class LeagueDAO {
                 league.setTeamSize(rs.getInt("TeamSize"));
                 league.setType(rs.getString("Type"));
                 league.setStatus(rs.getInt("Status"));
+                league.setTeamMemberSize(rs.getInt("TeamMemberSize"));
                 byte[] imgData = rs.getBytes("Image");
                 String base64Image = Base64.getEncoder().encodeToString(imgData);
                 league.setImage(base64Image);
@@ -594,6 +604,7 @@ public class LeagueDAO {
                 league.setType(rs.getString("Type"));
                 league.setStatus(rs.getInt("Status"));
                 byte[] imgData = rs.getBytes("Image");
+                league.setTeamMemberSize(rs.getInt("TeamMemberSize"));
                 String base64Image = Base64.getEncoder().encodeToString(imgData);
                 league.setImage(base64Image);
                 listLeague.add(league);
@@ -739,10 +750,47 @@ public class LeagueDAO {
     public List<LeagueRegisterVM> getTeamLeaugeRank(int leagueId) {
         List<LeagueRegisterVM> listTeam = new ArrayList<>();
         try {
-            String sql = "SELECT tl.TeamId, tl.RegisterAt, tl.Point, t.Name, t.Image, t.ShortName, tl.Loses, tl.Wins, tl.Ties FROM League le JOIN Team_League tl ON tl.LeagueId = le.Id "
-                    + "JOIN Team t ON tl.TeamId = t.Id WHERE le.Id = ? AND tl.Status = 1 ORDER BY tl.Point DESC";
+//            String sql = "SELECT tl.TeamId, tl.RegisterAt, tl.Point, t.Name, t.Image, t.ShortName, tl.Loses, tl.Wins, tl.Ties FROM League le JOIN Team_League tl ON tl.LeagueId = le.Id "
+//                    + "JOIN Team t ON tl.TeamId = t.Id WHERE le.Id = ? AND tl.Status = 1 ORDER BY tl.Point DESC";
+            String sql = "WITH CardPoints AS (\n"
+                    + "    SELECT\n"
+                    + "        TeamId,\n"
+                    + "        SUM(CASE WHEN c.Type = 'yellow' THEN 1 ELSE 0 END) AS YellowCards,\n"
+                    + "        SUM(CASE WHEN c.Type = 'red' THEN 3 ELSE 0 END) AS RedCards,\n"
+                    + "        SUM(CASE WHEN c.Type = 'yellow' THEN 1 ELSE 0 END) + SUM(CASE WHEN c.Type = 'red' THEN 3 ELSE 0 END) AS TotalCardPoints\n"
+                    + "    FROM\n"
+                    + "      Card  c JOIN Match m ON m.Id = c.MatchId\n"
+                    + "		JOIN League l ON m.LeagueId = l.Id WHERE l.Id = ? "
+                    + "    GROUP BY\n"
+                    + "        TeamId\n"
+                    + ")\n"
+                    + "\n"
+                    + "SELECT \n"
+                    + "    tl.TeamId, \n"
+                    + "    tl.RegisterAt, \n"
+                    + "    tl.Point, \n"
+                    + "    t.Name, \n"
+                    + "    t.Image, \n"
+                    + "    t.ShortName, \n"
+                    + "    tl.Loses, \n"
+                    + "    tl.Wins, \n"
+                    + "    tl.Ties,\n"
+                    + "    cp.TotalCardPoints\n"
+                    + "FROM \n"
+                    + "    League le \n"
+                    + "    JOIN Team_League tl ON tl.LeagueId = le.Id\n"
+                    + "    JOIN Team t ON tl.TeamId = t.Id\n"
+                    + "    LEFT JOIN CardPoints cp ON tl.TeamId = cp.TeamId\n"
+                    + "WHERE \n"
+                    + "    le.Id = ? \n"
+                    + "    AND tl.Status = 1 \n"
+                    + "ORDER BY \n"
+                    + "    tl.Point DESC, \n"
+                    + "    cp.TotalCardPoints ASC;";
             ps = con.prepareStatement(sql);
             ps.setInt(1, leagueId);
+            ps.setInt(2, leagueId);
+
             rs = ps.executeQuery();
             while (rs.next()) {
                 LeagueRegisterVM tl = new LeagueRegisterVM();
@@ -754,6 +802,77 @@ public class LeagueDAO {
                 tl.setWins(rs.getInt("Wins"));
                 tl.setLoses(rs.getInt("Loses"));
                 tl.setTies(rs.getInt("Ties"));
+                tl.setTotalCardPoint(rs.getInt("TotalCardPoints"));
+
+                byte[] imgData = rs.getBytes("Image");
+                String base64Image = Base64.getEncoder().encodeToString(imgData);
+                tl.setImage(base64Image);
+                listTeam.add(tl);
+            }
+            return listTeam;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<LeagueRegisterVM> getTeamLeaugeRankInGroupId(int leagueId, int groupdId) {
+        List<LeagueRegisterVM> listTeam = new ArrayList<>();
+        try {
+            String sql = "	WITH CardPoints AS (\n"
+                    + "    SELECT\n"
+                    + "        TeamId,\n"
+                    + "        SUM(CASE WHEN c.Type = 'yellow' THEN 1 ELSE 0 END) AS YellowCards,\n"
+                    + "        SUM(CASE WHEN c.Type = 'red' THEN 3 ELSE 0 END) AS RedCards,\n"
+                    + "        SUM(CASE WHEN c.Type = 'yellow' THEN 1 ELSE 0 END) + SUM(CASE WHEN c.Type = 'red' THEN 3 ELSE 0 END) AS TotalCardPoints\n"
+                    + "    FROM\n"
+                    + "      Card  c JOIN Match m ON m.Id = c.MatchId\n"
+                    + "		JOIN League l ON m.LeagueId = l.Id WHERE l.Id = ? "
+                    + "    GROUP BY\n"
+                    + "        TeamId\n"
+                    + ")\n"
+                    + "\n"
+                    + "SELECT \n"
+                    + "    tl.TeamId, \n"
+                    + "    tl.RegisterAt, \n"
+                    + "    tl.Point, \n"
+                    + "    t.Name, \n"
+                    + "    t.Image, \n"
+                    + "    t.ShortName, \n"
+                    + "    tl.Loses, \n"
+                    + "    tl.Wins, \n"
+                    + "    tl.Ties,\n"
+                    + "    cp.TotalCardPoints\n"
+                    + "FROM \n"
+                    + "    League le \n"
+                    + "    JOIN Team_League tl ON tl.LeagueId = le.Id\n"
+                    + "    JOIN Team t ON tl.TeamId = t.Id\n"
+                    + "    LEFT JOIN CardPoints cp ON tl.TeamId = cp.TeamId\n"
+                    + "WHERE \n"
+                    + "    le.Id = ?\n"
+                    + "    AND tl.Status = 1\n"
+                    + "	AND tl.GroupId = ?\n"
+                    + "ORDER BY \n"
+                    + "    tl.Point DESC, \n"
+                    + "    cp.TotalCardPoints ASC;";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, leagueId);
+            ps.setInt(2, leagueId);
+
+            ps.setInt(3, groupdId);
+
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                LeagueRegisterVM tl = new LeagueRegisterVM();
+                tl.setTeamId(rs.getInt("TeamId"));
+                tl.setTeamName(rs.getString("Name"));
+                tl.setRegisterAt(rs.getDate("RegisterAt").toString());
+                tl.setPoint(rs.getInt("Point"));
+                tl.setShortName(rs.getString("ShortName"));
+                tl.setWins(rs.getInt("Wins"));
+                tl.setLoses(rs.getInt("Loses"));
+                tl.setTies(rs.getInt("Ties"));
+                tl.setTotalCardPoint(rs.getInt("TotalCardPoints"));
 
                 byte[] imgData = rs.getBytes("Image");
                 String base64Image = Base64.getEncoder().encodeToString(imgData);
@@ -786,7 +905,7 @@ public class LeagueDAO {
                 league.setDateRegister(rs.getString("DateRegister"));
                 league.setType(rs.getString("Type"));
                 league.setUserId(rs.getInt("UserId"));
-
+                league.setTeamMemberSize(rs.getInt("TeamMemberSize"));
                 byte[] imgData = rs.getBytes("Image");
                 String base64Image = Base64.getEncoder().encodeToString(imgData);
                 league.setImage(base64Image);
@@ -953,7 +1072,7 @@ public class LeagueDAO {
         return null;
     }
 
-    public List<MatchVM> getMatchByLeague(int leagueId) {
+    public List<MatchVM> getMatchByLeagueType1(int leagueId) {
         try {
             League league = getLeagueById(leagueId);
             List<MatchVM> listmatchVM = new ArrayList<MatchVM>();
@@ -983,7 +1102,6 @@ public class LeagueDAO {
                 matchVM.setHometeamImage(base64Image);
                 listmatchVM.add(matchVM);
             }
-            System.out.println(listmatchVM);
             sql = "SELECT t.Id, t.Image, t.Name, t.ShortName, m.AwayTeamId"
                     + " FROM dbo.[Match] m JOIN dbo.Team t ON m.AwayTeamId = t.Id WHERE LeagueId = ?";
             ps = con.prepareStatement(sql);
@@ -1004,6 +1122,228 @@ public class LeagueDAO {
                 System.out.println("Null");
             }
 
+            return listmatchVM;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<MatchVM> getMatchByLeagueType2(int leagueId, int groupdId) {
+        try {
+            League league = getLeagueById(leagueId);
+            List<MatchVM> listmatchVM = new ArrayList<MatchVM>();
+            String sql = "SELECT t.Id, t.Image, t.Name, t.ShortName, m.HomeTeamId, m.Id as mId, m.Status, m.ScoreHome, m.ScoreAway, "
+                    + "m.StartAt, m.EndAt "
+                    + " FROM dbo.[Match] m JOIN dbo.Team t ON m.HomeTeamId = t.Id WHERE LeagueId = ? AND m.GroupId = ?";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, leagueId);
+            ps.setInt(2, groupdId);
+
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                MatchVM matchVM = new MatchVM();
+                matchVM.setAddress(league.getAddress());
+                matchVM.setScoreHome(rs.getInt("ScoreHome"));
+                matchVM.setScoreAway(rs.getInt("ScoreAway"));
+
+                matchVM.setStartAt(rs.getString("StartAt"));
+                matchVM.setEndAt(rs.getString("EndAt"));
+
+                matchVM.setLeagueId(leagueId);
+                matchVM.setId(rs.getInt("mId"));
+                matchVM.setStatus(rs.getInt("Status"));
+                matchVM.setHomeTeamId(rs.getInt("HomeTeamId"));
+                matchVM.setHometeamName(rs.getString("Name"));
+                matchVM.setHometeamShortName(rs.getString("ShortName"));
+                byte[] imgData = rs.getBytes("Image");
+                String base64Image = Base64.getEncoder().encodeToString(imgData);
+                matchVM.setHometeamImage(base64Image);
+                listmatchVM.add(matchVM);
+            }
+            sql = "SELECT t.Id, t.Image, t.Name, t.ShortName, m.AwayTeamId"
+                    + " FROM dbo.[Match] m JOIN dbo.Team t ON m.AwayTeamId = t.Id WHERE m.LeagueId = ? AND m.GroupId = ?";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, leagueId);
+            ps.setInt(2, groupdId);
+
+            rs = ps.executeQuery();
+            int matchIndex = 0;
+            if (listmatchVM.size() > 0) {
+                while (rs.next()) {
+                    listmatchVM.get(matchIndex).setAwayTeamId(rs.getInt("AwayTeamId"));
+                    listmatchVM.get(matchIndex).setAwayteamName(rs.getString("Name"));
+                    listmatchVM.get(matchIndex).setAwayteamShortName(rs.getString("ShortName"));
+                    byte[] imgData = rs.getBytes("Image");
+                    String base64Image = Base64.getEncoder().encodeToString(imgData);
+                    listmatchVM.get(matchIndex).setAwayteamImage(base64Image);
+                    matchIndex++;
+                }
+            } else {
+                System.out.println("Null");
+            }
+
+            return listmatchVM;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<MatchVM> getMatchByLeagueKnowoutStage(int leagueId, int groupdId) {
+        try {
+            League league = getLeagueById(leagueId);
+            List<MatchVM> listmatchVM = new ArrayList<MatchVM>();
+            String sql = "SELECT t.Id, t.Image, t.Name, t.ShortName, m.HomeTeamId, m.Id as mId, m.Status, m.ScoreHome, m.ScoreAway, "
+                    + "m.StartAt, m.EndAt "
+                    + " FROM dbo.[Match] m JOIN dbo.Team t ON m.HomeTeamId = t.Id WHERE LeagueId = ? AND m.Knockout = 1";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, leagueId);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                MatchVM matchVM = new MatchVM();
+                matchVM.setAddress(league.getAddress());
+                matchVM.setScoreHome(rs.getInt("ScoreHome"));
+                matchVM.setScoreAway(rs.getInt("ScoreAway"));
+
+                matchVM.setStartAt(rs.getString("StartAt"));
+                matchVM.setEndAt(rs.getString("EndAt"));
+
+                matchVM.setLeagueId(leagueId);
+                matchVM.setId(rs.getInt("mId"));
+                matchVM.setStatus(rs.getInt("Status"));
+                matchVM.setHomeTeamId(rs.getInt("HomeTeamId"));
+                matchVM.setHometeamName(rs.getString("Name"));
+                matchVM.setHometeamShortName(rs.getString("ShortName"));
+                byte[] imgData = rs.getBytes("Image");
+                String base64Image = Base64.getEncoder().encodeToString(imgData);
+                matchVM.setHometeamImage(base64Image);
+                listmatchVM.add(matchVM);
+            }
+            sql = "SELECT t.Id, t.Image, t.Name, t.ShortName, m.AwayTeamId"
+                    + " FROM dbo.[Match] m JOIN dbo.Team t ON m.AwayTeamId = t.Id WHERE m.LeagueId = ? AND m.Knockout = 1";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, leagueId);
+            rs = ps.executeQuery();
+            int matchIndex = 0;
+            if (listmatchVM.size() > 0) {
+                while (rs.next()) {
+                    System.out.println("matchIndex" + matchIndex);
+                    listmatchVM.get(matchIndex).setAwayTeamId(rs.getInt("AwayTeamId"));
+                    listmatchVM.get(matchIndex).setAwayteamName(rs.getString("Name"));
+                    listmatchVM.get(matchIndex).setAwayteamShortName(rs.getString("ShortName"));
+                    byte[] imgData = rs.getBytes("Image");
+                    String base64Image = Base64.getEncoder().encodeToString(imgData);
+                    listmatchVM.get(matchIndex).setAwayteamImage(base64Image);
+                    matchIndex++;
+                }
+            }
+            return listmatchVM;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<MatchVM> getFinalMatchByLeagueKnowoutStage(int leagueId) {
+        try {
+            League league = getLeagueById(leagueId);
+            List<MatchVM> listmatchVM = new ArrayList<MatchVM>();
+            String sql = "SELECT t.Id, t.Image, t.Name, t.ShortName, m.HomeTeamId, m.Id as mId, m.Status, m.ScoreHome, m.ScoreAway, "
+                    + "m.StartAt, m.EndAt "
+                    + " FROM dbo.[Match] m JOIN dbo.Team t ON m.HomeTeamId = t.Id WHERE LeagueId = ? AND m.Knockout = 1 ORDER BY m.Id DESC";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, leagueId);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                MatchVM matchVM = new MatchVM();
+                matchVM.setAddress(league.getAddress());
+                matchVM.setScoreHome(rs.getInt("ScoreHome"));
+                matchVM.setScoreAway(rs.getInt("ScoreAway"));
+
+                matchVM.setStartAt(rs.getString("StartAt"));
+                matchVM.setEndAt(rs.getString("EndAt"));
+
+                matchVM.setLeagueId(leagueId);
+                matchVM.setId(rs.getInt("mId"));
+                matchVM.setStatus(rs.getInt("Status"));
+                matchVM.setHomeTeamId(rs.getInt("HomeTeamId"));
+                matchVM.setHometeamName(rs.getString("Name"));
+                matchVM.setHometeamShortName(rs.getString("ShortName"));
+                byte[] imgData = rs.getBytes("Image");
+                String base64Image = Base64.getEncoder().encodeToString(imgData);
+                matchVM.setHometeamImage(base64Image);
+                listmatchVM.add(matchVM);
+            }
+            sql = "SELECT t.Id, t.Image, t.Name, t.ShortName, m.AwayTeamId"
+                    + " FROM dbo.[Match] m JOIN dbo.Team t ON m.AwayTeamId = t.Id WHERE m.LeagueId = ? AND m.Knockout = 1 ORDER BY m.Id DESC";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, leagueId);
+            rs = ps.executeQuery();
+            int matchIndex = 0;
+            if (listmatchVM.size() > 0) {
+                if (rs.next()) {
+                    listmatchVM.get(0).setAwayTeamId(rs.getInt("AwayTeamId"));
+                    listmatchVM.get(0).setAwayteamName(rs.getString("Name"));
+                    listmatchVM.get(0).setAwayteamShortName(rs.getString("ShortName"));
+                    byte[] imgData = rs.getBytes("Image");
+                    String base64Image = Base64.getEncoder().encodeToString(imgData);
+                    listmatchVM.get(0).setAwayteamImage(base64Image);
+                }
+            }
+            return listmatchVM;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<MatchVM> getFinalMatchByLeagueId(int leagueId) {
+        try {
+            League league = getLeagueById(leagueId);
+            List<MatchVM> listmatchVM = new ArrayList<MatchVM>();
+            String sql = "SELECT t.Id, t.Image, t.Name, t.ShortName, m.HomeTeamId, m.Id as mId, m.Status, m.ScoreHome, m.ScoreAway, "
+                    + "m.StartAt, m.EndAt "
+                    + " FROM dbo.[Match] m JOIN dbo.Team t ON m.HomeTeamId = t.Id WHERE LeagueId = ? AND m.Knockout = 2";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, leagueId);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                MatchVM matchVM = new MatchVM();
+                matchVM.setAddress(league.getAddress());
+                matchVM.setScoreHome(rs.getInt("ScoreHome"));
+                matchVM.setScoreAway(rs.getInt("ScoreAway"));
+
+                matchVM.setStartAt(rs.getString("StartAt"));
+                matchVM.setEndAt(rs.getString("EndAt"));
+
+                matchVM.setLeagueId(leagueId);
+                matchVM.setId(rs.getInt("mId"));
+                matchVM.setStatus(rs.getInt("Status"));
+                matchVM.setHomeTeamId(rs.getInt("HomeTeamId"));
+                matchVM.setHometeamName(rs.getString("Name"));
+                matchVM.setHometeamShortName(rs.getString("ShortName"));
+                byte[] imgData = rs.getBytes("Image");
+                String base64Image = Base64.getEncoder().encodeToString(imgData);
+                matchVM.setHometeamImage(base64Image);
+                listmatchVM.add(matchVM);
+            }
+            sql = "SELECT t.Id, t.Image, t.Name, t.ShortName, m.AwayTeamId"
+                    + " FROM dbo.[Match] m JOIN dbo.Team t ON m.AwayTeamId = t.Id WHERE m.LeagueId = ? AND m.Knockout = 2";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, leagueId);
+            rs = ps.executeQuery();
+            int matchIndex = 0;
+            if (listmatchVM.size() > 0) {
+                if (rs.next()) {
+                    listmatchVM.get(0).setAwayTeamId(rs.getInt("AwayTeamId"));
+                    listmatchVM.get(0).setAwayteamName(rs.getString("Name"));
+                    listmatchVM.get(0).setAwayteamShortName(rs.getString("ShortName"));
+                    byte[] imgData = rs.getBytes("Image");
+                    String base64Image = Base64.getEncoder().encodeToString(imgData);
+                    listmatchVM.get(0).setAwayteamImage(base64Image);
+                }
+            }
             return listmatchVM;
         } catch (Exception e) {
             e.printStackTrace();
@@ -1091,7 +1431,7 @@ public class LeagueDAO {
                     ps.setInt(1, homeId);
                     ps.setInt(2, leagueId);
                     afftedRow = ps.executeUpdate();
-                } else {
+                } else if (scoreA < scoreB) {
                     sql = "UPDATE Team_League SET Point += 3, Wins += 1 WHERE TeamId = ? AND LeagueId = ?";
                     ps = con.prepareStatement(sql);
                     ps.setInt(1, awayId);
@@ -1103,7 +1443,6 @@ public class LeagueDAO {
                     ps.setInt(1, homeId);
                     ps.setInt(2, leagueId);
                     afftedRow = ps.executeUpdate();
-
                 }
             }
             return true;
@@ -1140,6 +1479,21 @@ public class LeagueDAO {
         }
         return true;
     }
+    
+        public boolean isFinishAllMatchInGroup(int leagueId) {
+        try {
+            String sql = "SELECT * FROM Match WHERE LeagueId = ? AND ScoreHome IS NULL";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, leagueId);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
 
     public boolean startAtLeastOneMatch(int leagueId) {
         try {
@@ -1164,7 +1518,16 @@ public class LeagueDAO {
             ps.setInt(1, teamId);
             ps.setInt(2, leagueId);
             int afftedRow = ps.executeUpdate();
-            return afftedRow > 0;
+            if (afftedRow > 0) {
+                TeamDAO teamDAO = new TeamDAO();
+                int userId = teamDAO.getUserIdByTeamID(teamId);
+                League league = getLeagueById(leagueId);
+                NotificationDAO notiDAO = new NotificationDAO();
+                String title = "YÊU CẦU THAM GIA GIẢI ĐẤU";
+                String contentNoti = "Yêu cầu tham gia giải đấu [" + league.getName() + "] của bạn đã được phê duyệt.";
+                notiDAO.createNotification(userId, title, contentNoti);
+                return true;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1385,6 +1748,13 @@ public class LeagueDAO {
                 String content = "Tạo giải đấu " + league.getName() + " với giá 10 điểm";
                 boolean result = userWalletDAO.addTransitionHistory(content, userWallet.getWalletId());
                 if (result) {
+                    // Taoj noti
+                    int _userId = getUserIdByLeagueId(leagueId);
+                    NotificationDAO notiDAO = new NotificationDAO();
+                    String title = "QUẢN LÍ GIẢI ĐẤU";
+                    String contentNoti = "Giải đấu của bạn đã được tạo thành công!";
+                    notiDAO.createNotification(_userId, title, contentNoti);
+
                     return true;
                 }
             };
@@ -1401,7 +1771,17 @@ public class LeagueDAO {
             ps = con.prepareStatement(sql);
             ps.setInt(1, leagueId);
             int affectedRow = ps.executeUpdate();
-            return affectedRow > 0;
+            if (affectedRow > 0);
+            {
+                int _userId = getUserIdByLeagueId(leagueId);
+                NotificationDAO notiDAO = new NotificationDAO();
+                League league = getLeagueById(leagueId);
+                String title = "QUẢN LÍ GIẢI ĐẤU";
+                String contentNoti = "Yêu cầu tạo giải đấu của bạn đã bị từ chối , vui lòng kiểm tra lại!";
+                notiDAO.createNotification(_userId, title, contentNoti);
+                return true;
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1621,12 +2001,471 @@ public class LeagueDAO {
         return null;
     }
 
-    // các method get về danh sách total phía trên có thể trả về 1 list sẽ trả về toàn bộ các giá trị
+        public List<MatchVM> generateMatchWithGroup(int leagueId) {
+        try {
+            boolean _isFullTeam = isFullTeam(leagueId);
+            if (!_isFullTeam) {
+                return null;
+            }
+            League league = getLeagueById(leagueId);
+            List<MatchVM> listmatchVM = new ArrayList<>();
+            String sql = "UPDATE League SET Status = ? WHERE Id = ?";
+            ps = con.prepareStatement(sql);
+            // 4 la bat dau       
+            ps.setInt(1, 4);
+            ps.setInt(2, leagueId);
+            int affectedRow = ps.executeUpdate();
+            if (affectedRow > 0) {
+                List<LeagueRegister> listLeagueRegister = getTeamRegisterLeagueApprove(leagueId);
+                int registerTeamSize = listLeagueRegister.size();
+                if (registerTeamSize == 0) {
+                    return null;
+                }
+
+                // chia ra bảng = số đội chia 2.
+                int groupTotal = (int) Math.ceil((double) listLeagueRegister.size() / 4);
+
+                List<LeagueRegister[]> matchups = new ArrayList<>();
+                List<Group> groups = new ArrayList<>();
+
+                // đảo danh sách các đội tham gia
+                Collections.shuffle(listLeagueRegister);
+                // Create groups      
+                for (int i = 0; i < groupTotal; i++) {
+                    Group group = new Group();
+                    group.setName("Group " + (char) ('A' + i));
+                    group.setLeagueId(leagueId);
+                    group.setDescription("Group description");
+                    GroupDAO groupDAO = new GroupDAO();
+                    group = groupDAO.CreateGroupd(leagueId, group.getName());
+                    groups.add(group);
+                }
+
+                int groupIndex = 0;
+                // gán group
+                for (int i = 0; i < registerTeamSize; i++) {
+                    int groupId = groups.get(groupIndex).getId();
+                    int teamId = listLeagueRegister.get(i).getTeamId();
+                    boolean result = updateTeamLeagueGroupId(teamId, leagueId, groupId);
+                    if (result) {
+                        listLeagueRegister.get(i).setGroupId(groupId);
+                        groupIndex++;
+                        if (groupIndex > groupTotal - 1) {
+                            groupIndex = 0;
+                        }
+                    } else {
+                        System.out.println("false");
+                    }
+                }
+
+                // gán từng groupId cho các đội
+                for (int i = 0; i < registerTeamSize; i++) {
+                    for (int j = i + 1; j < registerTeamSize; j++) {
+                        // cùng groupId
+                        var teamAGroupId = listLeagueRegister.get(i).getGroupId();
+                        var teamBGroupId = listLeagueRegister.get(j).getGroupId();
+
+                        // tạo trận đáu theo groupId
+                        if (teamAGroupId == teamBGroupId) {
+                            LeagueRegister teamA = listLeagueRegister.get(i);
+                            LeagueRegister teamB = listLeagueRegister.get(j);
+                            teamA.setGroupId(teamAGroupId);
+                            teamB.setGroupId(teamBGroupId);
+                            // tạo trận
+                            matchups.add(new LeagueRegister[]{teamA, teamB});
+                        }
+
+                    }
+                }
+                LocalDateTime startDate = league.getStartDate();
+                LocalDateTime endDate = league.getEndDate();
+
+                // lấy giờ bắt đầu của giải đấu      
+                int startHour = startDate.getHour();
+                int startMin = startDate.getMinute();
+
+                Collections.shuffle(matchups);
+                long totalDays = ChronoUnit.DAYS.between(startDate.toLocalDate(), endDate.toLocalDate()) + 1;
+                int matchesPerDay = (int) Math.max(1, Math.min(4, Math.ceil((double) matchups.size() / totalDays)));
+                int matchIndex = 1;
+
+                int groupMatchIndex = 1;
+                LocalDateTime startTimeMatch = null;
+                for (LeagueRegister[] matchup : matchups) {
+                    String matchName = "Trận đấu Group " + matchIndex;
+                    sql = "INSERT INTO Match (LeagueId, HomeTeamId, AwayTeamId, Status, Name, Address, StartAt, EndAt, GroupId) "
+                            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    ps = con.prepareStatement(sql);
+                    ps.setInt(1, league.getId());
+                    ps.setInt(2, matchup[0].getTeamId());
+                    ps.setInt(3, matchup[1].getTeamId());
+                    ps.setInt(4, 0);
+                    ps.setString(5, matchName);
+                    ps.setString(6, league.getAddress());
+
+                    if (matchIndex > matchesPerDay) {
+                        matchIndex = 1;
+                        startDate = startDate.plusDays(1).withHour(startHour).withMinute(startMin);
+                    }
+                    if (endDate.toLocalTime().isBefore(LocalTime.of(startHour, startMin))) {
+                        // neues thoi gian truoc thoi gian bat dau thi se chuyen thanh thoi gian bat dau
+                        startDate.withHour(startHour).withMinute(startMin);
+                    } else if (endDate.toLocalTime().isAfter(LocalTime.of(endDate.getHour(), endDate.getMinute()))) {
+                        // Nếu sau 8 PM, điều chỉnh thành ngày bắt đầu của ngày sau
+                        startDate.plusDays(1).withHour(startHour).withMinute(startMin);
+                    }
+
+                    endDate = startDate.plusHours(2);
+
+                    // truong hop chung 1 khoan
+                    int startHourMatch = startDate.getHour();
+                    int endHourMatch = endDate.getHour();
+
+                    ps.setTimestamp(7, java.sql.Timestamp.valueOf(startDate));
+                    endDate = startDate.plusHours(2);
+                    ps.setTimestamp(8, java.sql.Timestamp.valueOf(endDate));
+
+                    if ((startHourMatch >= 11 && endHourMatch <= 13)
+                            || (endHourMatch >= 11 && endHourMatch <= 13)) {
+                        startTimeMatch = startDate.withHour(13).withMinute(0);
+                        endDate = startTimeMatch.plusHours(2);
+                        ps.setTimestamp(7, java.sql.Timestamp.valueOf(startTimeMatch));
+                        ps.setTimestamp(8, java.sql.Timestamp.valueOf(endDate));
+                    }
+
+                    ps.setInt(9, matchup[1].getGroupId());
+                    startDate = endDate;
+                    int afftedRow = ps.executeUpdate();
+                    MatchVM matchVM = new MatchVM();
+                    if (afftedRow > 0) {
+                        sql = "SELECT t.Id, t.Image, t.Name, t.ShortName, m.Id as mId, m.StartAt, m.EndAt FROM dbo.[Match] m JOIN dbo.Team t ON m.HomeTeamId = t.Id WHERE LeagueId = ?";
+                        ps = con.prepareStatement(sql);
+                        ps.setInt(1, leagueId);
+                        rs = ps.executeQuery();
+                        while (rs.next()) {
+                            matchVM.setAddress(league.getAddress());
+                            matchVM.setLeagueId(league.getId());
+                            matchVM.setId(rs.getInt("mId"));
+                            matchVM.setHomeTeamId(matchup[0].getTeamId());
+                            matchVM.setStartAt(rs.getString("StartAt"));
+                            matchVM.setEndAt(rs.getString("EndAt"));
+                            matchVM.setHometeamName(rs.getString("Name"));
+                            matchVM.setHometeamShortName(rs.getString("ShortName"));
+                            byte[] imgData = rs.getBytes("Image");
+                            String base64Image = Base64.getEncoder().encodeToString(imgData);
+                            matchVM.setHometeamImage(base64Image);
+                        }
+
+                        sql = "SELECT t.Id, t.Image, t.Name, t.ShortName FROM dbo.[Match] m JOIN dbo.Team t ON m.AwayTeamId = t.Id WHERE LeagueId = ?";
+                        ps = con.prepareStatement(sql);
+                        ps.setInt(1, leagueId);
+                        rs = ps.executeQuery();
+                        while (rs.next()) {
+                            matchVM.setAwayTeamId(matchup[1].getTeamId());
+                            matchVM.setAwayteamName(rs.getString("Name"));
+                            matchVM.setAwayteamShortName(rs.getString("ShortName"));
+                            byte[] imgData = rs.getBytes("Image");
+                            String base64Image = Base64.getEncoder().encodeToString(imgData);
+                            matchVM.setAwayteamImage(base64Image);
+                        }
+                        listmatchVM.add(matchVM);
+                    }
+                    matchIndex++;
+                    groupMatchIndex++;
+                }
+            }
+            return listmatchVM;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public boolean generateMatchWithGroupInKnockoutStage(List<LeagueRegisterVM[]> matchups, int leagueId, LocalDateTime startTime, LocalDateTime endTime) {
+        try {
+
+            int afftedRow = 0;
+            LocalDateTime _startTime = startTime;
+            LocalDateTime _endTime = endTime;
+            for (LeagueRegisterVM[] matchup : matchups) {
+                String matchName = "Trận đấu vòng knock out";
+                String sql = "INSERT INTO Match (LeagueId, HomeTeamId, AwayTeamId, Status, Name, Address, StartAt, EndAt, Knockout) "
+                        + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)";
+                ps = con.prepareStatement(sql);
+                ps.setInt(1, leagueId);
+                ps.setInt(2, matchup[0].getTeamId());
+                ps.setInt(3, matchup[1].getTeamId());
+                ps.setInt(4, 0);
+                ps.setString(5, matchName);
+                ps.setString(6, "");
+
+                // Chỗ này hiện tại em chỉ làm kịp cộng tiếp 2 giờ.
+                ps.setTimestamp(7, java.sql.Timestamp.valueOf(_startTime));
+                _endTime = _startTime.plusHours(2);
+                ps.setTimestamp(8, java.sql.Timestamp.valueOf(_endTime));
+                _startTime = _endTime;
+
+                afftedRow = ps.executeUpdate();
+                if (afftedRow > 0) {
+                    // status 6 la conf giai vong tiep theo
+                    sql = "UPDATE League Set Status = 6 WHERE Id = ?";
+                    ps = con.prepareStatement(sql);
+                    ps.setInt(1, leagueId);
+                    afftedRow = ps.executeUpdate();
+                }
+            }
+            return afftedRow > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public boolean generateFinalMatchWithGroupInKnockoutStage(List<LeagueRegisterVM[]> matchups, int leagueId, LocalDateTime startTime, LocalDateTime endTime) {
+        try {
+
+            int afftedRow = 0;
+            LocalDateTime _startTime = startTime;
+            LocalDateTime _endTime = endTime;
+            for (LeagueRegisterVM[] matchup : matchups) {
+                String matchName = "Trận đấu vòng knock out";
+                String sql = "INSERT INTO Match (LeagueId, HomeTeamId, AwayTeamId, Status, Name, Address, StartAt, EndAt, Knockout) "
+                        + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)";
+                ps = con.prepareStatement(sql);
+                ps.setInt(1, leagueId);
+                ps.setInt(2, matchup[0].getTeamId());
+                ps.setInt(3, matchup[1].getTeamId());
+                ps.setInt(4, 0);
+                ps.setString(5, matchName);
+                ps.setString(6, "");
+
+                // Chỗ này hiện tại em chỉ làm kịp cộng tiếp 2 giờ.
+                ps.setTimestamp(7, java.sql.Timestamp.valueOf(_startTime));
+                _endTime = _startTime.plusHours(2);
+                ps.setTimestamp(8, java.sql.Timestamp.valueOf(_endTime));
+                _startTime = _endTime;
+
+                afftedRow = ps.executeUpdate();
+                if (afftedRow > 0) {
+                    // status 8 là trận chung kết.
+                    sql = "UPDATE League Set Status = 8 WHERE Id = ?";
+                    ps = con.prepareStatement(sql);
+                    ps.setInt(1, leagueId);
+                    afftedRow = ps.executeUpdate();
+                    if (afftedRow > 0) {
+                        sql = "SELECT * FROM Match WHERE LeagueId = ? ORDER BY Id DESC";
+                        ps = con.prepareStatement(sql);
+                        ps.setInt(1, leagueId);
+                        rs = ps.executeQuery();
+                        if (rs.next()) {
+                            // get matchFianl Id de update knockout status
+                            int finalMatchId = rs.getInt(1);
+                            sql = "UPDATE Match Set Knockout = 2 WHERE Id = ?";
+                            ps = con.prepareStatement(sql);
+                            ps.setInt(1, finalMatchId);
+                            afftedRow = ps.executeUpdate();
+                            return afftedRow > 0;
+                        }
+                    }
+                }
+            }
+            return afftedRow > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public boolean updateTeamLeagueGroupId(int teamLeagueId, int leagueId, int groupId) {
+        try {
+            String sql = "UPDATE Team_League SET GroupId = ? WHERE TeamId = ? AND LeagueId = ?";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, groupId);
+            ps.setInt(2, teamLeagueId);
+            ps.setInt(3, leagueId);
+
+            int affectedRow = ps.executeUpdate();
+            return affectedRow > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public List<Group> getListGroup(int leagueId) {
+        List<Group> listGroup = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM [Group] WHERE LeagueId = ?";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, leagueId);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Group group = new Group();
+                group.setId(rs.getInt("Id"));
+                group.setLeagueId(rs.getInt("LeagueId"));
+                group.setName(rs.getString("Name"));
+                listGroup.add(group);
+            }
+            return listGroup;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return listGroup;
+    }
+
+    public List<MatchVM> getWinnerInKnockoutStage(int leagueId) {
+        List<MatchVM> listMatch = new ArrayList();
+        try {
+            String sql = "SELECT \n"
+                    + "    Id, \n"
+                    + "    LeagueId, \n"
+                    + "    HomeTeamId, \n"
+                    + "    AwayTeamId, \n"
+                    + "    Status, \n"
+                    + "    Name, \n"
+                    + "    Address, \n"
+                    + "    StartAt, \n"
+                    + "    EndAt, \n"
+                    + "    Knockout, \n"
+                    + "    ScoreHome, \n"
+                    + "    ScoreAway, \n"
+                    + "    GroupId,\n"
+                    + "    CASE \n"
+                    + "        WHEN ScoreHome > ScoreAway THEN HomeTeamId\n"
+                    + "        WHEN ScoreHome < ScoreAway THEN AwayTeamId\n"
+                    + "        ELSE NULL\n"
+                    + "    END AS WinningTeam\n"
+                    + "FROM \n"
+                    + "    Match WHERE Knockout = 1 AND LeagueId = ?";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, leagueId);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                MatchVM matchVM = new MatchVM();
+                matchVM.setWinningId(rs.getInt("WinningTeam"));
+                listMatch.add(matchVM);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return listMatch;
+    }
+
+    public List<MatchVM> getLoserInKnockoutStage(int leagueId) {
+        List<MatchVM> listMatch = new ArrayList();
+        try {
+            String sql = "SELECT \n"
+                    + "    Id, \n"
+                    + "    LeagueId, \n"
+                    + "    HomeTeamId, \n"
+                    + "    AwayTeamId, \n"
+                    + "    Status, \n"
+                    + "    Name, \n"
+                    + "    Address, \n"
+                    + "    StartAt, \n"
+                    + "    EndAt, \n"
+                    + "    Knockout, \n"
+                    + "    ScoreHome, \n"
+                    + "    ScoreAway, \n"
+                    + "    GroupId,\n"
+                    + "    CASE \n"
+                    + "        WHEN ScoreHome < ScoreAway THEN HomeTeamId\n"
+                    + "        WHEN ScoreHome > ScoreAway THEN AwayTeamId\n"
+                    + "        ELSE NULL\n"
+                    + "    END AS LosingTeam\n"
+                    + "FROM \n"
+                    + "    Match WHERE Knockout = 1 AND LeagueId = ?";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, leagueId);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                MatchVM matchVM = new MatchVM();
+                matchVM.setLosingId(rs.getInt("LosingTeam"));
+                listMatch.add(matchVM);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return listMatch;
+    }
+
+    public League updateLeagueDetail(League _league) {
+        try {
+            String sql = "UPDATE League SET Name = ?, Description = ? WHERE Id = ?";
+            ps = con.prepareStatement(sql);
+            ps.setString(1, _league.getName());
+            ps.setString(2, _league.getDescription());
+            ps.setInt(1, _league.getId());
+            int afftectedRow = ps.executeUpdate();
+            if (afftectedRow > 0) {
+                sql = "SELECT * FROM League WHERE Id = ?";
+                ps = con.prepareStatement(sql);
+                ps.setInt(1, _league.getId());
+                rs = ps.executeQuery();
+                if (rs.next()) {
+                    League league = new League();
+                    league.setId(rs.getInt("Id"));
+                    league.setStatus(rs.getInt("Status"));
+                    league.setAddress(rs.getString("Address"));
+                    league.setName(rs.getString("Name"));
+                    league.setDateRegister(rs.getString("DateRegister"));
+                    league.setDescription(rs.getString("Description"));
+                    league.setStartDate(rs.getTimestamp("StartDate").toLocalDateTime());
+                    league.setEndDate(rs.getTimestamp("EndDate").toLocalDateTime());
+                    league.setTeamSize(rs.getInt("TeamSize"));
+                    league.setType(rs.getString("Type"));
+                    league.setUserId(rs.getInt("UserId"));
+                    league.setTeamMemberSize(rs.getInt("TeamMemberSize"));
+                    byte[] imgData = rs.getBytes("Image");
+                    String base64Image = Base64.getEncoder().encodeToString(imgData);
+                    league.setImage(base64Image);
+                    return league;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public boolean removeTeamRegsiterFromLeague(int teamId, int leagueId) {
+        try {
+            String sql = "DELETE FROM Team_League WHERE TeamId = ? AND LeagueId = ?";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, teamId);      
+            ps.setInt(2, leagueId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+    
+    public boolean changeStatusTeamRegsiterFromLeague(int teamId, int leagueId) {
+        try {
+            String sql = "UPDATE Team_League SET Status = 0 WHERE TeamId = ? AND LeagueId = ?";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, teamId);      
+            ps.setInt(2, leagueId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
     public static void main(String[] args) {
         LeagueDAO leageDAO = new LeagueDAO();
-//        List<GoalVM> goals = leageDAO.getTopGoalScorersByLeagueId(1042);
-//        for (GoalVM goal : goals) {
-//        System.out.println(goal.toString());
-//        }
+        for (MatchVM vm : leageDAO.getFinalMatchByLeagueId(1013)) {
+            System.out.println("home" + vm.getHomeTeamId());  
+            System.out.println("ây" + vm.getAwayTeamId());
+        }
     }
 }

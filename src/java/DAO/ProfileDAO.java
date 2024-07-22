@@ -5,6 +5,7 @@
 package DAO;
 
 import DAL.DBContext;
+import Model.League;
 import Model.User;
 import jakarta.servlet.http.Part;
 import java.io.InputStream;
@@ -134,7 +135,12 @@ byte[] imgData = rs.getBytes("Image");
             ps = con.prepareStatement(sql);
             ps.setInt(1, userId);
             int affectedRow = ps.executeUpdate();
-            return affectedRow > 0;
+            if(affectedRow > 0) {
+                 NotificationDAO notiDAO = new NotificationDAO();
+                String title = "YÊU CẦU QUYỀN TẠO GIẢI ĐẤU";
+                String contentNoti = "Yêu cầu trở thành nhà tạo giải của bạn đã được gửi, vui lòng đợi admin phê duyệt!";
+                notiDAO.createNotification(userId, title, contentNoti);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

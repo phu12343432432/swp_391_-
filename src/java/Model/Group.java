@@ -19,22 +19,9 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class LeagueRegister {
-
-    private int TeamId;
-    private String TeamName;
-    private String RegisterAt;
-    private String Image;
-    private int Point;
-    private int Wins;
-    private int Loses;
-    private int Ties;
-    private int Status;
-    private int TotalGoals;
-    private int TotalCards;
-    // 0 là mới đăng kí
-    // 1 đã duyệt 
-    // 2 từ chối 
-    private int GroupId;
-
+public class Group {
+    private int Id;
+    private int LeagueId;
+    private String Name;
+    private String Description;
 }

@@ -93,6 +93,7 @@ public class BlogDAO extends DBContext {
                 byte[] imgData = rs.getBytes("Image");
                 String base64Image = Base64.getEncoder().encodeToString(imgData);
                 blog.setImage(base64Image);
+                blog.setLeagueId(rs.getInt("LeagueId"));
                 blog.setCreateAt(rs.getString("CreateAt"));
                 blog.setStatus(rs.getInt("Status"));
                 return blog;

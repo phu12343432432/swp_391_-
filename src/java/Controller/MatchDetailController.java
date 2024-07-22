@@ -26,6 +26,7 @@ public class MatchDetailController extends HttpServlet {
             throws ServletException, IOException {
         try {
             String matchIds = request.getParameter("matchId");
+            String groupIds = request.getParameter("groupId");
             int matchId = Integer.parseInt(matchIds);
             LeagueDAO leagueDAO = new LeagueDAO();
             TeamDAO teamDAO = new TeamDAO();
@@ -52,6 +53,7 @@ public class MatchDetailController extends HttpServlet {
             }
             request.setAttribute("MATCH", match);
 
+            request. setAttribute("groupId", groupIds);
             request.setAttribute("teamAEvents", teamAEvents);
             request.setAttribute("teamBEvents", teamBEvents);
             request.getRequestDispatcher("views/user/match-result.jsp").forward(request, response);

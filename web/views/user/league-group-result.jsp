@@ -55,7 +55,6 @@
             background-color: #f97316;
             border-color: #f97316;
         }
-
         .podium {
             margin-top: 15px;
             display: flex;
@@ -104,6 +103,7 @@
         }
 
 
+
     </style>
     <body>
 
@@ -132,29 +132,27 @@
                     <div class="mt-8 md:mt-0 md:ml-10 w-full max-w-lg">
                         <!--<form class="space-y-4" action="team" method="POST" >-->                       
                         <div class="space-y-4" >
-                            <form>
-
-                                <input type="hidden" name="action" value="update" />         
-                                <input type="file" id="image-input" name="image" style="display: none;" value="${TEAM.image}">
-                                <input type="hidden" name="leagueId" value="${USER_LEAGUE.id}" />
+                            <input type="hidden" name="action" value="update" />         
+                            <input type="file" id="image-input" name="image" style="display: none;" value="${TEAM.image}">
+                            <input type="hidden" name="leagueId" value="${USER_LEAGUE.id}" />
+                            <div>
+                                <label for="surname" class="text-gray-700">Tên giải đấu *</label>
+                                <input name="name" value="${USER_LEAGUE.name}" type="text" id="surname"  class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                            </div>
+                            <div style="display: flex">
                                 <div>
-                                    <label for="surname" class="text-gray-700">Tên giải đấu *</label>
-                                    <input name="name" value="${USER_LEAGUE.name}" type="text" id="surname"  class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                                    <label for="surname" class="text-gray-700">Ngày bắt đầu *</label>
+                                    <input name="start_date" value="${USER_LEAGUE.startDate}" type="datetime-local" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
                                 </div>
-                                <div style="display: flex">
-                                    <div>
-                                        <label for="surname" class="text-gray-700">Ngày bắt đầu *</label>
-                                        <input name="start_date" value="${USER_LEAGUE.startDate}" type="datetime-local" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
-                                    </div>
-                                    <div style="margin-left: 10px">
-                                        <label for="Phone" class="text-gray-700">Ngày kết thúc *</label>
-                                        <input name="end_date" value="${USER_LEAGUE.endDate}" type="datetime-local" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"  required>
-                                    </div>
+                                <div style="margin-left: 10px">
+                                    <label for="Phone" class="text-gray-700">Ngày kết thúc *</label>
+                                    <input name="end_date" value="${USER_LEAGUE.endDate}" type="datetime-local" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"  required>
                                 </div>
-                                <div>
-                                    <label for="surname" class="text-gray-700">Địa điểm thi đấu *</label>
-                                    <input name="address" value="${USER_LEAGUE.address}" type="text" id="surname"  class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
-                                </div>
+                            </div>
+                            <div>
+                                <label for="surname" class="text-gray-700">Địa điểm thi đấu *</label>
+                                <input name="address" value="${USER_LEAGUE.address}" type="text" id="surname"  class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                            </div>
 
                         </div>
                     </div>
@@ -188,31 +186,6 @@
                         </c:if>
                     </select>
                 </div>
-                <c:if test="${USER_LEAGUE.type.equals('2') && USER_LEAGUE.status == 5}">
-                    <div>
-                        <div class="podium">
-                            <div class="position second">
-                                <img src="${pageContext.request.contextPath}/img/match-result/huychuongbac.jpg" alt="Second Place">
-                                <div class="name">[${TEAM2.name}]</div>     
-                                <div class="number">2</div>
-                            </div>
-                            <div class="position first">
-                                <img src="${pageContext.request.contextPath}/img/match-result/huychuongvang.png" alt="First Place">
-                                <div class="name">[${TEAM1.name}]</div>
-                                <div class="number">1</div>
-                            </div>
-                            <div class="position third">
-                                <img src="${pageContext.request.contextPath}/img/match-result/huychuongdong.jpg" alt="Third Place">
-                                <div class="name">
-                                    <c:forEach items="${TEAM3}" var="team">
-                                        [${team.name}]
-                                    </c:forEach>
-                                </div>
-                                <div class="number">3</div>
-                            </div>
-                        </div>
-                    </div>
-                </c:if>
 
 
                 <div>
@@ -230,14 +203,7 @@
 
                     <c:forEach items="${GROUPS}" var="g">
                         <a class="btn ${g.id == groupId ? 'btn-warning' : 'btn-secondary'}" href="league?action=league-match&leagueId=${USER_LEAGUE.id}&groupId=${g.id}">${g.name}</a>
-                    </c:forEach>
-
-                    <c:if test="${USER_LEAGUE.status >= 6}">
-                        <div>
-                            <a class="btn btn-danger" href="league?action=knockout-stage&leagueId=${USER_LEAGUE.id}&groupId=${groupId}">Vòng knock out</a>
-                        </div> 
-                    </c:if>
-
+                    </c:forEach> 
 
                     <c:forEach items="${LEAGUE_TEAM}" var="team">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -266,57 +232,12 @@
                                     <div class="d-flex justify-content-between align-items-center" style="margin-top: 15px">
                                         <c:if test="${team.status == 0 && USER_LEAGUE.status == 2}">
                                             <div class="btn-group">
-                                                <a class="btn btn-sm btn-success" href="league?action=accept-team&teamId=${team.teamId}&leagueId=${leagueId}" class="btn btn-sm">Chấp nhận</a>                                         
-                                                <a class="btn btn-sm btn-danger" 
-                                                   data-bs-toggle="modal" data-bs-target="#remove-${team.teamId}" aria-hidden="true"
-
-                                                   class="btn btn-sm">Từ chôi</a>
-
-
-                                                <div class="modal fade" id="remove-${team.teamId}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                    <div class="modal-dialog">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <h5 class="modal-title" >Yêu cầu tham gia giải đấu</h5>
-                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                Hành động này sẽ loại bỏ <b>${team.teamName} </b> ra khỏi giải danh sách đăng kí ? Bạn có chắc chắn ?
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                                <a class="btn btn-danger" href="league?action=reject-team&teamId=${team.teamId}&leagueId=${leagueId}">Confirm</a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                <a class="btn btn-sm btn-success" href="league?action=accept-team&teamId=${team.teamId}&leagueId=${leagueId}" class="btn btn-sm" style="width: 100%">Chấp nhận</a>
                                             </div>  
                                         </c:if>
                                         <c:if test="${team.status == 1}">
                                             <div class="btn-group">
-                                                <a disalble class="btn btn-sm btn-primary" href="#" class="btn btn-sm" style="width: 100%">Đã xác nhận</a>
-                                                <c:if test="${USER_LEAGUE.status == 2}">
-                                                    <a  href="#" class="btn btn-sm btn-danger"  data-bs-toggle="modal" data-bs-target="#reject-${team.teamId}" aria-hidden="true">X</a>
-                                                </c:if>
-
-                                                <div class="modal fade" id="reject-${team.teamId}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                    <div class="modal-dialog">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <h5 class="modal-title" >Yêu cầu tham gia giải đấu</h5>
-                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                Hành động này sẽ loại bỏ <b>${team.teamName} </b> ra khỏi giải danh sách được duyệt để tham gia giải đấu ? Bạn có chắc chắn ?
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                                <a class="btn btn-danger"   href="league?action=remove-team-from-league&leagueId=${leagueId}&teamId=${team.teamId}">Confirm</a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
+                                                <a disalb class="btn btn-sm btn-primary" href="#" class="btn btn-sm" style="width: 100%">Đã xác nhận</a>
                                             </div>  
                                         </c:if>
                                     </div>
@@ -325,26 +246,7 @@
                             </div>
                         </div>
                     </c:forEach>
-                    <div style="display: flex; justify-content: center; margin-top: 15px">
-                        <c:if test="${USER_LEAGUE.status == 2}">
-                            <a href="league?action=start&leagueId=${USER_LEAGUE.id}&groupId=${groupId}" class="bg-green-500 text-white px-4 py-2 rounded shadow peer-checked:bg-green-500 transition-colors" 
-                               style="background-image: linear-gradient(to right top,#45af2a,#3ba023,#30901c,#268215,#1b730d,#1b730d,#1b730d,#1b730d,#268215,#30901c,#3ba023,#45af2a);">Bắt đầu giải đấu</a>
-                        </c:if> 
-                        <c:if test="${USER_LEAGUE.status == 4}">
-                            <a href="league?action=league-match&leagueId=${USER_LEAGUE.id}&groupId=${groupId}"  class="btn btn-primary" >Đang diễn ra - xem chi tiết</a>
-                        </c:if> 
-                        <c:if test="${USER_LEAGUE.status == 5}">
-                            <a  href="league?action=league-match&leagueId=${USER_LEAGUE.id}&groupId=${groupId}"  class="btn btn-danger">Đã kết thúc - xem chi tiết</a>
-                        </c:if> 
-                        <c:if test="${USER_LEAGUE.status == 6}">
-                            <a class="btn btn-danger" href="league?action=knockout-stage&leagueId=${USER_LEAGUE.id}&groupId=${groupId}">Vòng knock out</a>
-                        </c:if> 
-                        <c:if test="${USER_LEAGUE.status == 8}">
-                            <div>
-                                <a class="btn btn-danger" href="league?action=view-final&leagueId=${USER_LEAGUE.id}&groupId=${groupId}">Trận chung kết</a>
-                            </div> 
-                        </c:if>
-                    </div>
+
                 </div>              
         </div>
 
@@ -378,66 +280,5 @@
 <!-- Template Javascript -->
 <script src="${pageContext.request.contextPath}/js/main.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    var error = document.getElementById('error');
-    var message = document.getElementById('success');
 
-    if (error.value) {
-        Swal.fire({
-            title: error.value,
-            icon: "info",
-            showCancelButton: true,
-            confirmButtonText: "Xác nhận",
-        })
-    }
-
-    if (message.value) {
-        Swal.fire({
-            title: message.value,
-            icon: "success",
-            showCancelButton: true,
-            confirmButtonText: "Xác nhận",
-        })
-    }
-    const profilePicture = document.getElementById('profile-picture');
-    const imageInput = document.getElementById('image-input');
-
-    profilePicture.addEventListener('click', () => {
-        imageInput.disabled = false;
-        imageInput.click();
-    });
-    const updateAvatar = false;
-    imageInput.addEventListener('change', () => {
-        imageInput.disabled = false;
-        const file = imageInput.files[0];
-        const formData = new FormData();
-        formData.append('image', file);
-
-        const reader = new FileReader();
-        reader.onload = () => {
-            profilePicture.src = reader.result;
-            profilePicture.width = '100%';
-        };
-        reader.readAsDataURL(file);
-        updateAvatar = true;
-    });
-    if (!updateAvatar && imageInput.value != null) {
-        imageInput.disabled = true;
-    }
-    document.addEventListener("DOMContentLoaded", function () {
-        const phoneInput = document.getElementById("Phone");
-
-        phoneInput.addEventListener("input", function () {
-            const regex = /^\d{0,10}$/;
-            if (!regex.test(phoneInput.value)) {
-                // If validation fails, show a custom error message
-                phoneInput.setCustomValidity("Số điện thoại phải gồm 10 chữ số và không chứa ký tự đặc biệt.");
-            } else {
-                // Clear custom error message
-                phoneInput.setCustomValidity("");
-            }
-        });
-    });
-
-</script>
 </html>

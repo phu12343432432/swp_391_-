@@ -95,7 +95,9 @@
                 <input type="hidden" name="matchId" value="${MATCH.id}"/>    
                 <input type="hidden" name="leagueId" value="${MATCH.leagueId}"/>
                 <input type="hidden" name="teamAId" value="${MATCH.homeTeamId}"/>
-                <input type="hidden" name="teamBId" value="${MATCH.awayTeamId}"/>
+                <input type="hidden" name="teamBId" value="${MATCH.awayTeamId}"/>      
+                <input type="hidden" name="groupId" value="${groupId}"/>
+
 
                 <div class="flex flex-col md:flex-row justify-between items-start">
                     <div class="flex flex-col items-center text-center md:text-left md:items-start">
@@ -187,9 +189,13 @@
                     </div>  
                     <input type="hidden" name="cardQuantity" id="cardQuantity"/>
                     <div style="display: flex; justify-content: center; margin-top: 15px">
-                        <button type="submit" href="league?action=update-match&match=${USER_LEAGUE.id}" class="bg-green-500 text-white px-4 py-2 rounded shadow peer-checked:bg-green-500 transition-colors" 
+                        <button type="submit" href="league?action=update-match&match=${USER_LEAGUE.id}&groupId=${groupId}" class="bg-green-500 text-white px-4 py-2 rounded shadow peer-checked:bg-green-500 transition-colors" 
                                 style="background-image: linear-gradient(to right top,#45af2a,#3ba023,#30901c,#268215,#1b730d,#1b730d,#1b730d,#1b730d,#268215,#30901c,#3ba023,#45af2a);">Cập nhật trận đấu</button>
                     </div>
+                </div>
+                <div style="display: flex; justify-content: center; margin-top: 15px">
+                    <a href="league?action=league-match&leagueId=${MATCH.leagueId}&groupId=${groupId}" class="bg-green-500 text-white px-4 py-2 rounded shadow peer-checked:bg-green-500 transition-colors" 
+                       style="background-image: linear-gradient(to right top,#45af2a,#3ba023,#30901c,#268215,#1b730d,#1b730d,#1b730d,#1b730d,#268215,#30901c,#3ba023,#45af2a);">Trở về</a>
                 </div>
 
             </form>
@@ -219,21 +225,21 @@
 <!-- Template Javascript -->
 <script src="${pageContext.request.contextPath}/js/main.js"></script>
 <script>
-var goalIndex = 0;
-var cardIndex = 0;
-var scoreA = 0;
-var scoreB = 0;
-const cardQuantityDiv = document.getElementById('cardQuantity');
-cardQuantityDiv.value = cardIndex;
-function addGoalInputA() {
-    var inputScoreA = document.getElementById('teamAScore').value;
-    scoreA++;
-    console.log('scorea', scoreA);
-    console.log('inputvalue', inputScoreA);
-    if (scoreA <= inputScoreA) {
-        const goalDiv = document.getElementById('goalsA');
-        const goalInput = document.createElement('div');
-        goalInput.innerHTML = `
+                            var goalIndex = 0;
+                            var cardIndex = 0;
+                            var scoreA = 0;
+                            var scoreB = 0;
+                            const cardQuantityDiv = document.getElementById('cardQuantity');
+                            cardQuantityDiv.value = cardIndex;
+                            function addGoalInputA() {
+                                var inputScoreA = document.getElementById('teamAScore').value;
+                                scoreA++;
+                                console.log('scorea', scoreA);
+                                console.log('inputvalue', inputScoreA);
+                                if (scoreA <= inputScoreA) {
+                                    const goalDiv = document.getElementById('goalsA');
+                                    const goalInput = document.createElement('div');
+                                    goalInput.innerHTML = `
         <div class="row">
             <input type="hidden" name="goalTeamId[` + goalIndex + `]" value="${MATCH.homeTeamId}"/>
             <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
@@ -249,18 +255,18 @@ function addGoalInputA() {
                         <input class="goalInput" type="number" min="0" max="130" name="goalTime[` + goalIndex + `]" required>
             </div>
         </div>`;
-        goalDiv.appendChild(goalInput);
-        goalIndex++;
-    }
-}
+                                    goalDiv.appendChild(goalInput);
+                                    goalIndex++;
+                                }
+                            }
 
-function addGoalInputB() {
-    scoreB++;
-    var inputScoreB = document.getElementById('teamBScore').value;
-    if (scoreB <= inputScoreB) {
-        const goalDiv = document.getElementById('goalsB');
-        const goalInput = document.createElement('div');
-        goalInput.innerHTML = `
+                            function addGoalInputB() {
+                                scoreB++;
+                                var inputScoreB = document.getElementById('teamBScore').value;
+                                if (scoreB <= inputScoreB) {
+                                    const goalDiv = document.getElementById('goalsB');
+                                    const goalInput = document.createElement('div');
+                                    goalInput.innerHTML = `
                                 <div class="row">
             <input type="hidden" name="goalTeamId[` + goalIndex + `]" value="${MATCH.awayTeamId}"/>
             <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
@@ -276,26 +282,26 @@ function addGoalInputB() {
                 <input class="goalInput" type="number"  min="0" max="130" name="goalTime[` + goalIndex + `]" required><br>
             </div>
         </div>`;
-        goalDiv.appendChild(goalInput);
-        goalIndex++;
-    }
+                                    goalDiv.appendChild(goalInput);
+                                    goalIndex++;
+                                }
 
-}
+                            }
 
-var CardA = 0;
-var yellowCardIndexA = 1;
-var redCardIndexA = 1;
-function addCardInputA() {
-    CardA++;
-    var yellowCardA = parseInt(document.getElementById('yellowCardA').value);
-    var redCardA = parseInt(document.getElementById('redCardA').value);
-    var totalCard = yellowCardA + redCardA;
-    
-    if (CardA <= totalCard) {
-                const cardDiv = document.getElementById('cardsA');
-        const cardInput = document.createElement('div');
-        if (yellowCardIndexA <= yellowCardA) {
-            cardInput.innerHTML = `
+                            var CardA = 0;
+                            var yellowCardIndexA = 1;
+                            var redCardIndexA = 1;
+                            function addCardInputA() {
+                                CardA++;
+                                var yellowCardA = parseInt(document.getElementById('yellowCardA').value);
+                                var redCardA = parseInt(document.getElementById('redCardA').value);
+                                var totalCard = yellowCardA + redCardA;
+
+                                if (CardA <= totalCard) {
+                                    const cardDiv = document.getElementById('cardsA');
+                                    const cardInput = document.createElement('div');
+                                    if (yellowCardIndexA <= yellowCardA) {
+                                        cardInput.innerHTML = `
                                 <div class="row">
                                         <input type="hidden" name="cardTeamId[` + cardIndex + `]" value="${MATCH.homeTeamId}"/>
                                       <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
@@ -316,9 +322,9 @@ function addCardInputA() {
                                       </div>
                                 </div>
     `;
-            yellowCardIndexA++;
-        } else if (redCardIndexA <= redCardA) {
-            cardInput.innerHTML = `
+                                        yellowCardIndexA++;
+                                    } else if (redCardIndexA <= redCardA) {
+                                        cardInput.innerHTML = `
                                 <div class="row">
                                         <input type="hidden" name="cardTeamId[` + cardIndex + `]" value="${MATCH.homeTeamId}"/>
                                       <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
@@ -339,33 +345,33 @@ function addCardInputA() {
                                       </div>
                                 </div>
     `;
-            redCardIndexA++;
-        }
+                                        redCardIndexA++;
+                                    }
 
 
 
 
-        cardDiv.appendChild(cardInput);
-        cardIndex++;
-        cardQuantityDiv.value = cardIndex;
-    }
-}
+                                    cardDiv.appendChild(cardInput);
+                                    cardIndex++;
+                                    cardQuantityDiv.value = cardIndex;
+                                }
+                            }
 
 
-var CardB = 0;
-var yellowCardIndexB = 1;
-var redCardIndexB = 1;
-function addCardInputB() {
-    CardB++;
-    var yellowCardB = parseInt(document.getElementById('yellowCardB').value);
-    var redCardB = parseInt(document.getElementById('redCardB').value);
-    var totalCard = yellowCardB + redCardB;
-    if (CardB <= totalCard) {
-        const cardDiv = document.getElementById('cardsB');
-        const cardInput = document.createElement('div');
-        cardQuantityDiv.value = cardIndex;
-        if (yellowCardIndexB <= yellowCardB) {
-            cardInput.innerHTML = `
+                            var CardB = 0;
+                            var yellowCardIndexB = 1;
+                            var redCardIndexB = 1;
+                            function addCardInputB() {
+                                CardB++;
+                                var yellowCardB = parseInt(document.getElementById('yellowCardB').value);
+                                var redCardB = parseInt(document.getElementById('redCardB').value);
+                                var totalCard = yellowCardB + redCardB;
+                                if (CardB <= totalCard) {
+                                    const cardDiv = document.getElementById('cardsB');
+                                    const cardInput = document.createElement('div');
+                                    cardQuantityDiv.value = cardIndex;
+                                    if (yellowCardIndexB <= yellowCardB) {
+                                        cardInput.innerHTML = `
                                <div class="row">
                                                <input type="hidden" name="cardTeamId[` + cardIndex + `]" value="${MATCH.awayTeamId}"/>
 
@@ -388,9 +394,9 @@ function addCardInputB() {
                                       </div>
                                 </div>
     `;
-            yellowCardIndexB++;
-        } else if (redCardIndexB <= redCardB) {
-            cardInput.innerHTML = `
+                                        yellowCardIndexB++;
+                                    } else if (redCardIndexB <= redCardB) {
+                                        cardInput.innerHTML = `
                                <div class="row">
                                                <input type="hidden" name="cardTeamId[` + cardIndex + `]" value="${MATCH.awayTeamId}"/>
 
@@ -412,15 +418,15 @@ function addCardInputB() {
                                       </div>
                                 </div>
     `;
-            redCardIndexB++;
-        }
+                                        redCardIndexB++;
+                                    }
 
 
-        cardDiv.appendChild(cardInput);
-        cardIndex++;
-        cardQuantityDiv.value = cardIndex;
-    }
-}
+                                    cardDiv.appendChild(cardInput);
+                                    cardIndex++;
+                                    cardQuantityDiv.value = cardIndex;
+                                }
+                            }
 
 
 </script>

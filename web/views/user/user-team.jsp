@@ -93,7 +93,7 @@
                             </a>    
                             <div style="color: green; margin-top: 10px">${MESSAGE}</div>        
                             <div style="color: red; margin-top: 10px">${ERROR}</div>
-                            
+
                         </div>
                         <div class="mt-8 md:mt-0 md:ml-10 w-full max-w-lg">
                             <!--<form class="space-y-4" action="team" method="POST" >-->                       
@@ -134,9 +134,13 @@
                             <c:if test="${TEAM_MEMBERS ==  null}">
                                 <h3>Bạn chưa có thành viên nào trong team</h3>
                             </c:if>
-                            <form action="team" method="POST" style="display: flex; justify-content: space-between; align-items: center">
+                            <form action="team" method="POST" style="display: flex; justify-content: space-between; align-items: center"  enctype="multipart/form-data">
                                 <input type="hidden" name="action" value="add-team-member"/>      
                                 <input type="hidden" name="teamId" value="${TEAM.id}" />
+                                <div style="width: 20%">
+                                    <label for="surname" class="text-gray-700">Hình ảnh</label>
+                                    <input type="file" name="file" required>
+                                </div>
                                 <div>
                                     <label for="surname" class="text-gray-700">Tên</label>
                                     <input name="name" required="" value="" type="text" id="surname" placeholder="Tên cầu thủ" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
@@ -152,7 +156,9 @@
                             <c:forEach var="member" items="${TEAM_MEMBERS}" varStatus="status">
                                 <hr>
                                 <div style="display: flex; justify-content: space-between; align-items: center">
-                                    Cầu thủ ${status.count}
+                                    <div>
+                                        <img src="data:image/png;base64,${member.image}" style="width: 100px; hegiht: 100px"/>
+                                    </div>
                                     <div>
                                         <label for="surname" class="text-gray-700">Tên: ${member.name}</label>
                                     </div>
@@ -171,7 +177,7 @@
                                                 <h5 class="modal-title" id="exampleModalLabel">Thông tin cầu thủ</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
-                                            <form action="team" method="POST">
+                                            <form action="team" method="POST"  enctype="multipart/form-data">
                                                 <div class="modal-body">
                                                     <div  method="POST" style="display: flex; justify-content: space-between; align-items: center">
                                                         <input type="hidden" name="action" value="update-team-member"/>      
@@ -184,6 +190,9 @@
                                                             <label for="surname" class="text-gray-700">Số áo</label>
                                                             <input name="number"required value="${member.number}" type="number" id="surname" placeholder="Số áo cầu của" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" >
                                                         </div>
+                                                        <div>
+                                                        </div>
+                                                      
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer">

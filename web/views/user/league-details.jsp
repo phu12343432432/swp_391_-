@@ -63,6 +63,53 @@
             display: -webkit-box;
         }
 
+        .podium {
+            margin-top: 15px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .position {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            margin: 0 10px;
+        }
+        .position img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+        .position .name {
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .position .number {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .first {
+            height: 200px;
+            width: 150px;
+            background-color: gold;
+        }
+        .second {
+            height: 150px;
+            width: 150px;
+            background-color: silver;
+        }
+        .third {
+            height: 100px;
+            width: 150px;
+            background-color: #cd7f32;
+        }
+
 
     </style>
     <body>
@@ -174,12 +221,48 @@
                     </div>
 
                     <div>
+                        <label for="surname" class="text-gray-700">Số lượng cầu thủ yêu cầu: *</label>
+                        <input name="team_member_size" value="${USER_LEAGUE.teamMemberSize}" type="number" id="surname"  class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" readonly>
+                    </div>
+
+                    <div>
                         <label for="surname" class="text-gray-700">Hình thức thi đấu *</label>
-                        <select name="type" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"  readonly>
-                            <option value="Đá xoay vòng" >Đá xoay vòng</option>
-                            <option value="Thi đấu theo bảng">Thi đấu theo bảng</option>
+                        <select name="type" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"  requried>
+                            <c:if test="${USER_LEAGUE.type.equals('2')}">
+                                <option value="1" >Đá theo bảng</option>
+                            </c:if>
+                            <c:if test="${USER_LEAGUE.type.equals('1')}">
+                                <option value="1" >Đá xoay vòng</option>
+                            </c:if>
                         </select>
                     </div>
+
+                    <c:if test="${USER_LEAGUE.type.equals('2') && USER_LEAGUE.status == 5}">
+                    <div>
+                        <div class="podium">
+                            <div class="position second">
+                                <img src="${pageContext.request.contextPath}/img/match-result/huychuongbac.jpg" alt="Second Place">
+                                <div class="name">[${TEAM2.name}]</div>     
+                                <div class="number">2</div>
+                            </div>
+                            <div class="position first">
+                                <img src="${pageContext.request.contextPath}/img/match-result/huychuongvang.png" alt="First Place">
+                                <div class="name">[${TEAM1.name}]</div>
+                                <div class="number">1</div>
+                            </div>
+                            <div class="position third">
+                                <img src="${pageContext.request.contextPath}/img/match-result/huychuongdong.jpg" alt="Third Place">
+                                <div class="name">
+                                    <c:forEach items="${TEAM3}" var="team">
+                                        [${team.name}]
+                                    </c:forEach>
+                                </div>
+                                <div class="number">3</div>
+                            </div>
+                        </div>
+                    </div>
+                </c:if>
+
 
                     <div>
                         <div style="margin: 30px 0px">
@@ -201,7 +284,8 @@
                                     <br/>
                                     <h2>"Chưa có đội bóng nào đăng kí giải đấu này"</h2>
                                 </c:if>
-                                <c:if test="${USER_LEAGUE.status != 5 && USER_LEAGUE.status != 4 }">
+                                <%-- Cho nay a chua nghi ra cach ok ho --%>
+                                <c:if test="${USER_LEAGUE.status != 5 && USER_LEAGUE.status != 4 && USER_LEAGUE.status != 6 && USER_LEAGUE.status != 8}">
                                     <a class="btn btn-sm btn-warning" href="league?action=register&leagueId=${leagueId}" class="btn btn-sm" style="width: 200px">Đăng kí ngay</a>
                                 </c:if>
                             </c:otherwise>
@@ -238,11 +322,21 @@
                     </div>
                     <div style="display: flex; justify-content: center; margin-top: 15px">
                         <c:if test="${USER_LEAGUE.status == 4}">
-                            <a href="league?action=league-match&leagueId=${USER_LEAGUE.id}"  class="btn btn-primary" >Đang diễn ra - xem chi tiết</a>
+                            <a href="league?action=league-match&leagueId=${USER_LEAGUE.id}&groupId=${groupId}"  class="btn btn-primary" >Đang diễn ra - xem chi tiết</a>
                         </c:if> 
                         <c:if test="${USER_LEAGUE.status == 5}">
-                            <a  href="league?action=league-match&leagueId=${USER_LEAGUE.id}"  class="btn btn-danger">Đã kết thúc - xem chi tiết</a>
+                            <a  href="league?action=league-match&leagueId=${USER_LEAGUE.id}&groupId=${groupId}"  class="btn btn-danger">Đã kết thúc - xem chi tiết</a>
                         </c:if> 
+                        <c:if test="${USER_LEAGUE.status == 6}">
+                            <div>
+                                <a class="btn btn-danger" href="league?action=knockout-stage&leagueId=${USER_LEAGUE.id}&groupId=${groupId}">Vòng knock out</a>
+                            </div> 
+                        </c:if>
+                        <c:if test="${USER_LEAGUE.status == 8}">
+                            <div>
+                                <a class="btn btn-danger" href="league?action=view-final&leagueId=${USER_LEAGUE.id}&groupId=${groupId}">Trận chung kết</a>
+                            </div> 
+                        </c:if>
                     </div>
                 </form>
 
@@ -333,7 +427,7 @@
                     </thead>
                     <tbody>
                         <c:forEach items="${BLOG_LEAGUE}" var="blog" varStatus="status">
-                                
+
 
                             <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                                 <th scope="row" class="px-6 py-4 ">

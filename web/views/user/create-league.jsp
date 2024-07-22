@@ -91,11 +91,12 @@
                                     <label for="surname" class="text-gray-700">Ngày bắt đầu *</label>
                                     <input name="start_date" type="datetime-local" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
                                 </div>
-                                <div style="margin-left: 10px">
+                                <div style="margin-left: 10px; width: 80%">
                                     <label for="Phone" class="text-gray-700">Ngày kết thúc *</label>
-                                    <input name="end_date" type="datetime-local" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"  required>
+                                    <input name="end_date" type="datetime-local" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" style="width: 90%"  required>
                                 </div>
                             </div>
+                            <div><b>Thời gian bắt đầu giải đấu</b> cũng sẽ là thời gian diễn ra trận <b>đấu đầu tiên</b>, bạn hãy cân nhắc chọn thời gian phù hợp.</div>
                             <div>
                                 <label for="surname" class="text-gray-700">Địa điểm thi đấu *</label>
                                 <input name="address" type="text" id="surname"  class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
@@ -113,22 +114,35 @@
                               class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                               pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Email phải chứa ký tự '@' và không được chứa các ký tự đặc biệt không hợp lệ." required></textarea>
                 </div>
-                <div>
-                    <label for="surname" class="text-gray-700">Số lượng đội tham gia: *</label>
-                    <input name="teamsize"type="number" id="surname"  class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
-                </div>
 
+                <div>
+                    <label for="surname" class="text-gray-700">Số lượng cầu thủ mỗi đội: *</label>
+                    <select name="team_member_size" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"  requried>
+                        <option value="5" >5</option>    
+                        <option value="7" >7</option>
+                        <option value="11" >11</option>
+                    </select>
+                </div>
                 <div>
                     <label for="surname" class="text-gray-700">Ngày hết hạn đăng kí *</label>
                     <input name="date_register" type="date" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
                 </div>
 
+
                 <div>
                     <label for="surname" class="text-gray-700">Hình thức thi đấu *</label>
-                    <select name="type" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"  requried>
-                        <option value="Đá xoay vòng" >Đá xoay vòng</option>
-                        <option value="Thi đấu theo bảng">Thi đấu theo bảng</option>
+                    <select name="type" id="type-select" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"  requried>
+                        <option value="1" >Đá xoay vòng</option>
+                        <option value="2">Thi đấu theo bảng</option>
                     </select>
+                </div>
+
+                <div id="team-size-container">
+                    <label for="surname" class="text-gray-700">Số lượng đội tham gia: *</label>
+                    <input name="teamsize" type="number" id="surname"  class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                </div>
+                <div>
+                    Nếu giải theo hình thức chia bảng. Giải đấu sẽ được chia 4 đội trên 1 bảng.
                 </div>
 
                 <hr>
@@ -193,19 +207,26 @@
         if (!updateAvatar && imageInput.value != null) {
             imageInput.disabled = true;
         }
-        document.addEventListener("DOMContentLoaded", function () {
-            const phoneInput = document.getElementById("Phone");
 
-            phoneInput.addEventListener("input", function () {
-                const regex = /^\d{0,10}$/;
-                if (!regex.test(phoneInput.value)) {
-                    // If validation fails, show a custom error message
-                    phoneInput.setCustomValidity("Số điện thoại phải gồm 10 chữ số và không chứa ký tự đặc biệt.");
-                } else {
-                    // Clear custom error message
-                    phoneInput.setCustomValidity("");
-                }
-            });
+        document.getElementById('type-select').addEventListener('change', function () {
+            const container = document.getElementById('team-size-container');
+            const selectedType = this.value;
+            container.innerHTML = '';  // Clear previous content
+            if (selectedType === '2') {
+                // Create a select element for team sizes
+                container.innerHTML = `
+            <label for="teamsize-select" class="text-gray-700">Số lượng đội tham gia: *</label>
+            <select name="teamsize" id="teamsize-select" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                <option value="8">8 đội</option>
+                <option value="16">16 đội</option>
+                <option value="32">32 đội</option>
+            </select>`;
+            } else {
+                // Create an input element for team sizes
+                container.innerHTML = `
+            <label for="teamsize" class="text-gray-700">Số lượng đội tham gia: *</label>
+            <input name="teamsize" type="number" id="teamsize" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>`;
+            }
         });
 
     </script>

@@ -26,6 +26,7 @@
                 <div class="bg-green-600 text-white text-center py-4" style="background-image: linear-gradient(to right top,#45af2a,#3ba023,#30901c,#268215,#1b730d,#1b730d,#1b730d,#1b730d,#268215,#30901c,#3ba023,#45af2a);">
                     <h1 class="text-xl font-semibold" >QUÊN MẬT KHẨU</h1>
                 </div>
+                <div style="color: red">${ERROR}</div>
                 <div class="p-6">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
                         Địa chỉ Email:

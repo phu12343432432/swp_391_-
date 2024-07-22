@@ -78,7 +78,9 @@
                                 <img src="https://placehold.co/100x100" alt="Profile picture" id="profile-picture" class=" border-3 border-green-500 p-1 mb-3" style="width: 400px; cursor: pointer; margin: 10px auto;border: 2px solid #1b730d">
                             </c:otherwise>
                         </c:choose>
-                        <div style="color: green; margin-top: 10px">${MESSAGE}</div>
+                        <div style="color: green; margin-top: 10px">${MESSAGE}</div>  
+                        <div style="color: red; margin-top: 10px">${ERROR}</div>
+
                     </div>
                     <div class="mt-8 md:mt-0 md:ml-10 w-full max-w-lg">
                         <!--<form class="space-y-4" action="team" method="POST" >-->                       
@@ -125,12 +127,31 @@
                 <div>
                     <label for="surname" class="text-gray-700">Hình thức thi đấu *</label>
                     <select name="type" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"  requried>
-                        <option value="Đá xoay vòng" >Đá xoay vòng</option>
-                        <option value="Thi đấu theo bảng">Thi đấu theo bảng</option>
+                        <c:if test="${USER_LEAGUE.type.equals('2')}">
+                            <option value="1" >Đá theo bảng</option>
+                        </c:if>
+                        <c:if test="${USER_LEAGUE.type.equals('1')}">
+                            <option value="1" >Đá xoay vòng</option>
+                        </c:if>
                     </select>
                 </div>
                 <div>
 
+                    <div style="display: flex; justify-content: space-between; margin-top: 15px">
+                        <div>
+                            <c:forEach items="${GROUPS}" var="g">
+                                <a class="btn ${g.id == groupId ? 'btn-warning' : 'btn-light'}" href="league?action=league-match&leagueId=${USER_LEAGUE.id}&groupId=${g.id}">${g.name}</a>
+                            </c:forEach> 
+                        </div>
+
+                        <c:if test="${USER_LEAGUE.status >= 6 || USER_LEAGUE.type.equals('2')}">
+                            <div>
+                                <a class="btn btn-danger" href="league?action=knockout-stage&leagueId=${USER_LEAGUE.id}&groupId=${groupId}">Vòng knock out</a>
+                            </div> 
+                        </c:if> 
+                    </div>
+
+                    <div></div>
                     <label for="surname" class="text-gray-700">Các đội đăng kí:</label>
                     <c:if test="${LEAGUE_TEAM.size() == 0}">
                         <h2>"Chưa có đội bóng nào đăng kí giải đấu này"</h2>
@@ -157,13 +178,13 @@
                                         <c:choose>
                                             <c:when test="${OWNER}">
                                                 <div class="btn-group">
-                                                    <c:if test="${team.status == 0}">
-                                                        <a href="league?action=match-detail&matchId=${team.id}" class="btn btn-sm btn-secondary" class="btn btn-sm" style="width: 100%">
+                                                    <c:if test="${team.status == 0 || team.status == 2}">
+                                                        <a href="league?action=match-detail&matchId=${team.id}&groupId=${groupId}" class="btn btn-sm btn-secondary" class="btn btn-sm" style="width: 100%">
                                                             Sắp diễn ra
                                                         </a>
                                                     </c:if>
                                                     <c:if test="${team.status == 1}">
-                                                        <a href="match-detail?matchId=${team.id}" class="btn btn-sm btn-danger" class="btn btn-sm" style="width: 100%">
+                                                        <a href="match-detail?matchId=${team.id}&groupId=${groupId}" class="btn btn-sm btn-danger" class="btn btn-sm" style="width: 100%">
                                                             Đã diễn ra 
                                                         </a>
                                                     </c:if>
@@ -175,7 +196,7 @@
                                                         <h5 style="color: #198754">Sắp diễn ra</h5>
                                                     </c:if>
                                                     <c:if test="${team.status == 1}">
-                                                        <a href="match-detail?matchId=${team.id}" class="btn btn-sm btn-danger" class="btn btn-sm" style="width: 100%">
+                                                        <a href="match-detail?matchId=${team.id}&groupId=${groupId}" class="btn btn-sm btn-danger" class="btn btn-sm" style="width: 100%">
                                                             Đã diễn ra 
                                                         </a>
                                                     </c:if>
@@ -200,7 +221,7 @@
 
                                                 <c:choose>
                                                     <c:when test="${team.status == 0}">
-                                                        <a href="UpdateMatchController?matchId=${team.id}" class="btn btn-primary"> ${team.startAt.substring(11, 16)} - ${team.endAt.substring(11, 16)}</a>
+                                                        <a href="UpdateMatchController?matchId=${team.id}&groupId=${groupId}" class="btn btn-primary"> ${team.startAt.substring(11, 16)} - ${team.endAt.substring(11, 16)}</a>
                                                     </c:when>
                                                     <c:otherwise>
                                                         <a class="btn btn-primary"> ${team.startAt.substring(11, 16)} - ${team.endAt.substring(11, 16)}</a>
@@ -232,11 +253,35 @@
                         </div>
                         </hr>
                     </c:forEach>
-                    <c:if test="${OWNER}">
-                        <div style="display: flex; justify-content: center; margin-top: 15px">
-                            <a href="league?action=finish-league&leagueId=${USER_LEAGUE.id}" class="btn btn-danger" >Kết thúc giải</a>
-                        </div>
-                    </c:if>   
+                    <div style="display: flex; justify-content: space-between; align-items: center">
+                        <c:if test="${OWNER && USER_LEAGUE.status != 6}">
+                            <div style="display: flex; justify-content: center; margin-top: 15px">
+                                <c:choose>
+                                    <c:when test="${USER_LEAGUE.type.equals('2') && USER_LEAGUE.status < 6 && USER_LEAGUE.status != 5  }">
+                                        <a href="league?action=start-knockout-stage&leagueId=${USER_LEAGUE.id}&groupId=${groupId}" class="btn btn-danger" >Tạo vòng knock-out</a>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:if test="${USER_LEAGUE.status == 4 || USER_LEAGUE.status == 8}">
+                                            <a href="league?action=finish-league&leagueId=${USER_LEAGUE.id}&groupId=${groupId}" class="btn btn-danger" >Kết thúc giải</a>
+                                        </c:if>
+                                    </c:otherwise>
+                                </c:choose>
+
+
+                            </div>
+                        </c:if>   
+                        <c:if test="${ISKNOCKOUT && USER_LEAGUE.status != 8 && USER_LEAGUE.status != 5}">
+                            <div style="display: flex; justify-content: center; margin-top: 15px">
+                                <a href="league?action=start-final&leagueId=${USER_LEAGUE.id}&groupId=${groupId}" class="btn btn-success" >Bắt đầu trận chung kết</a>
+                            </div>
+                        </c:if>   
+                        <c:if test="${USER_LEAGUE.status == 8 || USER_LEAGUE.status == 5}" >
+                            <div style="display: flex; justify-content: center; margin-top: 15px">
+                                <a class="btn btn-primary" href="league?action=view-final&leagueId=${USER_LEAGUE.id}&groupId=${groupId}">Trận chung kết</a>
+                            </div> 
+                        </c:if>
+                    </div>
+
                     <div style="display: flex; justify-content: center; margin-top: 15px">
                         <a href="league?action=view-league&leagueId=${USER_LEAGUE.id}" class="btn btn-success" >Trở về</a>
                     </div>

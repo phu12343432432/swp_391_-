@@ -96,7 +96,17 @@
                                         <p class="card-text">Kết thúc: ${league.endDate}</p>
 
                                         <p class="card-text">Hạn đăng kí giải: ${league.dateRegister}</p>
-                                        <small class="text-muted">${league.type}</small>
+
+                                        <c:if test="${league.type.equals('1')}">
+                                            <small class="text-muted">
+                                                Đá xoay vòng
+                                            </small>
+                                        </c:if>
+                                        <c:if test="${league.type.equals('2')}">
+                                            Thi đấu theo bảng
+                                        </c:if>
+
+
                                         <div class="d-flex justify-content-between align-items-center" style="margin-top: 15px">
                                             <div class="btn-group">
                                                 <a class="btn btn-sm btn-secondary" href="league?action=view-league&leagueId=${league.id}" class="btn btn-sm" style="width: 100px">Xem chi tiết</a>

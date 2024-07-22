@@ -109,7 +109,7 @@
                         <div style="color: green; margin-top: 10px">${MESSAGE}</div>
                     </div>
                     <div class="mt-8 md:mt-0 md:ml-10 w-full max-w-lg">
-                        <form action="SendOrderWalletController">
+                        <form action="VnpayRequestController">
                             <div>
                                 <label for="inputOne" class="text-gray-700">Số tiền bạn muốn nạp (Vnđ)</label>
                                 <input placeholder="1000 vnđ" type="number" name="ammount"  id="inputOne"  class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" required>

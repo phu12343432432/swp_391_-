@@ -77,6 +77,11 @@
                 <hr>
                 </br>
                 <div>
+
+                    <c:forEach items="${GROUPS}" var="g">
+                        <a class="btn ${g.id == groupId ? 'btn-warning' : 'btn-secondary'}" href="league?action=league-rank&leagueId=${leagueId}&groupId=${g.id}">${g.name}</a>
+                    </c:forEach>  
+
                     <c:if test="${LIST_RANK.size() == 0}">
                         <h2>"Giải đáu chưa bắt đầu"</h2>
                     </c:if>
@@ -99,7 +104,10 @@
                                         <i>Điểm: <b>${team.point}</b></i>
                                         <div style="display: flex">
                                             ${team.wins} <img style="width: 25px; margin-left: 5px" src="${pageContext.request.contextPath}/img/match-result/check.png"/>
-                                            ${team.loses} <img style="width: 25px; margin-left: 5px" src="${pageContext.request.contextPath}/img/match-result/cancel.png"/>                                          
+                                            ${team.loses} <img style="width: 25px; margin-left: 5px" src="${pageContext.request.contextPath}/img/match-result/cancel.png"/>       
+                                            
+                                            Hòa: ${team.ties} 
+                                            Số điểm bị thẻ:   ${team.totalCardPoint}   
                                         </div>
                                     </div>
                                 </div>
@@ -114,10 +122,22 @@
                             </div>
                         </div>
                     </c:forEach>
-                    <div style="display: flex; justify-content: center; margin-top: 15px">
-                        <a href="league?action=detail&leagueId=${leagueId}" class="bg-green-500 text-white px-4 py-2 rounded shadow peer-checked:bg-green-500 transition-colors" 
-                           style="background-image: linear-gradient(to right top,#45af2a,#3ba023,#30901c,#268215,#1b730d,#1b730d,#1b730d,#1b730d,#268215,#30901c,#3ba023,#45af2a);">Trở về</a>
-                    </div>
+                    <c:choose>
+                        <c:when test="${OWNER}">
+                            <div style="display: flex; justify-content: center; margin-top: 15px">
+                                <a href="league?action=detail&leagueId=${leagueId}&groupId=${groupId}" class="bg-green-500 text-white px-4 py-2 rounded shadow peer-checked:bg-green-500 transition-colors" 
+                                   style="background-image: linear-gradient(to right top,#45af2a,#3ba023,#30901c,#268215,#1b730d,#1b730d,#1b730d,#1b730d,#268215,#30901c,#3ba023,#45af2a);">Trở về</a>
+                            </div>
+                        </c:when> 
+                        <c:otherwise>
+                            <div style="display: flex; justify-content: center; margin-top: 15px">
+                                <a href="league?action=view-league&leagueId=${leagueId}&groupId=${groupId}" class="bg-green-500 text-white px-4 py-2 rounded shadow peer-checked:bg-green-500 transition-colors" 
+                                   style="background-image: linear-gradient(to right top,#45af2a,#3ba023,#30901c,#268215,#1b730d,#1b730d,#1b730d,#1b730d,#268215,#30901c,#3ba023,#45af2a);">Trở về</a>
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
+
+
                 </div>              
         </div>
 

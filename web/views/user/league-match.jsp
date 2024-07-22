@@ -117,6 +117,12 @@
                                                     Đã kết thúc - xem kết quả
                                                 </a>
                                             </c:if>
+                                            <c:if test="${team.status == 6}">
+
+                                                <a href="league?action=match-detail?matchId=${team.id}" class="btn btn-sm btn-danger" class="btn btn-sm" style="width: 100%">
+                                                    Vòng knock out
+                                                </a>
+                                            </c:if>
 
                                         </div>
                                     </div>

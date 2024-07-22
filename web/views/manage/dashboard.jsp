@@ -86,6 +86,15 @@
                                 </div>
                             </div>
                         </div>
+
+
+                    </div>
+                    <div style="display: flex">              
+                        <canvas id="monthly-confirmed-posts" style="width:100%;max-width:700px"></canvas>          
+                        <canvas id="monthly-saved-posts" style="width:100%;max-width:700px"></canvas>        
+                    </div>
+                    <div style="display: flex">
+                        <canvas id="wallet-revenue" style="width:100%;max-width:700px"></canvas>
                         <div class="col-12 col-md-6 col-lg-4 mb-4">
                             <div class="card card-bg-primary ">
                                 <div class="card-body d-flex align-items-center">
@@ -97,15 +106,16 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
 
-                    <canvas id="wallet-revenue" style="width:100%;max-width:700px"></canvas>
                     <div class="row">
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
                                     <h5 class="card-title">Monthly Wallet Orders</h5>
+                                    <c:forEach var="i" begin="1" end="12">
+                                        <a href="admin?action=dashboard&month=${i}" class="btn ${i == currentMonth ? 'btn-primary' : 'btn-secondary'}">${i}</a>
+                                    </c:forEach>
                                 </div>
                                 <div class="card-body">
                                     <table class="table table-striped">
@@ -151,6 +161,70 @@
                                     }]
                             },
                             options: {
+                                responsive: true
+                            }
+                        });
+
+
+
+                        const labels = [];
+                        const data = [];
+                    <c:forEach var="entry" items="${MONTHLY_FINISHED_LEAGUE}">
+                        labels.push('${entry.key}');
+                        data.push(${entry.value});
+                    </c:forEach>
+
+                        // Create the chart
+                        const ctx = document.getElementById('monthly-confirmed-posts').getContext('2d');
+                        const postChart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                        label: 'Số giải đấu đã kết thúc',
+                                        data: data,
+                                        backgroundColor: 'rgba(75, 192, 192, 0.8)',
+                                        borderColor: 'rgba(75, 192, 192, 1)',
+                                        borderWidth: 1
+                                    }]
+                            },
+                            options: {
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                },
+                                responsive: true
+                            }
+                        });
+
+                        const labels2 = [];
+                        const data2 = [];
+                    <c:forEach var="entry" items="${MONTHLY_LEAGUE}">
+                        labels2.push('${entry.key}');
+                        data2.push(${entry.value});
+                    </c:forEach>
+
+                        // Create the chart
+                        const ctx2 = document.getElementById('monthly-saved-posts').getContext('2d');
+                        const postSavedChart = new Chart(ctx2, {
+                            type: 'bar',
+                            data: {
+                                labels: labels2,
+                                datasets: [{
+                                        label: 'Số giải đấu đã tạo',
+                                        data: data2,
+                                        backgroundColor: 'rgb(255, 99, 71, 0.8)',
+                                        borderColor: 'rgba(75, 192, 192, 1)',
+                                        borderWidth: 1
+                                    }]
+                            },
+                            options: {
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                },
                                 responsive: true
                             }
                         });

@@ -120,12 +120,14 @@
                         </div>
                     </div>
 
-
                     <div style="width: 100%">
                         <c:forEach var="member" items="${TEAM_MEMBERS}" varStatus="status">
                             <hr>
                             <div style="display: flex; justify-content: space-between; align-items: center">
-                                Cầu thủ ${status.count}
+                                ${status.count}
+                                <div>
+                                    <img src="data:image/png;base64,${member.image}" style="width: 100px; hegiht: 100px"/>
+                                </div>
                                 <div>
                                     <label for="surname" class="text-gray-700">Tên: ${member.name}</label>
                                 </div>
@@ -148,7 +150,9 @@
                                     </c:otherwise>
                                 </c:choose>
                                 <c:forEach var="i" begin="1" end="${endP}">
-                                <li class="page-item ${i == selectedPage ? "active" : "" }"> <a class="page-link" href="team?search=${search}&index=${i}">${i}</a> <li>
+                                <li class="page-item ${i == selectedPage ? "active" : "" }"> 
+                                    <a class="page-link" href="team?search=${search}&index=${i}">${i}</a> 
+                                <li>
                                 </c:forEach>
                                 <c:choose>
                                     <c:when test ="${selectedPage >= endP}">

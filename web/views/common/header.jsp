@@ -41,9 +41,9 @@
                 <a href="service.html" class="nav-item nav-link">Khóa Học Bóng Đá</a>
                 <a href="contact.html" class="nav-item nav-link">Liên Hệ</a>
             </div >
-            <a href="lichsuhoadon" class="icon-button">
-                <span class="material-icons">shopping_cart</span>
-                <span class="icon-button__badge">2</span>
+            <a href="NotifcationController?action=view" class="icon-button">
+             <span class="material-icons"><i class="bi bi-bell"></i></span>
+                <span class="icon-button__badge">${NOTIFY}</span>
             </a>
             <!--login-->
             <h1 class="m-4 ">

@@ -186,7 +186,9 @@
                         </div>
                     </div>
                 </div>
-
+                            
+                            
+                <input type="hidden" name="groupId" value="${groupId}"/>
                 <div style="color: red">${ERROR}</div>
                 <div style="display: flex; justify-content: center; margin-top: 15px">
                     <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded shadow peer-checked:bg-green-500 transition-colors" 
@@ -195,7 +197,7 @@
             </div>     
 
             <div style="display: flex; justify-content: center; margin-top: 15px">
-                <a href="league?action=league-match&leagueId=${MATCH.leagueId}" class="bg-green-500 text-white px-4 py-2 rounded shadow peer-checked:bg-green-500 transition-colors" 
+                <a href="league?action=league-match&leagueId=${MATCH.leagueId}&groupId=${groupId}" class="bg-green-500 text-white px-4 py-2 rounded shadow peer-checked:bg-green-500 transition-colors" 
                    style="background-image: linear-gradient(to right top,#45af2a,#3ba023,#30901c,#268215,#1b730d,#1b730d,#1b730d,#1b730d,#268215,#30901c,#3ba023,#45af2a);">Trở về</a>
             </div>
         </form>
